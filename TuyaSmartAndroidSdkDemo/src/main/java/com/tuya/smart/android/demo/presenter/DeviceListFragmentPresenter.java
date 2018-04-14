@@ -9,9 +9,9 @@ import android.net.wifi.WifiManager;
 import com.tuya.smart.android.base.event.NetWorkStatusEvent;
 import com.tuya.smart.android.base.event.NetWorkStatusEventModel;
 import com.tuya.smart.android.demo.R;
-import com.tuya.smart.android.demo.activity.AddDeviceTipActivity;
 import com.tuya.smart.android.demo.activity.BrowserActivity;
-import com.tuya.smart.android.demo.activity.CommonDeviceDebugActivity;
+import com.tuya.smart.android.demo.activity.DeviceColorPickActivity;
+import com.tuya.smart.android.demo.activity.SelectDeviceTypeActivity;
 import com.tuya.smart.android.demo.activity.SharedActivity;
 import com.tuya.smart.android.demo.activity.SwitchActivity;
 import com.tuya.smart.android.demo.config.CommonConfig;
@@ -36,7 +36,8 @@ import java.util.List;
 /**
  * Created by letian on 15/6/1.
  */
-public class DeviceListFragmentPresenter extends BasePresenter implements NetWorkStatusEvent, ITuyaListChangedListener {
+public class DeviceListFragmentPresenter extends BasePresenter implements NetWorkStatusEvent,
+        ITuyaListChangedListener {
 
     private static final String TAG = "DeviceListFragmentPresenter";
     private static final int WHAT_JUMP_GROUP_PAGE = 10212;
@@ -58,9 +59,12 @@ public class DeviceListFragmentPresenter extends BasePresenter implements NetWor
 
     private void showDevIsNotOnlineTip(final DeviceBean deviceBean) {
         final boolean isShared = deviceBean.isShare;
-        DialogUtil.customDialog(mActivity, mActivity.getString(R.string.title_device_offline), mActivity.getString(R.string.content_device_offline),
-                mActivity.getString(isShared ? R.string.ty_offline_delete_share : R.string.cancel_connect),
-                mActivity.getString(R.string.right_button_device_offline), mActivity.getString(R.string.left_button_device_offline), new DialogInterface.OnClickListener() {
+        DialogUtil.customDialog(mActivity, mActivity.getString(R.string.title_device_offline),
+                mActivity.getString(R.string.content_device_offline),
+                mActivity.getString(isShared ? R.string.ty_offline_delete_share : R.string
+                        .cancel_connect),
+                mActivity.getString(R.string.right_button_device_offline), mActivity.getString(R
+                        .string.left_button_device_offline), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         switch (which) {
@@ -68,10 +72,13 @@ public class DeviceListFragmentPresenter extends BasePresenter implements NetWor
                                 if (isShared) {
                                     //跳转到删除共享
                                     Intent intent = new Intent(mActivity, SharedActivity.class);
-                                    intent.putExtra(SharedActivity.CURRENT_TAB, SharedActivity.TAB_RECEIVED);
+                                    intent.putExtra(SharedActivity.CURRENT_TAB, SharedActivity
+                                            .TAB_RECEIVED);
                                     mActivity.startActivity(intent);
                                 } else {
-                                    DialogUtil.simpleConfirmDialog(mActivity, mActivity.getString(R.string.device_confirm_remove), new DialogInterface.OnClickListener() {
+                                    DialogUtil.simpleConfirmDialog(mActivity, mActivity.getString
+                                            (R.string.device_confirm_remove), new DialogInterface
+                                            .OnClickListener() {
 
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
@@ -88,7 +95,8 @@ public class DeviceListFragmentPresenter extends BasePresenter implements NetWor
                                 intent.putExtra(BrowserActivity.EXTRA_LOGIN, false);
                                 intent.putExtra(BrowserActivity.EXTRA_REFRESH, true);
                                 intent.putExtra(BrowserActivity.EXTRA_TOOLBAR, true);
-                                intent.putExtra(BrowserActivity.EXTRA_TITLE, mActivity.getString(R.string.left_button_device_offline));
+                                intent.putExtra(BrowserActivity.EXTRA_TITLE, mActivity.getString
+                                        (R.string.left_button_device_offline));
                                 intent.putExtra(BrowserActivity.EXTRA_URI, CommonConfig.RESET_URL);
                                 mActivity.startActivity(intent);
                                 break;
@@ -116,13 +124,18 @@ public class DeviceListFragmentPresenter extends BasePresenter implements NetWor
     }
 
     private void gotoDeviceCommonActivity(DeviceBean devBean) {
+        //跳转至控制界面
+        Intent intent = new Intent(mActivity, DeviceColorPickActivity.class);
+        intent.putExtra(DeviceColorPickActivity.INTNET_TITLE,devBean.getName());
+        intent.putExtra(DeviceColorPickActivity.INTENT_DEVID,devBean.getDevId());
+        mActivity.startActivity(intent);
 //        Intent intent = new Intent(mActivity, DeviceCommonActivity.class);
 //        intent.putExtra(DeviceCommonPresenter.INTENT_DEVID, devBean.getDevId());
 //        mActivity.startActivity(intent);
 
-        Intent intent = new Intent(mActivity, CommonDeviceDebugActivity.class);
-        intent.putExtra(CommonDeviceDebugPresenter.INTENT_DEVID, devBean.getDevId());
-        mActivity.startActivity(intent);
+//        Intent intent = new Intent(mActivity, CommonDeviceDebugActivity.class);
+//        intent.putExtra(CommonDeviceDebugPresenter.INTENT_DEVID, devBean.getDevId());
+//        mActivity.startActivity(intent);
     }
 
     public void getDataFromServer() {
@@ -130,14 +143,19 @@ public class DeviceListFragmentPresenter extends BasePresenter implements NetWor
     }
 
     public void gotoAddDevice() {
-        ActivityUtils.gotoActivity(mActivity, AddDeviceTipActivity.class, ActivityUtils.ANIMATE_SLIDE_TOP_FROM_BOTTOM, false);
+        //ActivityUtils.gotoActivity(mActivity, AddDeviceTipActivity.class, ActivityUtils
+        // .ANIMATE_SLIDE_TOP_FROM_BOTTOM, false);
+        ActivityUtils.gotoActivity(mActivity, SelectDeviceTypeActivity.class, ActivityUtils
+                .ANIMATE_SLIDE_TOP_FROM_BOTTOM, false);
     }
 
     //添加设备
     public void addDevice() {
-        final WifiManager mWifiManager = (WifiManager) mActivity.getSystemService(Context.WIFI_SERVICE);
+        final WifiManager mWifiManager = (WifiManager) mActivity.getApplicationContext().getSystemService(Context
+                .WIFI_SERVICE);
         if (!mWifiManager.isWifiEnabled()) {
-            DialogUtil.simpleConfirmDialog(mActivity, mActivity.getString(R.string.open_wifi), new DialogInterface.OnClickListener() {
+            DialogUtil.simpleConfirmDialog(mActivity, mActivity.getString(R.string.open_wifi),
+                    new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     switch (which) {
@@ -166,7 +184,8 @@ public class DeviceListFragmentPresenter extends BasePresenter implements NetWor
         if (deviceBean.getIsShare()) {
             return false;
         }
-        DialogUtil.simpleConfirmDialog(mActivity, mActivity.getString(R.string.device_confirm_remove), new DialogInterface.OnClickListener() {
+        DialogUtil.simpleConfirmDialog(mActivity, mActivity.getString(R.string
+                .device_confirm_remove), new DialogInterface.OnClickListener() {
 
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -239,7 +258,8 @@ public class DeviceListFragmentPresenter extends BasePresenter implements NetWor
 
     public void addDemoDevice() {
         ProgressUtil.showLoading(mActivity, null);
-        TuyaSmartRequest.getInstance().requestWithApiName("s.m.dev.sdk.demo.list", "1.0", null, new IRequestCallback() {
+        TuyaSmartRequest.getInstance().requestWithApiName("s.m.dev.sdk.demo.list", "1.0", null,
+                new IRequestCallback() {
             @Override
             public void onSuccess(Object result) {
                 ProgressUtil.hideLoading();

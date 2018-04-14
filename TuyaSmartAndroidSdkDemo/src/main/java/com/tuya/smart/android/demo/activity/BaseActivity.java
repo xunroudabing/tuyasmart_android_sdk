@@ -65,13 +65,13 @@ public class BaseActivity extends AppCompatActivity {
         }
         Constant.attachActivity(this);
         checkLogin();
-        StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-                .detectActivityLeaks()
-                .detectLeakedSqlLiteObjects()
-                .detectLeakedClosableObjects()
-                .detectAll()
-                .penaltyLog()
-                .build());
+//        StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+//                .detectActivityLeaks()
+//                .detectLeakedSqlLiteObjects()
+//                .detectLeakedClosableObjects()
+//                .detectAll()
+//                .penaltyLog()
+//                .build());
     }
 
     public void closeDefaultAni() {

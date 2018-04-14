@@ -10,6 +10,7 @@ import com.tuya.smart.android.demo.R;
 import com.tuya.smart.android.demo.activity.AddDeviceTipActivity;
 import com.tuya.smart.android.demo.fragment.DeviceListFragment;
 import com.tuya.smart.android.demo.fragment.PersonalCenterFragment;
+import com.tuya.smart.android.demo.fragment.SceneListFragment;
 import com.tuya.smart.android.demo.test.utils.DialogUtil;
 import com.tuya.smart.android.demo.utils.ActivityUtils;
 import com.tuya.smart.android.demo.view.IHomeView;
@@ -28,8 +29,8 @@ public class HomePresenter extends BasePresenter {
     protected Activity mActivity;
 
     public static final int TAB_MY_DEVICE = 0;
-    public static final int TAB_PERSONAL_CENTER = 1;
-
+    public static final int TAB_PERSONAL_CENTER = 2;
+    public static final int TAB_SCENE = 1;
     protected int mCurrentTab = -1;
 
     public HomePresenter(IHomeView homeView, Activity ctx) {
@@ -40,7 +41,7 @@ public class HomePresenter extends BasePresenter {
 
     //添加设备
     public void addDevice() {
-        final WifiManager mWifiManager = (WifiManager) mActivity.getSystemService(Context.WIFI_SERVICE);
+        final WifiManager mWifiManager = (WifiManager) mActivity.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         if (!mWifiManager.isWifiEnabled()) {
             DialogUtil.simpleConfirmDialog(mActivity, mActivity.getString(R.string.open_wifi), new DialogInterface.OnClickListener() {
                 @Override
@@ -67,7 +68,10 @@ public class HomePresenter extends BasePresenter {
     public void showMyDevicePage() {
         showTab(TAB_MY_DEVICE);
     }
-
+    //智能场景 add by hanzheng 2018-1-20
+    public void showScene(){
+        showTab(TAB_SCENE);
+    }
     public void gotoAddDevice() {
         ActivityUtils.gotoActivity(mActivity, AddDeviceTipActivity.class, ActivityUtils.ANIMATE_SLIDE_TOP_FROM_BOTTOM, false);
 
@@ -86,13 +90,17 @@ public class HomePresenter extends BasePresenter {
     }
 
     public int getFragmentCount() {
-        return 2;
+        return 3;
     }
 
     public Fragment getFragment(int type) {
         if (type == TAB_MY_DEVICE) {
             return DeviceListFragment.newInstance();
-        } else if (type == TAB_PERSONAL_CENTER) {
+        }
+        else if (type == TAB_SCENE){
+            return SceneListFragment.newInstance();
+        }
+        else if (type == TAB_PERSONAL_CENTER) {
             return PersonalCenterFragment.newInstance();
         }
         return null;

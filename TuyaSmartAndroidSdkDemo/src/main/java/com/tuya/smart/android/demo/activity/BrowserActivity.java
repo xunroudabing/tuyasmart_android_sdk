@@ -16,6 +16,7 @@ import com.tuya.smart.android.common.utils.TyCommonUtil;
 import com.tuya.smart.android.demo.R;
 import com.tuya.smart.android.demo.utils.ActivityUtils;
 import com.tuya.smart.android.demo.utils.CommonUtil;
+import com.tuya.smart.sdk.api.ITuyaSceneManager;
 
 import java.util.HashMap;
 import java.util.Map;

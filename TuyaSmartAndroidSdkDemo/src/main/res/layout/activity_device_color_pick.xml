@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/app_bg_color"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/action_bar_layout"
+        layout="@layout/toolbar_top_view" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <colorpickerview.oden.com.colorpicker.ColorPickerView
+                    android:id="@+id/color_picker"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    app:picture_resource="@drawable/color_background" />
+
+                <ImageView
+                    android:id="@+id/img_picker"
+                    android:layout_width="10dp"
+                    android:layout_height="25dp"
+                    android:visibility="gone"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/circle_white" />
+
+                <TextView
+                    android:id="@+id/device_color_txtMode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:text="W"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/ts_24" />
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/seekbar_1"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/ts_12"
+                    tools:text="@string/seekbar_1" />
+                <!-- 调光-->
+                <SeekBar
+                    android:id="@+id/device_color_seekbarLight"
+                    android:max="230"
+                    android:progress="0"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxHeight="15dp"
+                    android:progressDrawable="@drawable/progress_drawable"
+                    android:splitTrack="false"
+                    android:thumb="@drawable/progress_thumb" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="5dp"
+                    android:text="@string/seekbar_2"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/ts_12"
+                    tools:text="@string/seekbar_1" />
+                <!-- 色温-->
+                <SeekBar
+                    android:id="@+id/device_color_seekbarTemp"
+                    android:max="255"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxHeight="15dp"
+                    android:progressDrawable="@drawable/progress_drawable"
+                    android:splitTrack="false"
+                    android:thumb="@drawable/progress_thumb" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="5dp"
+                    android:text="@string/seekbar_3"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/ts_12"
+                    tools:text="@string/seekbar_1" />
+                <!-- 素艳-->
+                <SeekBar
+                    android:id="@+id/device_color_seekbarSu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxHeight="15dp"
+                    android:progressDrawable="@drawable/progress_drawable"
+                    android:splitTrack="false"
+                    android:max="255"
+                    android:thumb="@drawable/progress_thumb" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="10dp">
+
+                <ImageView
+                    android:id="@+id/device_colorpick_imgColor1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_colorpick_button" />
+
+                <ImageView
+                    android:id="@+id/device_colorpick_imgColor2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:src="@drawable/ic_colorpick_button" />
+
+                <ImageView
+                    android:id="@+id/device_colorpick_imgColor3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:src="@drawable/ic_colorpick_button" />
+
+                <ImageView
+                    android:id="@+id/device_colorpick_imgColor4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:src="@drawable/ic_colorpick_button" />
+
+                <ImageView
+                    android:id="@+id/device_colorpick_imgColor5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:src="@drawable/ic_colorpick_button" />
+
+                <ImageView
+                    android:id="@+id/device_colorpick_btnAddColor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:src="@drawable/ic_colorpick_addbutton" />
+            </LinearLayout>
+            <!-- 开关-->
+            <LinearLayout
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <ImageButton
+                    android:id="@+id/device_color_btnNight"
+                    android:background="@null"
+                    android:src="@drawable/btn_night"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <ImageButton
+                    android:id="@+id/device_color_btnDelay"
+                    android:background="@null"
+                    android:src="@drawable/btn_delay"
+                    android:layout_marginLeft="20dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <ImageButton
+                    android:id="@+id/device_color_btnTimer"
+                    android:background="@null"
+                    android:src="@drawable/btn_timer"
+                    android:layout_marginLeft="20dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <ImageButton
+                    android:id="@+id/device_color_btnScene"
+                    android:background="@null"
+                    android:src="@drawable/btn_scene"
+                    android:layout_marginLeft="20dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <ImageButton
+                    android:id="@+id/device_color_btnSwitch"
+                    android:background="@null"
+                    android:src="@drawable/btn_switch"
+                    android:layout_marginLeft="20dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

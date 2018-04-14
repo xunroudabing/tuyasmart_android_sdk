@@ -296,5 +296,15 @@
 
     <color name="color_ff5800">#ff5800</color>
 
-
+    <style name="TY_RecyclerView_Normal">
+        <item name="android:scrollbarThumbVertical">@drawable/ty_scrollbar_thumb</item>
+        <item name="android:scrollbarTrackVertical">@null</item>
+        <item name="android:fadingEdge">none</item>
+        <item name="android:listSelector">@android:color/transparent</item>
+        <item name="android:cacheColorHint">@android:color/transparent</item>
+        <item name="android:divider">@color/line_color</item>
+        <item name="android:dividerHeight">@dimen/single_pix</item>
+        <item name="android:listDivider">@drawable/ty_color_line</item>
+        <item name="android:footerDividersEnabled">false</item>
+    </style>
 </resources>

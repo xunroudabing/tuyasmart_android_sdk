@@ -13,7 +13,36 @@
     <string name="OnlineControl">在线</string>
     <string name="device_state">设备状态：</string>
     <string name="action_settings">设置</string>
-
+    <!-- add by hanzheng-->
+    <string name="title_choose_timer">定时关闭</string>
+    <string name="title_choose_delay">延时关闭</string>
+    <string name="alert_colorisnull">请选择一个颜色</string>
+    <string name="seekbar_1">调光</string>
+    <string name="seekbar_2">色温</string>
+    <string name="seekbar_3">素艳</string>
+    <string name="device_type_1">照明</string>
+    <string name="device_type_2">开关</string>
+    <string name="device_type_3">插座</string>
+    <string name="home_scene">智能场景</string>
+    <string name="ty_smart_scene_start">执行</string>
+    <string name="scene_item1">到家</string>
+    <string name="scene_item2">离家</string>
+    <string name="scene_item3">起床</string>
+    <string name="scene_item4">休息</string>
+    <string name="add_scene">添加场景</string>
+    <string name="save_scene">保存</string>
+    <string name="txt_current_city">当前城市</string>
+    <string name="title_select_city">选择城市</string>
+    <string name="title_select_device_type">选择设备类型</string>
+    <string name="title_select_condition">选择条件</string>
+    <string name="txt_select_condition">选择执行任务的条件</string>
+    <string name="txt_location_city">当前定位地址</string>
+    <string name="txt_city">城市</string>
+    <string name="ty_smart_scene_error_enter_name">请输入场景名称</string>
+    <string name="ty_smart_scene_add_condition">第一步:添加条件</string>
+    <string name="ty_smart_scene_add_notadded">未添加条件（可不添加，直接手动执行）</string>
+    <string name="ty_smart_scene_add_newwork">第二步:添加任务</string>
+    <string name="ty_smart_scene_add_notaddedwork">未添加任务</string>
     <!-- 通用 -->
     <string name="Confirm">确认</string>
     <string name="at_login_sns">社交账号登录</string>
@@ -189,7 +218,7 @@
     <string name="add_new_user_tip">添加新成员使用智能设备</string>
     <string name="add_next_device">再添加一个</string>
     <string name="ap_mode">热点模式</string>
-    <string name="app_name">涂鸦演示程序</string>
+    <string name="app_name">smart•life</string>
     <string name="bind_device_cancel">否</string>
     <string name="bind_device_confirm">是</string>
     <string name="bind_device_failure"><![CDATA[<font color="#FF5800">查看可能失败的原因</font>]]></string>

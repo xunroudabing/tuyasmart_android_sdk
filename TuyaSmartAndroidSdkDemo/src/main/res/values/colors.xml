@@ -79,7 +79,8 @@
     <color name="status_font_color">#303030</color>
     <color name="status_bg_color">#FAFAFA</color>
     <color name="status_system_bg_color">#303030</color>
-    <color name="navbar_font_color">#ff5800</color>
+    <!--ff5800 ff5e92f7-->
+    <color name="navbar_font_color">#ff5e92f7</color>
     <color name="navbar_bg_color">#FAFAFA</color>
     <color name="app_bg_color">#F2F2F2</color>
     <color name="colorDark">#303030</color>

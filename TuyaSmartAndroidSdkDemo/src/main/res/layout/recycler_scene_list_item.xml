@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <ImageView
+        android:id="@+id/iv_scene_icon"
+        android:layout_width="@dimen/wh_44"
+        android:layout_height="@dimen/wh_44"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="@dimen/mg_15"
+        app:layout_constraintLeft_toLeftOf="parent"
+        tools:src="@drawable/ty_index_get_home" />
+
+    <TextView
+        android:id="@+id/tv_icon_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="@dimen/mg_15"
+        android:gravity="center_horizontal|center_vertical"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/ts_17"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/iv_scene_icon"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="到家" />
+
+    <TextView
+        android:id="@+id/tv_scene_function"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_width="@dimen/wh_54"
+        android:layout_height="24.0dip"
+        android:layout_gravity="end|center"
+        android:layout_marginRight="@dimen/mg_16"
+        android:background="@drawable/shape_scene_execute"
+        android:gravity="center"
+        tools:text="执行"
+        android:text="@string/ty_smart_scene_start"
+        android:textColor="#ff63be00"
+        android:textSize="@dimen/ts_12" />
+</android.support.constraint.ConstraintLayout>

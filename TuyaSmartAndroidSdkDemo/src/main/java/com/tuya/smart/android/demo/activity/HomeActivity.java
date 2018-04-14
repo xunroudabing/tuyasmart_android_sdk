@@ -1,8 +1,12 @@
 package com.tuya.smart.android.demo.activity;
 
+import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -14,8 +18,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.tuya.smart.android.demo.R;
+import com.tuya.smart.android.demo.TuyaSmartApp;
 import com.tuya.smart.android.demo.presenter.HomePresenter;
+import com.tuya.smart.android.demo.test.utils.DialogUtil;
+import com.tuya.smart.android.demo.utils.CheckPermissionUtils;
 import com.tuya.smart.android.demo.view.IHomeView;
+import com.tuya.smart.sdk.TuyaScene;
 import com.tuya.smart.sdk.TuyaSdk;
 import com.tuya.smart.sdk.TuyaUser;
 import com.tuya.smart.sdk.api.ITuyaSearchDeviceListener;
@@ -26,18 +34,32 @@ import com.wnafee.vector.compat.VectorDrawable;
  * Created by letian on 16/7/18.
  */
 public class HomeActivity extends BaseActivity implements IHomeView {
+    CheckPermissionUtils checkPermission;
+    static final int REQUEST_LOCATION = 100;
     private static final String TAG = "HomeActivity";
     private static final int REQUEST_GESTURE_CHECK = 99;
-
+    public ViewPager mFragmentContainer;
     protected HomePresenter mHomePresenter;
     protected TextView mTvMyDevice;
     protected TextView mTvHomeCenter;
+    protected View.OnClickListener mClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (v.getId() == R.id.tv_home_my_device || v.getId() == R.id.iv_my_device) {
+                mHomePresenter.showMyDevicePage();
+            } else if (v.getId() == R.id.tv_home_center || v.getId() == R.id.iv_home_center) {
+                mHomePresenter.showPersonalCenterPage();
+            } else if (v.getId() == R.id.tv_home_scene || v.getId() == R.id.iv_my_scene) {
+                mHomePresenter.showScene();
+            }
+        }
+    };
+    ImageView mIvScene;
+    TextView mTvScene;
     private ImageView mIvMyDevice;
     private ImageView mIvHomeCenter;
-
-    public ViewPager mFragmentContainer;
-    private int mFuncBarTextNormalColor = Color.BLACK;
-    private int mFuncBarTextSelectColor = Color.RED;
+    private int mFuncBarTextNormalColor = 0xff9b9b9b;
+    private int mFuncBarTextSelectColor = 0xff5e92f7;
     private HomeFragmentAdapter mHomeFragmentAdapter;
 
     @Override
@@ -55,13 +77,39 @@ public class HomeActivity extends BaseActivity implements IHomeView {
                 Log.d(TAG, "s" + deviceActiveEnum);
             }
         });
+        checkPermission();
+    }
+
+    protected void checkPermission() {
+        checkPermission = new CheckPermissionUtils(this);
+        checkPermission.checkSiglePermission(Manifest.permission.ACCESS_COARSE_LOCATION, REQUEST_LOCATION);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        if (requestCode == REQUEST_LOCATION && checkPermission.onRequestPermissionsResult(permissions, grantResults)){
+            TuyaSmartApp.getInstance().locationService.restart();
+        }else {
+            DialogUtil.simpleSmartDialog(this, getString(R.string.alert_location_permission_fail), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent i = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    //i.addCategory(Intent.CATEGORY_DEFAULT);
+                    i.setData(Uri.parse("package:" + HomeActivity.this.getPackageName()));
+                    HomeActivity.this.startActivity(i);
+                    HomeActivity.this.finish();
+                }
+            });
+        }
     }
 
     private void initViewPager() {
         mFragmentContainer.setOffscreenPageLimit(2);
         mFragmentContainer.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            public void onPageScrolled(int position, float positionOffset, int
+                    positionOffsetPixels) {
 
             }
 
@@ -85,29 +133,26 @@ public class HomeActivity extends BaseActivity implements IHomeView {
         mTvMyDevice = (TextView) findViewById(R.id.tv_home_my_device);
         mTvMyDevice.setOnClickListener(mClickListener);
         mIvMyDevice = (ImageView) findViewById(R.id.iv_my_device);
-        mIvMyDevice.setImageDrawable(VectorDrawable.getDrawable(TuyaSdk.getApplication(), R.drawable.ty_mydevice));
+        mIvMyDevice.setImageDrawable(VectorDrawable.getDrawable(TuyaSdk.getApplication(), R
+                .drawable.ty_mydevice));
         mIvMyDevice.setOnClickListener(mClickListener);
         mIvMyDevice.setColorFilter(mFuncBarTextSelectColor);
 
         mTvHomeCenter = (TextView) findViewById(R.id.tv_home_center);
         mTvHomeCenter.setOnClickListener(mClickListener);
         mIvHomeCenter = (ImageView) findViewById(R.id.iv_home_center);
-        mIvHomeCenter.setImageDrawable(VectorDrawable.getDrawable(TuyaSdk.getApplication(), R.drawable.ty_home_center));
+        mIvHomeCenter.setImageDrawable(VectorDrawable.getDrawable(TuyaSdk.getApplication(), R
+                .drawable.ty_home_center));
         mIvHomeCenter.setOnClickListener(mClickListener);
         mIvHomeCenter.setColorFilter(mFuncBarTextNormalColor);
 
-    }
+        mIvScene = (ImageView) findViewById(R.id.iv_my_scene);
+        mIvScene.setImageResource(R.drawable.ic_scene_nor);
+        mTvScene = (TextView) findViewById(R.id.tv_home_scene);
+        mTvScene.setOnClickListener(mClickListener);
+        mIvScene.setOnClickListener(mClickListener);
 
-    protected View.OnClickListener mClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            if (v.getId() == R.id.tv_home_my_device || v.getId() == R.id.iv_my_device) {
-                mHomePresenter.showMyDevicePage();
-            } else if (v.getId() == R.id.tv_home_center || v.getId() == R.id.iv_home_center) {
-                mHomePresenter.showPersonalCenterPage();
-            }
-        }
-    };
+    }
 
     @Override
     protected void onDestroy() {
@@ -164,13 +209,20 @@ public class HomeActivity extends BaseActivity implements IHomeView {
             case HomePresenter.TAB_MY_DEVICE:
                 mTvMyDevice.setTextColor(mFuncBarTextSelectColor);
                 mIvMyDevice.setColorFilter(mFuncBarTextSelectColor);
-                mIvMyDevice.setImageDrawable(VectorDrawable.getDrawable(TuyaSdk.getApplication(), R.drawable.ty_mydevice_selected));
+                mIvMyDevice.setImageDrawable(VectorDrawable.getDrawable(TuyaSdk.getApplication(),
+                        R.drawable.ty_mydevice_selected));
                 mFragmentContainer.setCurrentItem(idToPosition(id), true);
                 break;
             case HomePresenter.TAB_PERSONAL_CENTER:
                 mTvHomeCenter.setTextColor(mFuncBarTextSelectColor);
                 mIvHomeCenter.setColorFilter(mFuncBarTextSelectColor);
-                mIvHomeCenter.setImageDrawable(VectorDrawable.getDrawable(TuyaSdk.getApplication(), R.drawable.ty_home_center_selected));
+                mIvHomeCenter.setImageDrawable(VectorDrawable.getDrawable(TuyaSdk.getApplication
+                        (), R.drawable.ty_home_center_selected));
+                mFragmentContainer.setCurrentItem(idToPosition(id), true);
+                break;
+            case HomePresenter.TAB_SCENE:
+                mTvScene.setTextColor(mFuncBarTextSelectColor);
+                mIvScene.setColorFilter(mFuncBarTextSelectColor);
                 mFragmentContainer.setCurrentItem(idToPosition(id), true);
                 break;
         }
@@ -182,16 +234,49 @@ public class HomeActivity extends BaseActivity implements IHomeView {
             case HomePresenter.TAB_MY_DEVICE:
                 mTvMyDevice.setTextColor(mFuncBarTextNormalColor);
                 mIvMyDevice.setColorFilter(mFuncBarTextNormalColor);
-                mIvMyDevice.setImageDrawable(VectorDrawable.getDrawable(TuyaSdk.getApplication(), R.drawable.ty_mydevice));
+                mIvMyDevice.setImageDrawable(VectorDrawable.getDrawable(TuyaSdk.getApplication(),
+                        R.drawable.ty_mydevice));
                 break;
             case HomePresenter.TAB_PERSONAL_CENTER:
                 mTvHomeCenter.setTextColor(mFuncBarTextNormalColor);
                 mIvHomeCenter.setColorFilter(mFuncBarTextNormalColor);
-                mIvHomeCenter.setImageDrawable(VectorDrawable.getDrawable(TuyaSdk.getApplication(), R.drawable.ty_home_center));
+                mIvHomeCenter.setImageDrawable(VectorDrawable.getDrawable(TuyaSdk.getApplication
+                        (), R.drawable.ty_home_center));
+                break;
+            case HomePresenter.TAB_SCENE:
+                mTvScene.setTextColor(mFuncBarTextNormalColor);
+                mIvScene.setColorFilter(mFuncBarTextNormalColor);
+                mIvScene.setImageResource(R.drawable.ic_scene_nor);
                 break;
         }
     }
 
+    protected int postionToId(int pos) {
+        switch (pos) {
+            case 0:
+                return HomePresenter.TAB_MY_DEVICE;
+            case 1:
+                return HomePresenter.TAB_SCENE;
+            case 2:
+                return HomePresenter.TAB_PERSONAL_CENTER;
+
+        }
+
+        return HomePresenter.TAB_MY_DEVICE;
+    }
+
+    protected int idToPosition(int id) {
+
+        switch (id) {
+            case HomePresenter.TAB_MY_DEVICE:
+                return 0;
+            case HomePresenter.TAB_SCENE:
+                return 1;
+            case HomePresenter.TAB_PERSONAL_CENTER:
+                return 2;
+        }
+        return 0;
+    }
 
     private class HomeFragmentAdapter extends FragmentPagerAdapter {
 
@@ -214,30 +299,5 @@ public class HomeActivity extends BaseActivity implements IHomeView {
         public int getItemPosition(Object object) {
             return POSITION_NONE;
         }
-    }
-
-
-    protected int postionToId(int pos) {
-        switch (pos) {
-            case 0:
-                return HomePresenter.TAB_MY_DEVICE;
-            case 1:
-                return HomePresenter.TAB_PERSONAL_CENTER;
-
-        }
-
-        return HomePresenter.TAB_MY_DEVICE;
-    }
-
-    protected int idToPosition(int id) {
-
-        switch (id) {
-            case HomePresenter.TAB_MY_DEVICE:
-                return 0;
-            case HomePresenter.TAB_PERSONAL_CENTER:
-                return 1;
-
-        }
-        return 0;
     }
 }

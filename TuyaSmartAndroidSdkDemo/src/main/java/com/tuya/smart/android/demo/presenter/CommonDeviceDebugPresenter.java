@@ -471,6 +471,8 @@ public class CommonDeviceDebugPresenter extends BasePresenter implements IDevLis
     @Override
     public void onDestroy() {
         super.onDestroy();
+        mContext = null;
+        mView = null;
         if (mDownLatch != null) {
             mDownLatch.countDown();
         }

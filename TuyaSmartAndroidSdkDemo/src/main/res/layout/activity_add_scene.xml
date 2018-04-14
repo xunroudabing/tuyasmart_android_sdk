@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/app_bg_color"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/action_bar_layout"
+        layout="@layout/toolbar_top_view" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.0"
+        android:orientation="vertical">
+        <!-- 场景名称-->
+        <FrameLayout
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/mg_60"
+            android:background="@drawable/bg_white_and_line">
+
+            <ImageView
+                android:id="@+id/iv_scene_icon"
+                android:layout_width="@dimen/mg_22"
+                android:layout_height="@dimen/mg_22"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="@dimen/mg_25"
+                android:src="@drawable/ty_scene_custom2" />
+
+            <EditText
+                android:id="@+id/et_scene_name"
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/mg_48"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="@dimen/mg_62"
+                android:layout_marginRight="@dimen/mg_15"
+                android:width="400dp"
+                android:background="@null"
+                android:gravity="start|center"
+                android:hint="@string/ty_smart_scene_error_enter_name"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:textColor="#ff77808a"
+                android:textColorHint="#ff77808a"
+                android:textSize="@dimen/ts_14" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/fl_add_condition"
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/wh_48"
+            android:layout_marginTop="@dimen/mg_20"
+            android:background="@drawable/bg_white_and_line">
+
+            <TextView
+                style="@style/TextView.Normal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="@dimen/mg_20"
+                android:text="@string/ty_smart_scene_add_condition"
+                android:textColor="@color/color_303030"
+                android:textSize="@dimen/ts_16" />
+
+            <ImageView
+                android:id="@+id/iv_condition_add"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center|right"
+                android:layout_marginRight="@dimen/mg_10"
+                android:src="@drawable/ty_task_add" />
+        </FrameLayout>
+        <include android:id="@+id/scene_condition_include" android:visibility="gone" layout="@layout/layout_scene_condition"></include>
+        <TextView
+            android:id="@+id/tv_add_condition_tip"
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/wh_60"
+            android:layout_marginBottom="8.0dip"
+            android:layout_marginLeft="@dimen/mg_10"
+            android:layout_marginRight="@dimen/mg_10"
+            android:layout_marginTop="8.0dip"
+            android:background="@drawable/bg_dash_line"
+            android:gravity="center"
+            android:layerType="software"
+            android:text="@string/ty_smart_scene_add_notadded"
+            android:textColor="#9b9b9b"
+            android:textSize="@dimen/ts_13" />
+
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_scene_condition"
+            style="@style/list_view"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/mg_15"
+            android:visibility="gone" />
+
+        <FrameLayout
+            android:id="@+id/fl_add_task"
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/wh_48"
+            android:background="@drawable/bg_white_and_line">
+
+            <TextView
+                style="@style/TextView.Normal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="@dimen/mg_20"
+                android:text="@string/ty_smart_scene_add_newwork"
+                android:textColor="@color/color_303030"
+                android:textSize="@dimen/ts_16" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center|right"
+                android:layout_marginRight="@dimen/mg_10"
+                android:src="@drawable/ty_task_add" />
+        </FrameLayout>
+        <include android:id="@+id/scene_task_include" android:visibility="gone" layout="@layout/layout_scene_task"></include>
+        <TextView
+            android:id="@+id/tv_add_task_tip"
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/wh_60"
+            android:layout_marginLeft="@dimen/mg_10"
+            android:layout_marginRight="@dimen/mg_10"
+            android:layout_marginTop="8.0dip"
+            android:background="@drawable/bg_dash_line"
+            android:gravity="center"
+            android:layerType="software"
+            android:text="@string/ty_smart_scene_add_notaddedwork"
+            android:textColor="#9b9b9b"
+            android:textSize="@dimen/ts_13" />
+
+
+        <TextView
+            android:id="@+id/tv_scene_delete"
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/mg_48"
+            android:layout_marginTop="@dimen/mg_30"
+            android:background="?list_bg_color"
+            android:gravity="center"
+            android:text="@string/operation_delete"
+            android:textColor="@color/red"
+            android:textSize="@dimen/ts_16" />
+    </LinearLayout>
+</LinearLayout>

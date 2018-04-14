@@ -5,4 +5,5 @@
     <item name="np__decrement" type="id"/>
     <item name="schemaId" type="id">10210</item>
     <item name="schemaView" type="id">102023</item>
+    <item name="item_click_support" type="id"></item>
 </resources>

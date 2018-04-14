@@ -5,12 +5,12 @@ android {
     buildToolsVersion '25.0.0'
 
     defaultConfig {
-        applicationId "com.tuya.smart.sdk.demo"
+        applicationId "com.nbera.smartlife.demo"
         minSdkVersion 16
         targetSdkVersion 25
         versionCode 1
         versionName "1.0.0"
-        multiDexEnabled false
+        multiDexEnabled true
         generatedDensities = []
 //        ndk {
 //            abiFilters "armeabi-v7a","x86"
@@ -26,7 +26,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
 
-        debug{
+        debug {
             minifyEnabled false
         }
     }
@@ -52,6 +52,7 @@ android {
     sourceSets {
         main {
             jniLibs.srcDirs = ['libs']
+            //jni.srcDirs = []
         }
     }
 
@@ -63,12 +64,14 @@ repositories {
     flatDir {
         dirs 'libs'
     }
+    google()
 }
 
 dependencies {
     testCompile 'junit:junit:4.12'
-
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     //=====依赖库 必要 ====//
+    compile 'com.android.support:multidex:1.0.1'
     compile 'com.alibaba:fastjson:1.1.45.android'
     compile 'com.squareup.okhttp3:okhttp-urlconnection:3.2.0'
     compile 'de.greenrobot:eventbus:2.4.0'
@@ -77,13 +80,15 @@ dependencies {
     compile 'org.eclipse.paho:org.eclipse.paho.android.service:1.1.1'
     compile(name: 'tuyasmart-1.12.0', ext: 'aar')
     //=====依赖库====//
-
-    compile 'com.android.support:appcompat-v7:25.3.0@aar'
+    compile 'com.android.support:appcompat-v7:25.4.0'
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'com.android.support:support-v4:25.3.0@aar'
     compile 'com.readystatesoftware.systembartint:systembartint:1.0.3'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.wnafee:vector-compat:1.0.5'
     compile 'com.kyleduo.switchbutton:library:1.4.2'
-
+    compile 'com.android.support:recyclerview-v7:25.4.0'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile 'cn.carbswang.android:NumberPickerView:1.1.1'
+    compile project(':colorpicker')
 }

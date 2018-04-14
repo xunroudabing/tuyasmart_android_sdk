@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/app_bg_color"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/action_bar_layout"
+        layout="@layout/toolbar_top_view" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <com.tuya.smart.android.demo.widget.mode.PanContainer
+                android:id="@+id/device_mode_panContainer"
+                android:layout_width="270dp"
+                android:layout_height="270dp"
+                android:layout_centerHorizontal="true"
+                android:background="@mipmap/bg_modepick"
+                android:padding="10dp">
+
+                <com.tuya.smart.android.demo.widget.mode.RotatePan
+                    android:id="@+id/device_mode_pan"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    app:names="@array/names"
+                    app:pannum="8" />
+
+                <ImageView
+                    android:id="@+id/device_mode_go"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:src="@mipmap/ic_modepick_center"
+                    android:tag="startbtn" />
+            </com.tuya.smart.android.demo.widget.mode.PanContainer>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/seekbar_1"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/ts_12"
+                    tools:text="@string/seekbar_1" />
+                <!-- 调光-->
+                <SeekBar
+                    android:id="@+id/device_color_seekbarLight"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:max="230"
+                    android:maxHeight="15dp"
+                    android:progress="0"
+                    android:progressDrawable="@drawable/progress_drawable"
+                    android:splitTrack="false"
+                    android:thumb="@drawable/progress_thumb" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="5dp"
+                    android:text="@string/seekbar_3"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/ts_12"
+                    tools:text="@string/seekbar_1" />
+                <!-- 素艳-->
+                <SeekBar
+                    android:id="@+id/device_color_seekbarSu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxHeight="15dp"
+                    android:progressDrawable="@drawable/progress_drawable"
+                    android:splitTrack="false"
+                    android:thumb="@drawable/progress_thumb" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginTop="15dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <ImageButton
+                    android:id="@+id/device_color_btnNight"
+                    android:background="@null"
+                    android:src="@drawable/btn_night"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <ImageButton
+                    android:id="@+id/device_color_btnDelay"
+                    android:background="@null"
+                    android:src="@drawable/btn_delay"
+                    android:layout_marginLeft="20dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <ImageButton
+                    android:id="@+id/device_color_btnTimer"
+                    android:background="@null"
+                    android:src="@drawable/btn_timer"
+                    android:layout_marginLeft="20dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <ImageButton
+                    android:id="@+id/device_color_btnScene"
+                    android:background="@null"
+                    android:src="@drawable/btn_scene"
+                    android:layout_marginLeft="20dp"
+                    android:visibility="gone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <ImageButton
+                    android:id="@+id/device_color_btnSwitch"
+                    android:background="@null"
+                    android:src="@drawable/btn_switch"
+                    android:layout_marginLeft="20dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

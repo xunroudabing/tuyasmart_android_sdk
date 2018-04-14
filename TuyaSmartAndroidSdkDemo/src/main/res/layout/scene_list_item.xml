@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout android:orientation="vertical" android:background="@color/white" android:layout_width="fill_parent" android:layout_height="@dimen/mg_74"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <ImageView tools:src="@drawable/ty_index_get_home" android:layout_gravity="center_vertical" android:id="@+id/iv_scene_icon" android:layout_width="@dimen/wh_44" android:layout_height="@dimen/wh_44" android:layout_marginLeft="@dimen/mg_15" />
+    <TextView  tools:text="到家" android:layout_marginLeft="78dp" android:layout_marginTop="@dimen/mg_20" android:layout_marginRight="@dimen/mg_15" android:textSize="@dimen/ts_17" android:textColor="@color/text_color" android:gravity="center_horizontal" android:id="@+id/tv_icon_text"  android:layout_width="wrap_content" android:layout_height="wrap_content" />
+    <TextView android:textSize="@dimen/ts_12" android:textColor="#ff63be00" android:gravity="center" android:layout_gravity="end|center" android:id="@+id/tv_scene_function" android:background="@drawable/shape_scene_execute" android:layout_width="@dimen/wh_54" android:layout_height="24.0dip" android:layout_marginRight="@dimen/mg_16" android:text="@string/ty_smart_scene_start" />
+    <LinearLayout android:layout_gravity="center_vertical" android:orientation="vertical" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="@dimen/mg_74" android:layout_marginRight="@dimen/mg_74">
+        <TextView android:textSize="@dimen/ts_16" android:ellipsize="end" android:id="@+id/tv_scene_title" android:layout_width="wrap_content" android:layout_height="wrap_content" android:lines="1" />
+        <TextView android:textSize="@dimen/ts_14" android:ellipsize="end" android:id="@+id/tv_scene_describe" android:layout_width="wrap_content" android:layout_height="wrap_content" android:lines="1" />
+    </LinearLayout>
+</FrameLayout>
