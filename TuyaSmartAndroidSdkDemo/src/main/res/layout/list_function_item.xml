@@ -17,6 +17,15 @@
         android:textColor="@color/text_color"
         android:textSize="@dimen/ts_16" />
 
+    <TextView
+        android:id="@+id/tv_function_selected"
+        tools:text="温度"
+        android:layout_gravity="center_vertical"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/mg_15"
+        android:layout_width="wrap_content"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/ts_16" />
     <ImageView
         android:id="@+id/condition_list_item_imgArrow"
         android:background="@drawable/arrow_more"

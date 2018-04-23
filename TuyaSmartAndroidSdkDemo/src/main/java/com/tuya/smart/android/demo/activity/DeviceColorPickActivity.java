@@ -32,6 +32,7 @@ import com.tuya.smart.sdk.TuyaDevice;
 import com.tuya.smart.sdk.TuyaTimerManager;
 import com.tuya.smart.sdk.TuyaUser;
 import com.tuya.smart.sdk.api.IResultStatusCallback;
+import com.tuya.smart.sdk.bean.GroupDeviceBean;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -52,6 +53,7 @@ import colorpickerview.oden.com.colorpicker.ColorPickerView;
 
 public class DeviceColorPickActivity extends BaseActivity implements View.OnClickListener,
         SeekBar.OnSeekBarChangeListener, ICommonDeviceDebugView {
+    public static final String INTENT_PRODUCTID = "INTENT_PRODUCTID";
     public static final String INTENT_DEVID = "intent_devId";
     public static final String INTENT_DPID = "intent_dpid";
     public static final String INTNET_TITLE = "intent_title";
@@ -70,6 +72,7 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
     Queue<Integer> mColorQueue = new LinkedBlockingQueue<Integer>(5);
     private String mDevId;
     private String mDpId;
+    private String mProductId;
     private TuyaDevice mTuyaDevice;
     private CommonDeviceDebugPresenter mPresenter;
 
@@ -128,6 +131,7 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
     protected void initViews() {
         mDevId = getIntent().getStringExtra(INTENT_DEVID);
         mDpId = getIntent().getStringExtra(INTENT_DPID);
+        mProductId = getIntent().getStringExtra(INTENT_PRODUCTID);
         mTuyaDevice = new TuyaDevice(mDevId);
         seekBarLight = (SeekBar) findViewById(R.id.device_color_seekbarLight);
         seekBarColor = (SeekBar) findViewById(R.id.device_color_seekbarTemp);
@@ -153,6 +157,12 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
         btnAddColor = (ImageView) findViewById(R.id.device_colorpick_btnAddColor);
         btnAddColor.setOnClickListener(this);
         txtMode = (TextView) findViewById(R.id.device_color_txtMode);
+        txtMode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setWhiteLight();
+            }
+        });
         imgPicker = (ImageView) findViewById(R.id.img_picker);
         colorPickerView = (ColorPickerView) findViewById(R.id.color_picker);
         //colorPickerView.setImgPicker(this, imgPicker, 10);
@@ -287,8 +297,17 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
         sendDp(value);
     }
 
+    //白光
+    protected void setWhiteLight() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("2", "white");
+        final String json = JSONObject.toJSONString(map);
+        sendDp(json);
+    }
+
     //调光 改变亮度
     protected void setLight(int value) {
+
         Map<String, Object> map = new HashMap<>();
         map.put("3", value);
         final String json = JSONObject.toJSONString(map);

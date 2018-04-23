@@ -27,6 +27,7 @@ import com.tuya.smart.sdk.bean.scene.condition.ConditionListBean;
 import com.tuya.smart.sdk.bean.scene.condition.property.EnumProperty;
 import com.tuya.smart.sdk.bean.scene.condition.property.ValueProperty;
 import com.tuya.smart.sdk.bean.scene.condition.rule.EnumRule;
+import com.tuya.smart.sdk.bean.scene.condition.rule.ValueRule;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -40,6 +41,7 @@ public class AddSceneActivity extends BaseActivity implements View.OnClickListen
     static final int REQUEST_ADD_CONDITION = 100;
     static final int REQUEST_ADD_TASK = 101;
     static final String TAG = AddSceneActivity.class.getSimpleName();
+    ValueRule mValueRule;
     SceneBean mSceneBean;
     ConditionListBean mConditionListBean;
     PlaceFacadeBean mPlaceFacadeBean;
@@ -76,11 +78,17 @@ public class AddSceneActivity extends BaseActivity implements View.OnClickListen
 
                 mPlaceFacadeBean = (PlaceFacadeBean) data.getSerializableExtra
                         (ConditionDetailActivity.RESULT_CITYBEAN);
+                String des = data.getStringExtra(ConditionDetailActivity.RESULT_DES);
                 Log.d(TAG, "bean:" + mConditionListBean.getType() + "," + mConditionListBean
                         .getName());
                 String city_name = mPlaceFacadeBean == null ? "" : mPlaceFacadeBean.getCity();
                 String str = String.format("%s：%s", mConditionListBean.getName(), value);
-                showCondition(str, city_name);
+                showCondition(des, city_name);
+                if (mConditionListBean.getProperty() instanceof ValueProperty) {
+                    String type = mConditionListBean.getType();
+                    String operator = data.getStringExtra(ConditionDetailActivity.RESULT_COMPARE);
+                    mValueRule = ValueRule.newInstance(type, operator, Integer.valueOf(value));
+                }
             }
         } else if (requestCode == REQUEST_ADD_TASK) {
             if (resultCode == RESULT_OK) {
@@ -140,17 +148,19 @@ public class AddSceneActivity extends BaseActivity implements View.OnClickListen
 
     protected void initParms() {
         mSceneBean = (SceneBean) getIntent().getSerializableExtra(INTENT_SCENEBEAN);
-        List<SceneTask> tasks = mSceneBean.getActions();
-        List<SceneCondition> conditions = mSceneBean.getConditions();
-        if (tasks != null && tasks.size() > 0) {
-            mSceneTask = tasks.get(0);
-            showTask(mSceneTask.getEntityName(), mSceneTask.getActionDisplay());
+        if (mSceneBean != null) {
+            List<SceneTask> tasks = mSceneBean.getActions();
+            List<SceneCondition> conditions = mSceneBean.getConditions();
+            if (tasks != null && tasks.size() > 0) {
+                mSceneTask = tasks.get(0);
+                showTask(mSceneTask.getEntityName(), mSceneTask.getActionDisplay());
+            }
+            if (conditions != null && conditions.size() > 0) {
+                mCondition = conditions.get(0);
+                showCondition(mCondition.getExprDisplay(), mCondition.getEntityName());
+            }
+            editSceneName.setText(mSceneBean.getName());
         }
-        if (conditions != null && conditions.size() > 0) {
-            mCondition = conditions.get(0);
-            showCondition(mCondition.getExprDisplay(), mCondition.getEntityName());
-        }
-        editSceneName.setText(mSceneBean.getName());
     }
 
     //删除场景
@@ -159,27 +169,27 @@ public class AddSceneActivity extends BaseActivity implements View.OnClickListen
             DialogUtil.simpleConfirmDialog(AddSceneActivity.this, getString(R.string
                     .dialog_title_delScene), getString(R.string.dialog_delScene_content), new
                     DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    if (which == DialogInterface.BUTTON_POSITIVE) {
-                        TuyaScene.getTuyaSmartScene(mSceneBean.getId()).deleteScene(new IDeleteSceneCallback() {
-                            @Override
-                            public void onSuccess() {
-                                Log.d(TAG, "del scene success");
-                                setResult(RESULT_OK);
-                                finish();
-                            }
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            if (which == DialogInterface.BUTTON_POSITIVE) {
+                                TuyaScene.getTuyaSmartScene(mSceneBean.getId()).deleteScene(new IDeleteSceneCallback() {
+                                    @Override
+                                    public void onSuccess() {
+                                        Log.d(TAG, "del scene success");
+                                        setResult(RESULT_OK);
+                                        finish();
+                                    }
 
-                            @Override
-                            public void onError(String s, String s1) {
-                                Log.d(TAG, "del scene error:" + s1);
-                            }
-                        });
-                    } else if (which == DialogInterface.BUTTON_NEGATIVE) {
+                                    @Override
+                                    public void onError(String s, String s1) {
+                                        Log.d(TAG, "del scene error:" + s1);
+                                    }
+                                });
+                            } else if (which == DialogInterface.BUTTON_NEGATIVE) {
 
-                    }
-                }
-            });
+                            }
+                        }
+                    });
 
         }
     }
@@ -220,7 +230,8 @@ public class AddSceneActivity extends BaseActivity implements View.OnClickListen
                         enumRule            //规则
                 );
             } else if (mConditionListBean.getProperty() instanceof ValueProperty) {
-
+                mCondition = SceneCondition.createWeatherCondition(mPlaceFacadeBean,
+                        mConditionListBean.getType(), mValueRule);
             }
         }
 
@@ -271,7 +282,8 @@ public class AddSceneActivity extends BaseActivity implements View.OnClickListen
                         enumRule            //规则
                 );
             } else if (mConditionListBean.getProperty() instanceof ValueProperty) {
-
+                condition = SceneCondition.createWeatherCondition(mPlaceFacadeBean,
+                        mConditionListBean.getType(), mValueRule);
             }
         }
 
@@ -332,8 +344,8 @@ public class AddSceneActivity extends BaseActivity implements View.OnClickListen
             case R.id.tv_scene_delete:
                 try {
                     deleteScene();
-                }catch (Exception ex){
-                    Log.e(TAG,ex.toString());
+                } catch (Exception ex) {
+                    Log.e(TAG, ex.toString());
                 }
                 break;
         }

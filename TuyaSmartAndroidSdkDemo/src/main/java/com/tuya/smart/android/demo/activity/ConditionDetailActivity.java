@@ -9,7 +9,6 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.NumberPicker;
 import android.widget.TextView;
 
 import com.baidu.location.BDLocation;
@@ -27,6 +26,8 @@ import com.tuya.smart.sdk.bean.scene.condition.property.ValueProperty;
 
 import java.util.Map;
 
+import cn.carbswang.android.numberpickerview.library.NumberPickerView;
+
 /**
  * 条件详情-选择条件二及页面
  */
@@ -34,10 +35,16 @@ public class ConditionDetailActivity extends BaseActivity {
     public static final String RESULT_CITYBEAN = "RESULT_CITYBEAN";
     public static final String RESULT_CONDITIONLISTBEAN = "RESULT_CONDITIONLISTBEAN";
     public static final String RESULT_KEY = "RESULT_KEY";
+    public static final String RESULT_DES = "RESULT_DES";
+    public static final String RESULT_COMPARE = "RESULT_COMPARE";
     public static final String RESULT_VALUE = "RESULT_VALUE";
     public static final String INTENT_PARMS_CONDITION_BEAN = "INTENT_PARMS_CONDITION_BEAN";
     public static final int REQUEST_SELECT_CITY = 100;
+    static final String[] TEXT1_ARRAY = {"小于", "等于", "大于"};
+    static final String[] VALUE1_ARRAY = {"<", "==", ">"};
     static final String TAG = ConditionDetailActivity.class.getSimpleName();
+    String[] TEXT2_ARRAY;
+    String[] VALUE2_ARRAY;
     PlaceFacadeBean mCityBean;
     LinearLayout cityLayout;
     ConditionListBean mConditionListBean;
@@ -46,7 +53,9 @@ public class ConditionDetailActivity extends BaseActivity {
     TextView txtCity;
     String city_selected = "";
     ConditionDetailRecyclerAdapter adapter;
-    NumberPicker picker1,picker2;
+    NumberPickerView picker1, picker2;
+    LinearLayout pickerLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,8 +85,9 @@ public class ConditionDetailActivity extends BaseActivity {
     }
 
     protected void initViews() {
-        picker1 = (NumberPicker) findViewById(R.id.condition_detail_numberpick1);
-        picker2 = (NumberPicker) findViewById(R.id.condition_detail_numberpick2);
+        pickerLayout = (LinearLayout) findViewById(R.id.condition_detail_pickerLayout);
+        picker1 = (NumberPickerView) findViewById(R.id.condition_detail_numberpick1);
+        picker2 = (NumberPickerView) findViewById(R.id.condition_detail_numberpick2);
         mRecyclerView = (RecyclerView) findViewById(R.id.condition_detail_recyclerView);
         txtCity = (TextView) findViewById(R.id.condition_detail_txtCity);
         cityLayout = (LinearLayout) findViewById(R.id.condition_detail_cityLayout);
@@ -113,7 +123,17 @@ public class ConditionDetailActivity extends BaseActivity {
         try {
             mConditionListBean = (ConditionListBean) getIntent()
                     .getSerializableExtra(INTENT_PARMS_CONDITION_BEAN);
+            Log.d(TAG, "ConditionListBean.type=" + mConditionListBean.getType() + ",name=" +
+                    mConditionListBean.getName());
             setTitle(mConditionListBean.getName());
+            String type = mConditionListBean.getType();
+            if (type.equals("temp")) {
+                pickerLayout.setVisibility(View.VISIBLE);
+                mRecyclerView.setVisibility(View.GONE);
+            } else {
+                pickerLayout.setVisibility(View.GONE);
+                mRecyclerView.setVisibility(View.VISIBLE);
+            }
             if (mConditionListBean.getProperty() instanceof EnumProperty) {
                 EnumProperty property = (EnumProperty) mConditionListBean.getProperty();
                 bindRecycleView(property.getEnums());
@@ -139,6 +159,7 @@ public class ConditionDetailActivity extends BaseActivity {
                         public void onSuccess(PlaceFacadeBean placeFacadeBean) {
                             Log.d(TAG, "onSuccess:" + placeFacadeBean.getCity() + "," + location
                                     .getCity());
+                            placeFacadeBean.setArea(placeFacadeBean.getCity());
                             mCityBean = placeFacadeBean;
                         }
 
@@ -149,22 +170,55 @@ public class ConditionDetailActivity extends BaseActivity {
                     });
         }
     }
-    protected void initPicker(){
-        String[] array = {"小于","等于","大于"};
+
+    protected void initPicker() {
+        String[] array = {"小于", "等于", "大于"};
         picker1.setDisplayedValues(array);
         picker1.setMinValue(0);
         picker1.setMaxValue(array.length - 1);
         picker1.setValue(0);
+        TEXT2_ARRAY = new String[41];
+        VALUE2_ARRAY = new String[41];
+        for (int i = 0; i < 41; i++) {
+            TEXT2_ARRAY[i] = String.valueOf(i) + "℃";
+            VALUE2_ARRAY[i] = String.valueOf(i);
+        }
+        picker2.setDisplayedValues(TEXT2_ARRAY);
+        picker2.setMinValue(0);
+        picker2.setMaxValue(TEXT2_ARRAY.length - 1);
+        picker2.setValue(0);
+
     }
+
     //保存
     protected void save() {
-        Map.Entry<Object, String> item = adapter.getChecked();
-        Log.d(TAG, "save=" + item.toString());
+        String type = mConditionListBean.getType();
+
         Intent data = new Intent();
-        data.putExtra(RESULT_KEY, item.getKey().toString());
-        data.putExtra(RESULT_VALUE, item.getValue());
+        if (type.equals("temp")) {
+            String compare_value = VALUE1_ARRAY[picker1.getValue()];
+            String temp_value = VALUE2_ARRAY[picker2.getValue()];
+            String des = String.format("温度%s%s", TEXT1_ARRAY[picker1.getValue()],
+                    TEXT2_ARRAY[picker2.getValue()]);
+            Log.d(TAG, "save compare=" + compare_value + ",temp_value=" + temp_value);
+            data.putExtra(RESULT_KEY, "temp");
+            data.putExtra(RESULT_COMPARE, compare_value);
+            data.putExtra(RESULT_VALUE, temp_value);
+            data.putExtra(RESULT_DES, des);
+
+
+        } else {
+            Map.Entry<Object, String> item = adapter.getChecked();
+            Log.d(TAG, "save=" + item.toString());
+            data.putExtra(RESULT_KEY, item.getKey().toString());
+            data.putExtra(RESULT_VALUE, item.getValue());
+            String des = String.format("%s：%s", mConditionListBean.getName(), item.getValue());
+            data.putExtra(RESULT_DES, des);
+        }
+
         data.putExtra(RESULT_CONDITIONLISTBEAN, mConditionListBean);
         data.putExtra(RESULT_CITYBEAN, mCityBean);
+
         setResult(RESULT_OK, data);
         finish();
     }

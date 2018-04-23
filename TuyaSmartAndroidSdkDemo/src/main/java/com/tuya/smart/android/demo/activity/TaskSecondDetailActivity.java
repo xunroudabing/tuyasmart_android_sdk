@@ -23,6 +23,7 @@ import java.util.Map;
  */
 
 public class TaskSecondDetailActivity extends BaseActivity {
+    public static final String BUNDLE_DPNAME = "BUNDLE_DPNAME";
     public static final String BUNDLE_TASK_DES = "BUNDLE_TASK_DES";
     public static final String BUNDLE_DEVICE_NAME = "BUNDLE_DEVICE_NAME";
     public static final String BUNDLE_TASK = "BUNDLE_TASK";
@@ -82,6 +83,7 @@ public class TaskSecondDetailActivity extends BaseActivity {
                     String task_des = String.format("%s：%s", mBean.getName(), des);
                     Log.d(TAG, "result=" + value + " task_des=" + task_des);
                     Intent intent = new Intent();
+                    intent.putExtra(BUNDLE_DPNAME, des);
                     intent.putExtra(BUNDLE_TASK_DES, task_des);
                     intent.putExtra(BUNDLE_TASK, value);
                     setResult(RESULT_OK, intent);

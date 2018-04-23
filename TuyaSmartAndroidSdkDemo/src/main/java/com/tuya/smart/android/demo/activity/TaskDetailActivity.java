@@ -67,6 +67,10 @@ public class TaskDetailActivity extends BaseActivity {
                 Log.d(TAG, "json:" + json);
                 Map<String, Object> map = JSONObject.parseObject(json, Map.class);
                 mMap.putAll(map);
+                if (mAdapter != null) {
+                    String dpname = data.getStringExtra(TaskSecondDetailActivity.BUNDLE_DPNAME);
+                    mAdapter.setSelectedValue(dpname);
+                }
             }
         }
     }
