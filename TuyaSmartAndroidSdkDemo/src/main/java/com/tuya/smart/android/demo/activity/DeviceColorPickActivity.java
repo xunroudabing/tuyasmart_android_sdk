@@ -119,6 +119,11 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
                     case R.id.action_resume_factory_reset:
                         mPresenter.resetFactory();
                         break;
+                    case R.id.action_add_group:
+                        Intent intent = new Intent(DeviceColorPickActivity.this,AddGroupActivity.class);
+                        intent.putExtras(getIntent());
+                        startActivity(intent);
+                        break;
                     case R.id.action_unconnect:
                         mPresenter.removeDevice();
                         break;

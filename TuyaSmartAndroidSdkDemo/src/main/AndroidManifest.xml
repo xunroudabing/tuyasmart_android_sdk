@@ -236,6 +236,7 @@
         <activity android:name=".activity.AddTaskActivity" android:theme="@style/Splash.Theme"></activity>
         <activity android:name=".activity.TaskDetailActivity" android:theme="@style/Splash.Theme"></activity>
         <activity android:name=".activity.TaskSecondDetailActivity" android:theme="@style/Splash.Theme"></activity>
+        <activity android:name=".activity.AddGroupActivity" android:theme="@style/Splash.Theme"></activity>
         <activity android:name=".debug.MainListActivity">
 
         </activity>

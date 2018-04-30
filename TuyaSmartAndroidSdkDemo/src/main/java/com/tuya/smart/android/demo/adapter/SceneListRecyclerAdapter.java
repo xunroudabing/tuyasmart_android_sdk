@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.tuya.smart.android.demo.R;
 import com.tuya.smart.android.demo.bean.SceneListItemBean;
@@ -66,6 +67,8 @@ public class SceneListRecyclerAdapter extends RecyclerView.Adapter<SceneListRecy
                         @Override
                         public void onSuccess() {
                             Log.d(TAG, "onSuccess");
+                            Toast.makeText(mContext, R.string.alert_scene_execute, Toast
+                                    .LENGTH_SHORT).show();
                         }
 
                         @Override

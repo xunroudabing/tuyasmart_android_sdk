@@ -126,8 +126,9 @@ public class DeviceListFragmentPresenter extends BasePresenter implements NetWor
     private void gotoDeviceCommonActivity(DeviceBean devBean) {
         //跳转至控制界面
         Intent intent = new Intent(mActivity, DeviceColorPickActivity.class);
-        intent.putExtra(DeviceColorPickActivity.INTNET_TITLE,devBean.getName());
-        intent.putExtra(DeviceColorPickActivity.INTENT_DEVID,devBean.getDevId());
+        intent.putExtra(DeviceColorPickActivity.INTNET_TITLE, devBean.getName());
+        intent.putExtra(DeviceColorPickActivity.INTENT_DEVID, devBean.getDevId());
+        intent.putExtra(DeviceColorPickActivity.INTENT_PRODUCTID, devBean.getProductId());
         mActivity.startActivity(intent);
 //        Intent intent = new Intent(mActivity, DeviceCommonActivity.class);
 //        intent.putExtra(DeviceCommonPresenter.INTENT_DEVID, devBean.getDevId());
@@ -151,21 +152,22 @@ public class DeviceListFragmentPresenter extends BasePresenter implements NetWor
 
     //添加设备
     public void addDevice() {
-        final WifiManager mWifiManager = (WifiManager) mActivity.getApplicationContext().getSystemService(Context
+        final WifiManager mWifiManager = (WifiManager) mActivity.getApplicationContext()
+                .getSystemService(Context
                 .WIFI_SERVICE);
         if (!mWifiManager.isWifiEnabled()) {
             DialogUtil.simpleConfirmDialog(mActivity, mActivity.getString(R.string.open_wifi),
                     new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    switch (which) {
-                        case DialogInterface.BUTTON_POSITIVE:
-                            mWifiManager.setWifiEnabled(true);
-                            gotoAddDevice();
-                            break;
-                    }
-                }
-            });
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            switch (which) {
+                                case DialogInterface.BUTTON_POSITIVE:
+                                    mWifiManager.setWifiEnabled(true);
+                                    gotoAddDevice();
+                                    break;
+                            }
+                        }
+                    });
         } else {
             gotoAddDevice();
         }
@@ -260,18 +262,18 @@ public class DeviceListFragmentPresenter extends BasePresenter implements NetWor
         ProgressUtil.showLoading(mActivity, null);
         TuyaSmartRequest.getInstance().requestWithApiName("s.m.dev.sdk.demo.list", "1.0", null,
                 new IRequestCallback() {
-            @Override
-            public void onSuccess(Object result) {
-                ProgressUtil.hideLoading();
-                getDataFromServer();
-            }
+                    @Override
+                    public void onSuccess(Object result) {
+                        ProgressUtil.hideLoading();
+                        getDataFromServer();
+                    }
 
-            @Override
-            public void onFailure(String errorCode, String errorMsg) {
-                ProgressUtil.hideLoading();
-                ToastUtil.showToast(mActivity, errorMsg);
-            }
-        });
+                    @Override
+                    public void onFailure(String errorCode, String errorMsg) {
+                        ProgressUtil.hideLoading();
+                        ToastUtil.showToast(mActivity, errorMsg);
+                    }
+                });
     }
 
     @Override
