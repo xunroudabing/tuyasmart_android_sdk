@@ -1,6 +1,6 @@
 package com.tuya.smart.android.demo.activity;
 
-import android.content.Intent;
+import android.Manifest;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -14,18 +14,23 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
+import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONObject;
 import com.tuya.smart.android.demo.R;
 import com.tuya.smart.android.demo.test.bean.AlertPickBean;
 import com.tuya.smart.android.demo.test.widget.AlertPickDialog;
+import com.tuya.smart.android.demo.utils.AudioUtils;
+import com.tuya.smart.android.demo.utils.CheckPermissionUtils;
 import com.tuya.smart.android.demo.widget.mode.PanContainer;
 import com.tuya.smart.android.demo.widget.mode.RotatePan;
 import com.tuya.smart.android.hardware.model.IControlCallback;
 import com.tuya.smart.sdk.TuyaDevice;
+import com.tuya.smart.sdk.TuyaGroup;
 import com.tuya.smart.sdk.TuyaTimerManager;
 import com.tuya.smart.sdk.TuyaUser;
 import com.tuya.smart.sdk.api.IResultStatusCallback;
+import com.tuya.smart.sdk.api.ITuyaGroup;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -34,26 +39,42 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.ScheduledExecutorService;
 
 public class DeviceModePickActivity extends BaseActivity implements SeekBar
         .OnSeekBarChangeListener, View.OnClickListener {
-    public static final String INTENT_DEVID = "intent_devid";
+    public static final String INTENT_DEVID = "intent_devId";
     public static final String INTENT_DPID = "intent_dpid";
     public static final String INTNET_TITLE = "intent_title";
+    public static final String INTENT_ISGROUP = "INTENT_ISGROUP";
+    public static final String INTENT_GROUPID = "INTENT_GROUPID";
+    public static final int REQUEST_RECODE_AUDIO = 101;
     static final int ACTION_MODE_POSITION = 100;
+    static final int ACTION_MUSIC = 102;
     static final String TAG = DeviceModePickActivity.class.getSimpleName();
+    CheckPermissionUtils checkPermission;
     boolean mSwitch = true;
+    boolean mMusicStart = false;
     int mValue;//明度
-    String mSpeed = "10";
+    int mSpeed = 10;
     SeekBar seekBarLight, seekBarSu;
     ImageButton btnScene, btnSwitch, btnNight, btnDelay, btnTimer;
+    ImageButton btnSpeedMin, btnSpeedPlus;
     PanContainer mPanContainer;
     RotatePan mPan;
     ImageView btnGo;
     List<Bitmap> mBackgrounds = new ArrayList<>();
+    ImageButton btnMusic;
+    ScheduledExecutorService mScheduleService;
+    AudioUtils mAudioUtils;
+    boolean sw = true;
+    private boolean isGroup = false;
+    private long mGroupId;
     private String mDevId;
     private String mDpId;
     private TuyaDevice mTuyaDevice;
+    private ITuyaGroup mTuyaGroup;
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -62,6 +83,14 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
                     try {
                         int positon = (int) msg.obj;
                         setMode(positon);
+                    } catch (Exception ex) {
+                        Log.e(TAG, ex.toString());
+                    }
+                    break;
+                case ACTION_MUSIC:
+                    try {
+                        int v = (int) msg.obj;
+                        setColorByMusic(v);
                     } catch (Exception ex) {
                         Log.e(TAG, ex.toString());
                     }
@@ -77,6 +106,13 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
         initToolbar();
         initMenu();
         initViews();
+        checkPermission();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mAudioUtils.stopRecord();
     }
 
     protected void initToolbar() {
@@ -92,20 +128,61 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
         }
     }
 
+    protected void checkPermission() {
+        checkPermission = new CheckPermissionUtils(this);
+        checkPermission.checkSiglePermission(Manifest.permission.RECORD_AUDIO,
+                REQUEST_RECODE_AUDIO);
+    }
+
     protected void initMenu() {
         setDisplayHomeAsUpEnabled();
         String title = getIntent().getStringExtra(INTNET_TITLE);
         setTitle(title);
     }
 
+    protected void initData() {
+        try {
+            if (!isGroup) {
+                Map<String, Object> map_dp = TuyaUser.getDeviceInstance().getDev(mDevId).getDps();
+                if (map_dp != null) {
+                    boolean b = (boolean) map_dp.get("1");
+                    final int value_light = (int) map_dp.get("3");
+                    final int value_temp = (int) map_dp.get("4");
+                    if (b) {
+                        btnSwitch.setImageResource(R.drawable.btn_switch);
+                    } else {
+                        btnSwitch.setImageResource(R.drawable.btn_switch_off);
+                    }
+                    seekBarLight.setProgress(value_light);
+                }
+            }
+        } catch (Exception ex) {
+            Log.e(TAG, ex.toString());
+        }
+
+
+    }
+
     protected void initViews() {
+        mAudioUtils = new AudioUtils();
+        isGroup = getIntent().getBooleanExtra(INTENT_ISGROUP, false);
+        mGroupId = getIntent().getLongExtra(INTENT_GROUPID, 0);
         mDevId = getIntent().getStringExtra(INTENT_DEVID);
         mDpId = getIntent().getStringExtra(INTENT_DPID);
         mTuyaDevice = new TuyaDevice(mDevId);
+        if (isGroup && mGroupId != 0L) {
+            mTuyaGroup = TuyaGroup.newGroupInstance(mGroupId);
+        }
+        btnSpeedMin = (ImageButton) findViewById(R.id.device_mode_btnSpeedDown);
+        btnSpeedPlus = (ImageButton) findViewById(R.id.device_mode_btnSpeedUp);
+        btnSpeedMin.setOnClickListener(this);
+        btnSpeedPlus.setOnClickListener(this);
         seekBarLight = (SeekBar) findViewById(R.id.device_color_seekbarLight);
         seekBarSu = (SeekBar) findViewById(R.id.device_color_seekbarSu);
         seekBarLight.setOnSeekBarChangeListener(this);
         seekBarSu.setOnSeekBarChangeListener(this);
+        btnMusic = (ImageButton) findViewById(R.id.device_mode_btnMusic);
+        btnMusic.setOnClickListener(this);
         btnDelay = (ImageButton) findViewById(R.id.device_color_btnDelay);
         btnTimer = (ImageButton) findViewById(R.id.device_color_btnTimer);
         btnDelay.setOnClickListener(this);
@@ -208,11 +285,26 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            //情景
-            case R.id.device_color_btnScene:
-                Intent intent = new Intent(this, DeviceModePickActivity.class);
-                startActivity(intent);
-                //开关
+            case R.id.device_mode_btnSpeedDown:
+                try {
+                    mSpeed = mSpeed - 10;
+                    mSpeed = Math.max(0, mSpeed);
+                } catch (Exception ex) {
+                    Log.e(TAG, ex.toString());
+                }
+                break;
+            case R.id.device_mode_btnSpeedUp:
+                try {
+                    mSpeed = mSpeed + 10;
+                    mSpeed = Math.min(99, mSpeed);
+                } catch (Exception ex) {
+                    Log.e(TAG, ex.toString());
+                }
+                break;
+            case R.id.device_mode_btnMusic:
+                startMusicListen();
+                break;
+            //开关
             case R.id.device_color_btnSwitch:
                 try {
                     setSwitch();
@@ -276,16 +368,25 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
 
     protected void setMode1() {
         try {
-            Map<String, Object> map_dp = TuyaUser.getDeviceInstance().getDev(mDevId).getDps();
-            int v3 = (int) map_dp.get("3");
-            int v4 = (int) map_dp.get("4");
-            String v = String.format("%s%s%s06f30000f200ab0000f31ffab224fb10f4dc05", Integer
-                    .toHexString(v3), Integer.toHexString(v4), mSpeed);
-            Map<String, Object> map = new HashMap<>();
-            map.put("2", "scene_2");
-            map.put("8", v);
-            final String value = JSONObject.toJSONString(map);
-            sendDp(value);
+            if (!isGroup) {
+                Map<String, Object> map_dp = TuyaUser.getDeviceInstance().getDev(mDevId).getDps();
+                int v3 = (int) map_dp.get("3");
+                int v4 = (int) map_dp.get("4");
+                String v = String.format("%s%s%d06f30000f200ab0000f31ffab224fb10f4dc05", Integer
+                        .toHexString(v3), Integer.toHexString(v4), mSpeed);
+                Map<String, Object> map = new HashMap<>();
+                map.put("2", "scene_2");
+                map.put("8", v);
+                final String value = JSONObject.toJSONString(map);
+                sendDp(value);
+            } else {
+                String v = String.format("ffff%d06f30000f200ab0000f31ffab224fb10f4dc05", mSpeed);
+                Map<String, Object> map = new HashMap<>();
+                map.put("2", "scene_2");
+                map.put("8", v);
+                final String value = JSONObject.toJSONString(map);
+                sendDp(value);
+            }
         } catch (Exception ex) {
             Log.e(TAG, ex.toString());
         }
@@ -294,16 +395,25 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
 
     protected void setMode2() {
         try {
-            Map<String, Object> map_dp = TuyaUser.getDeviceInstance().getDev(mDevId).getDps();
-            int v3 = (int) map_dp.get("3");
-            int v4 = (int) map_dp.get("4");
-            String v = String.format("%s%s%s060000f5f4cb06f100ec25fb10f1000aa699b8", Integer
-                    .toHexString(v3), Integer.toHexString(v4), mSpeed);
-            Map<String, Object> map = new HashMap<>();
-            map.put("2", "scene_2");
-            map.put("8", v);
-            final String value = JSONObject.toJSONString(map);
-            sendDp(value);
+            if (!isGroup) {
+                Map<String, Object> map_dp = TuyaUser.getDeviceInstance().getDev(mDevId).getDps();
+                int v3 = (int) map_dp.get("3");
+                int v4 = (int) map_dp.get("4");
+                String v = String.format("%s%s%d060000f5f4cb06f100ec25fb10f1000aa699b8", Integer
+                        .toHexString(v3), Integer.toHexString(v4), mSpeed);
+                Map<String, Object> map = new HashMap<>();
+                map.put("2", "scene_2");
+                map.put("8", v);
+                final String value = JSONObject.toJSONString(map);
+                sendDp(value);
+            } else {
+                String v = String.format("ffff%d060000f5f4cb06f100ec25fb10f1000aa699b8", mSpeed);
+                Map<String, Object> map = new HashMap<>();
+                map.put("2", "scene_2");
+                map.put("8", v);
+                final String value = JSONObject.toJSONString(map);
+                sendDp(value);
+            }
         } catch (Exception ex) {
             Log.e(TAG, ex.toString());
         }
@@ -311,16 +421,25 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
 
     protected void setMode3() {
         try {
-            Map<String, Object> map_dp = TuyaUser.getDeviceInstance().getDev(mDevId).getDps();
-            int v3 = (int) map_dp.get("3");
-            int v4 = (int) map_dp.get("4");
-            String v = String.format("%s%s%s04fb00060200ff240003fedd0a", Integer
-                    .toHexString(v3), Integer.toHexString(v4), mSpeed);
-            Map<String, Object> map = new HashMap<>();
-            map.put("2", "scene_4");
-            map.put("10", v);
-            final String value = JSONObject.toJSONString(map);
-            sendDp(value);
+            if (!isGroup) {
+                Map<String, Object> map_dp = TuyaUser.getDeviceInstance().getDev(mDevId).getDps();
+                int v3 = (int) map_dp.get("3");
+                int v4 = (int) map_dp.get("4");
+                String v = String.format("%s%s%d04fb00060200ff240003fedd0a", Integer
+                        .toHexString(v3), Integer.toHexString(v4), mSpeed);
+                Map<String, Object> map = new HashMap<>();
+                map.put("2", "scene_4");
+                map.put("10", v);
+                final String value = JSONObject.toJSONString(map);
+                sendDp(value);
+            } else {
+                String v = String.format("ffff%d04fb00060200ff240003fedd0a", mSpeed);
+                Map<String, Object> map = new HashMap<>();
+                map.put("2", "scene_4");
+                map.put("10", v);
+                final String value = JSONObject.toJSONString(map);
+                sendDp(value);
+            }
         } catch (Exception ex) {
             Log.e(TAG, ex.toString());
         }
@@ -328,96 +447,203 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
 
     protected void setMode4() {
         try {
-            Map<String, Object> map_dp = TuyaUser.getDeviceInstance().getDev(mDevId).getDps();
-            int v3 = (int) map_dp.get("3");
-            int v4 = (int) map_dp.get("4");
-            String v = String.format("%s%s%s060000f5f4cb06f1000927fb101be1f4e500f5", Integer
-                    .toHexString(v3), Integer.toHexString(v4), mSpeed);
-            Map<String, Object> map = new HashMap<>();
-            map.put("2", "scene_4");
-            map.put("10", v);
-            final String value = JSONObject.toJSONString(map);
-            sendDp(value);
+            if (!isGroup) {
+                Map<String, Object> map_dp = TuyaUser.getDeviceInstance().getDev(mDevId).getDps();
+                int v3 = (int) map_dp.get("3");
+                int v4 = (int) map_dp.get("4");
+                String v = String.format("%s%s%d060000f5f4cb06f1000927fb101be1f4e500f5", Integer
+                        .toHexString(v3), Integer.toHexString(v4), mSpeed);
+                Map<String, Object> map = new HashMap<>();
+                map.put("2", "scene_4");
+                map.put("10", v);
+                final String value = JSONObject.toJSONString(map);
+                sendDp(value);
+            } else {
+                String v = String.format("ffff%d04fb00060200ff240003fedd0a", mSpeed);
+                Map<String, Object> map = new HashMap<>();
+                map.put("2", "scene_4");
+                map.put("10", v);
+                final String value = JSONObject.toJSONString(map);
+                sendDp(value);
+            }
         } catch (Exception ex) {
             Log.e(TAG, ex.toString());
         }
     }
+
     //红闪
     protected void setMode8() {
         try {
-            Map<String, Object> map_dp = TuyaUser.getDeviceInstance().getDev(mDevId).getDps();
-            int v3 = (int) map_dp.get("3");
-            int v4 = (int) map_dp.get("4");
-            String v = String.format("%s%s%s01ff0000", Integer
-                    .toHexString(v3), Integer.toHexString(v4), mSpeed);
-            Map<String, Object> map = new HashMap<>();
-            map.put("2", "scene_3");
-            map.put("9", v);
-            final String value = JSONObject.toJSONString(map);
-            sendDp(value);
+            if (!isGroup) {
+                Map<String, Object> map_dp = TuyaUser.getDeviceInstance().getDev(mDevId).getDps();
+                int v3 = (int) map_dp.get("3");
+                int v4 = (int) map_dp.get("4");
+                String v = String.format("%s%s%d01ff0000", Integer
+                        .toHexString(v3), Integer.toHexString(v4), mSpeed);
+                Map<String, Object> map = new HashMap<>();
+                map.put("2", "scene_3");
+                map.put("9", v);
+                final String value = JSONObject.toJSONString(map);
+                sendDp(value);
+            } else {
+                String v = String.format("ffff%d01ff0000", mSpeed);
+                Map<String, Object> map = new HashMap<>();
+                map.put("2", "scene_3");
+                map.put("9", v);
+                final String value = JSONObject.toJSONString(map);
+                sendDp(value);
+            }
         } catch (Exception ex) {
             Log.e(TAG, ex.toString());
         }
     }
+
     //蓝闪
     protected void setMode6() {
         try {
-            Map<String, Object> map_dp = TuyaUser.getDeviceInstance().getDev(mDevId).getDps();
-            int v3 = (int) map_dp.get("3");
-            int v4 = (int) map_dp.get("4");
-            String v = String.format("%s%s%s010000ff", Integer
-                    .toHexString(v3), Integer.toHexString(v4), mSpeed);
-            Map<String, Object> map = new HashMap<>();
-            map.put("2", "scene_3");
-            map.put("9", v);
-            final String value = JSONObject.toJSONString(map);
-            sendDp(value);
+            if (!isGroup) {
+                Map<String, Object> map_dp = TuyaUser.getDeviceInstance().getDev(mDevId).getDps();
+                int v3 = (int) map_dp.get("3");
+                int v4 = (int) map_dp.get("4");
+                String v = String.format("%s%s%d010000ff", Integer
+                        .toHexString(v3), Integer.toHexString(v4), mSpeed);
+                Map<String, Object> map = new HashMap<>();
+                map.put("2", "scene_3");
+                map.put("9", v);
+                final String value = JSONObject.toJSONString(map);
+                sendDp(value);
+            } else {
+                String v = String.format("ffff%d010000ff", mSpeed);
+                Map<String, Object> map = new HashMap<>();
+                map.put("2", "scene_3");
+                map.put("9", v);
+                final String value = JSONObject.toJSONString(map);
+                sendDp(value);
+            }
         } catch (Exception ex) {
             Log.e(TAG, ex.toString());
         }
     }
+
     //绿闪
     protected void setMode7() {
         try {
-            Map<String, Object> map_dp = TuyaUser.getDeviceInstance().getDev(mDevId).getDps();
-            int v3 = (int) map_dp.get("3");
-            int v4 = (int) map_dp.get("4");
-            String v = String.format("%s%s%s0100ff00", Integer
-                    .toHexString(v3), Integer.toHexString(v4), mSpeed);
-            Map<String, Object> map = new HashMap<>();
-            map.put("2", "scene_3");
-            map.put("9", v);
-            final String value = JSONObject.toJSONString(map);
-            sendDp(value);
+            if (!isGroup) {
+                Map<String, Object> map_dp = TuyaUser.getDeviceInstance().getDev(mDevId).getDps();
+                int v3 = (int) map_dp.get("3");
+                int v4 = (int) map_dp.get("4");
+                String v = String.format("%s%s%d0100ff00", Integer
+                        .toHexString(v3), Integer.toHexString(v4), mSpeed);
+                Map<String, Object> map = new HashMap<>();
+                map.put("2", "scene_3");
+                map.put("9", v);
+                final String value = JSONObject.toJSONString(map);
+                sendDp(value);
+            } else {
+                String v = String.format("ffff%d0100ff00", mSpeed);
+                Map<String, Object> map = new HashMap<>();
+                map.put("2", "scene_3");
+                map.put("9", v);
+                final String value = JSONObject.toJSONString(map);
+                sendDp(value);
+            }
         } catch (Exception ex) {
             Log.e(TAG, ex.toString());
         }
     }
+
     //白闪
     protected void setMode5() {
         try {
-            Map<String, Object> map_dp = TuyaUser.getDeviceInstance().getDev(mDevId).getDps();
-            int v3 = (int) map_dp.get("3");
-            int v4 = (int) map_dp.get("4");
-            String v = String.format("%s%s%s01000000", Integer
-                    .toHexString(v3), Integer.toHexString(v4), mSpeed);
-            Map<String, Object> map = new HashMap<>();
-            map.put("2", "scene_1");
-            map.put("7", v);
-            final String value = JSONObject.toJSONString(map);
-            sendDp(value);
+            if (!isGroup) {
+                Map<String, Object> map_dp = TuyaUser.getDeviceInstance().getDev(mDevId).getDps();
+                int v3 = (int) map_dp.get("3");
+                int v4 = (int) map_dp.get("4");
+                String v = String.format("%s%s%d01000000", Integer
+                        .toHexString(v3), Integer.toHexString(v4), mSpeed);
+                Map<String, Object> map = new HashMap<>();
+                map.put("2", "scene_1");
+                map.put("7", v);
+                final String value = JSONObject.toJSONString(map);
+                sendDp(value);
+            } else {
+                String v = String.format("ffff%d01000000", mSpeed);
+                Map<String, Object> map = new HashMap<>();
+                map.put("2", "scene_1");
+                map.put("7", v);
+                final String value = JSONObject.toJSONString(map);
+                sendDp(value);
+            }
         } catch (Exception ex) {
             Log.e(TAG, ex.toString());
         }
     }
+
     //开关
     protected void setSwitch() {
-        mSwitch = !mSwitch;
-        Map<String, Object> map = new HashMap<>();
-        map.put("1", mSwitch);
-        map.put("2", "white");
-        final String value = JSONObject.toJSONString(map);
-        sendDp(value);
+        if (!isGroup) {
+            Map<String, Object> map_dp = TuyaUser.getDeviceInstance().getDev(mDevId).getDps();
+            boolean b = (boolean) map_dp.get("1");
+            Map<String, Object> map = new HashMap<>();
+            map.put("1", !b);
+            if (!b) {
+                btnSwitch.setImageResource(R.drawable.btn_switch);
+            } else {
+                btnSwitch.setImageResource(R.drawable.btn_switch_off);
+            }
+            final String value = JSONObject.toJSONString(map);
+            sendDp(value);
+        } else {
+            sw = !sw;
+            Map<String, Object> map = new HashMap<>();
+            map.put("1", sw);
+            final String value = JSONObject.toJSONString(map);
+            sendDp(value);
+            if (!sw) {
+                btnSwitch.setImageResource(R.drawable.btn_switch);
+            } else {
+                btnSwitch.setImageResource(R.drawable.btn_switch_off);
+            }
+        }
+    }
+
+    protected void startMusicListen() {
+        mMusicStart = !mMusicStart;
+        if(mMusicStart) {
+            mAudioUtils.setCallBack(new AudioUtils.ICallback() {
+                @Override
+                public void onVolume(double v) {
+                    mHandler.sendMessage(Message.obtain(mHandler, ACTION_MUSIC, (int) v));
+                }
+            });
+            mAudioUtils.startRecord();
+            btnMusic.setImageResource(R.drawable.btn_music_pressed);
+            Toast.makeText(this, R.string.alert_mode_startmusic, Toast.LENGTH_SHORT).show();
+        }else {
+            mAudioUtils.stopRecord();
+            btnMusic.setImageResource(R.drawable.btn_music_nor);
+            Toast.makeText(this, R.string.alert_mode_endmusic, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    protected void setColorByMusic(int volumn) {
+        Random random = new Random();
+        int r = random.nextInt(255);
+        int b = Math.abs(255 - volumn);
+        int color = Color.argb(255, volumn, r, b);
+        setLightColor(color);
+    }
+
+    protected void setLightColor(int color) {
+        String color_hex = Integer.toHexString(color).toLowerCase().replace("ff",
+                "");
+        String value = String.format("%s0000ff%s", color_hex, Integer.toHexString(255));
+        Log.d(TAG, "value= " + value);
+        Map<String, String> map = new HashMap<>();
+        map.put("2", "colour");
+        //map.put("2","scene");
+        map.put("5", value);
+        sendDp(map);
     }
 
     //调光 改变亮度
@@ -429,14 +655,38 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
     }
 
     protected void setSu(int value) {
-        String s = String.format("%sffffff%s", "ffffff", Integer.toHexString(value));
-        Map<String, Object> map = new HashMap<>();
-        map.put("2", "colour");
-        //map.put("2","scene");
-        map.put("5", s);
-        map.put("3", value);
-        final String json = JSONObject.toJSONString(map);
-        sendDp(json);
+        try {
+            int color = Color.WHITE;
+            if (!isGroup) {
+                Map<String, Object> map_dp = TuyaUser.getDeviceInstance().getDev(mDevId).getDps();
+                String dp5 = map_dp.get("5").toString();
+                String rgb_str = dp5.substring(0, 6);
+                color = Color.parseColor("#" + rgb_str);
+            } else {
+//                if (mCurrentColor != -1) {
+//                    color = mCurrentColor;
+//                }
+            }
+
+
+            //16进制颜色转int
+            //int i = (int) Long.parseLong("FF" + rgb_str, 16);
+            float[] hsv = new float[3];
+            Color.colorToHSV(color, hsv);
+            hsv[1] = value / 100;
+            int convertColor = Color.HSVToColor(hsv);
+
+            String color_hex = Integer.toHexString(convertColor).toLowerCase().replace("ff",
+                    "");
+            String dp5_convert = String.format("%s0000ff%s", color_hex, Integer.toHexString(255));
+            Map<String, String> map = new HashMap<>();
+            map.put("2", "colour");
+            map.put("5", dp5_convert);
+            sendDp(map);
+        } catch (Exception ex) {
+            Log.e(TAG, ex.toString());
+        }
+
 
     }
 
@@ -480,11 +730,11 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
         alertPickBean2.setSelected(min);
         AlertPickDialog.showTimePickAlertPickDialog(DeviceModePickActivity.this, alertPickBean1,
                 alertPickBean2, new
-                        AlertPickDialog.AlertPickCallBack() {
+                        AlertPickDialog.AlertPickCallBack2() {
                             @Override
-                            public void confirm(String value) {
+                            public void confirm(String value, boolean sw) {
                                 Log.d(TAG, "定时关闭：" + value);
-                                setTuyaTimer(value);
+                                setTuyaTimer(value, sw);
                             }
 
                             @Override
@@ -507,10 +757,10 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
         alertPickBean.setRangeValues(rangesKey);
         alertPickBean.setTitle(getString(R.string.title_choose_delay));
         AlertPickDialog.showAlertPickDialog(DeviceModePickActivity.this, alertPickBean, new
-                AlertPickDialog.AlertPickCallBack() {
+                AlertPickDialog.AlertPickCallBack2() {
                     @Override
-                    public void confirm(String value) {
-                        setdelay(value);
+                    public void confirm(String value, boolean sw) {
+                        setdelay(value, sw);
                     }
 
                     @Override
@@ -533,31 +783,33 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
 //        });
     }
 
-    protected void setdelay(String delay) {
+    protected void setdelay(String delay, boolean sw) {
         long currentTime = System.currentTimeMillis();
         long executeTime = currentTime + Integer.parseInt(delay) * 60 * 1000;
         SimpleDateFormat format = new SimpleDateFormat("HH:mm");
         String time = format.format(new Date(executeTime));
         Log.d(TAG, "setdelay:" + time);
-        setTuyaTimer(time);
+        setTuyaTimer(time, sw);
     }
 
-    protected void setTuyaTimer(final String time) {
-        final TuyaTimerManager timerManager = new TuyaTimerManager();
-        Map<String, Object> map = new HashMap<>();
-        map.put("1", false);
-        timerManager.addTimerWithTask("timer", mDevId, "0000000", map, time, new
-                IResultStatusCallback() {
-                    @Override
-                    public void onSuccess() {
-                        Log.d(TAG, "设置定时器成功：" + time);
-                    }
+    protected void setTuyaTimer(final String time, boolean sw) {
+        if (!isGroup) {
+            final TuyaTimerManager timerManager = new TuyaTimerManager();
+            Map<String, Object> map = new HashMap<>();
+            map.put("1", sw);
+            timerManager.addTimerWithTask("timer", mDevId, "0000000", map, time, new
+                    IResultStatusCallback() {
+                        @Override
+                        public void onSuccess() {
+                            Log.d(TAG, "设置定时器成功：" + time);
+                        }
 
-                    @Override
-                    public void onError(String s, String s1) {
+                        @Override
+                        public void onError(String s, String s1) {
 
-                    }
-                });
+                        }
+                    });
+        }
     }
 
     //夜灯
@@ -566,7 +818,8 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
         int light = (int) (255 * 0.05);
         int temp = (int) (255 * 0.5);
         Map<String, Object> map = new HashMap<>();
-        map.put("3", light);
+        map.put("2", "white");
+        map.put("3", 25);
         map.put("4", temp);
         final String json = JSONObject.toJSONString(map);
         sendDp(json);
@@ -574,23 +827,63 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
 
     protected void sendDp(String json) {
         Log.d(TAG, "sendDp:" + json);
-        mTuyaDevice.publishDps(json, new IControlCallback() {
-            @Override
-            public void onError(String s, String s1) {
-                //mView.showMessage("send command failure");
-                Log.d(TAG, "onError:" + s + "," + s1);
-            }
+        if (!isGroup) {
+            mTuyaDevice.publishDps(json, new IControlCallback() {
+                @Override
+                public void onError(String s, String s1) {
+                    //mView.showMessage("send command failure");
+                    Log.d(TAG, "onError:" + s + "," + s1);
+                }
 
-            @Override
-            public void onSuccess() {
-                Log.d(TAG, "onSuccess");
-            }
-        });
+                @Override
+                public void onSuccess() {
+                    Log.d(TAG, "onSuccess");
+                }
+            });
+        } else {
+            mTuyaGroup.publishDps(json, new IControlCallback() {
+                @Override
+                public void onError(String s, String s1) {
+                    Log.d(TAG, "onError:" + s + "," + s1);
+                }
+
+                @Override
+                public void onSuccess() {
+                    Log.d(TAG, "onSuccess");
+                }
+            });
+        }
     }
 
     protected void sendDp(Map<String, String> dp) {
         final String value = JSONObject.toJSONString(dp);
         Log.d(TAG, "sendDp:" + value);
         sendDp(value);
+    }
+
+    class ListenMusic implements Runnable {
+
+        /**
+         * When an object implementing interface <code>Runnable</code> is used
+         * to create a thread, starting the thread causes the object's
+         * <code>run</code> method to be called in that separately executing
+         * thread.
+         * <p>
+         * The general contract of the method <code>run</code> is that it may
+         * take any action whatsoever.
+         *
+         * @see Thread#run()
+         */
+        @Override
+        public void run() {
+            try {
+//                int max = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL);
+//                int current = mAudioManager.getStreamVolume(AudioManager.STREAM_VOICE_CALL);
+
+                //Log.d(TAG, "Muisc Listen:current=" + current + ",max=" + max);
+            } catch (Exception ex) {
+                Log.e(TAG, ex.toString());
+            }
+        }
     }
 }

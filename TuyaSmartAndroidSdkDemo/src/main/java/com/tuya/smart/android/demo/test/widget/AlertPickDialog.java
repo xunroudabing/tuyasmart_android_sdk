@@ -6,7 +6,9 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.CompoundButton;
 import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.tuya.smart.android.demo.R;
@@ -19,7 +21,7 @@ import com.tuya.smart.android.demo.test.bean.AlertPickBean;
 public class AlertPickDialog {
 
     private static final String TAG = "ChooseDialog";
-    public static void showSeekBarPickDialog(Activity activity,int progress, final AlertPickCallBack callBack){
+    public static void showSeekBarPickDialog(Activity activity,int progress, final AlertPickCallBack2 callBack){
         final AlertDialog dialog = new AlertDialog.Builder(activity, R.style.dialog_alert).create();
         dialog.setCanceledOnTouchOutside(true);
         dialog.show();
@@ -49,7 +51,7 @@ public class AlertPickDialog {
                     int p = (progress * 100) / 255 ;
                     txtValue.setText(String.valueOf(p) + "%");
                     if(callBack != null){
-                        callBack.confirm(String.valueOf(progress));
+                        callBack.confirm(String.valueOf(progress),true);
                     }
                 }
             }
@@ -68,7 +70,7 @@ public class AlertPickDialog {
         txtValue.setText(String.valueOf(p) + "%");
         seekBar.setProgress(progress);
     }
-    public static void showTimePickAlertPickDialog(Activity activity, final AlertPickBean alertPickBean1,final AlertPickBean alertPickBean2, final AlertPickCallBack alertPickCallBack){
+    public static void showTimePickAlertPickDialog(Activity activity, final AlertPickBean alertPickBean1,final AlertPickBean alertPickBean2, final AlertPickCallBack2 alertPickCallBack){
         final AlertDialog dialog = new AlertDialog.Builder(activity, R.style.dialog_alert).create();
         dialog.setCanceledOnTouchOutside(true);
         dialog.show();
@@ -86,11 +88,12 @@ public class AlertPickDialog {
         TextView sureTV = (TextView) dialog.findViewById(R.id.tv_sure);
         TextView cancelTV = (TextView) dialog.findViewById(R.id.tv_cancel);
         TextView titleTV = (TextView) dialog.findViewById(R.id.tv_title);
+        final Switch swView = (Switch) dialog.findViewById(R.id.action_item_switch);
         sureTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String value = String.format("%s:%s",alertPickBean1.getRangeKeys().get(numberPicker1.getValue()),alertPickBean2.getRangeKeys().get(numberPicker2.getValue()));
-                alertPickCallBack.confirm(value);
+                alertPickCallBack.confirm(value,swView.isChecked());
                 dialog.cancel();
             }
         });
@@ -107,7 +110,7 @@ public class AlertPickDialog {
         initData(numberPicker1, alertPickBean1);
         initData(numberPicker2,alertPickBean2);
     }
-    public static void showAlertPickDialog(Activity activity, final AlertPickBean alertPickBean, final AlertPickCallBack alertPickCallBack) {
+    public static void showAlertPickDialog(Activity activity, final AlertPickBean alertPickBean, final AlertPickCallBack2 alertPickCallBack) {
         final AlertDialog dialog = new AlertDialog.Builder(activity, R.style.dialog_alert).create();
         dialog.setCanceledOnTouchOutside(true);
         dialog.show();
@@ -124,11 +127,13 @@ public class AlertPickDialog {
         TextView sureTV = (TextView) dialog.findViewById(R.id.tv_sure);
         TextView cancelTV = (TextView) dialog.findViewById(R.id.tv_cancel);
         TextView titleTV = (TextView) dialog.findViewById(R.id.tv_title);
+        final Switch swView = (Switch) dialog.findViewById(R.id.action_item_switch);
+
         sureTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 alertPickCallBack.confirm(
-                        alertPickBean.getRangeKeys().get(numberPicker.getValue()));
+                        alertPickBean.getRangeKeys().get(numberPicker.getValue()),swView.isChecked());
                 dialog.cancel();
             }
         });
@@ -154,8 +159,8 @@ public class AlertPickDialog {
         numberPicker.setWrapSelectorWheel(alertPickBean.isLoop());
     }
 
-    public interface AlertPickCallBack {
-        void confirm(String value);
+    public interface AlertPickCallBack2 {
+        void confirm(String value,boolean sw);
 
         void cancel();
     }

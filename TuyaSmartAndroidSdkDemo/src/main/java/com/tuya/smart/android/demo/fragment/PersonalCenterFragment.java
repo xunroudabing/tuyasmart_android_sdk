@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.tuya.smart.android.demo.R;
 import com.tuya.smart.android.demo.activity.GroupListActivity;
 import com.tuya.smart.android.demo.activity.SharedActivity;
+import com.tuya.smart.android.demo.activity.ThirdEchoActivity;
 import com.tuya.smart.android.demo.presenter.PersonalCenterFragmentPresenter;
 import com.tuya.smart.android.demo.utils.ActivityUtils;
 import com.tuya.smart.android.demo.view.IPersonalCenterView;
@@ -84,6 +85,12 @@ public class PersonalCenterFragment extends BaseFragment implements IPersonalCen
                 ActivityUtils.gotoActivity(getActivity(), GroupListActivity.class, ActivityUtils.ANIMATE_SLIDE_TOP_FROM_BOTTOM, false);
             }
         });
+        mContentView.findViewById(R.id.rl_third).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gotoThirdEchoActivity();
+            }
+        });
         TypedArray a = getActivity().obtainStyledAttributes(new int[]{
                 R.attr.user_default_portrait});
         int portraitRes = a.getResourceId(0, -1);
@@ -96,7 +103,9 @@ public class PersonalCenterFragment extends BaseFragment implements IPersonalCen
     private void gotoShareActivity() {
         ActivityUtils.gotoActivity(getActivity(), SharedActivity.class, ActivityUtils.ANIMATE_FORWARD, false);
     }
-
+    private void gotoThirdEchoActivity(){
+        ActivityUtils.gotoActivity(getActivity(), ThirdEchoActivity.class, ActivityUtils.ANIMATE_FORWARD, false);
+    }
     private void gotoQuestionActivity() {
 
     }

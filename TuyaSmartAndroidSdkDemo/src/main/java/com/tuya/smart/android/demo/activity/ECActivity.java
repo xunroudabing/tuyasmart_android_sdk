@@ -4,6 +4,7 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
@@ -12,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.tuya.smart.android.demo.R;
+import com.tuya.smart.android.demo.config.CommonConfig;
 import com.tuya.smart.android.demo.presenter.ECPresenter;
 import com.tuya.smart.android.demo.view.IECView;
 import com.tuya.smart.sdk.TuyaSdk;
@@ -105,6 +107,10 @@ public class ECActivity extends BaseActivity implements IECView {
         mTvOtherWifi.setOnClickListener(mOnClickListener);
         findViewById(R.id.tv_bottom_button).setOnClickListener(mOnClickListener);
         m5gNetworkTip = findViewById(R.id.network_tip);
+        String password = CommonConfig.getWifiPassword(getApplicationContext());
+        if(!TextUtils.isEmpty(password)){
+            mPassword.setText(password);
+        }
     }
 
     private void initMenu() {

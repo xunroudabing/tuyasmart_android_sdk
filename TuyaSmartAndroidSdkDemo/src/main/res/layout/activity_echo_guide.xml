@@ -1,0 +1,397 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="?app_bg_color"
+    android:orientation="vertical">
+
+    <include
+        android:id="@id/action_bar_layout"
+        layout="@layout/toolbar_top_view" />
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+`
+            <android.support.v7.widget.CardView xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/cd_echo"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/mg_15"
+                android:layout_marginRight="@dimen/mg_15"
+                android:layout_marginTop="@dimen/mg_20"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="@dimen/mg_10"
+                app:cardPreventCornerOverlap="false"
+                app:cardUseCompatPadding="false">
+
+                <LinearLayout
+                    android:id="@+id/ll_echo_list"
+                    android:visibility="gone"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="290.0dip"
+                        android:layout_height="96.0dip"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="@dimen/mg_44"
+                        android:scaleType="center"
+                        android:src="@drawable/ty_icon_echo" />
+
+                    <TextView
+                        android:id="@+id/tv_echo_use"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginBottom="@dimen/mg_44"
+                        android:drawablePadding="@dimen/mg_6"
+                        android:drawableRight="@drawable/ty_more_grey"
+                        android:gravity="center"
+                        android:paddingBottom="@dimen/mg_8"
+                        android:paddingLeft="@dimen/mg_8"
+                        android:paddingRight="@dimen/mg_8"
+                        android:paddingTop="@dimen/mg_8"
+                        android:text="@string/echo_use_next"
+                        android:textColor="#cc303030"
+                        android:textSize="@dimen/ts_17"
+                        android:textStyle="bold" />
+
+                    <View style="@style/line_long" />
+
+                    <FrameLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:id="@+id/tv_echo_list_tip"
+                            android:layout_width="wrap_content"
+                            android:layout_height="@dimen/wh_34"
+                            android:layout_marginLeft="@dimen/mg_15"
+                            android:gravity="center"
+                            android:textColor="#99111111"
+                            android:textSize="@dimen/ts_12" />
+
+                        <TextView
+                            android:id="@+id/tv_echo_list_btn"
+                            android:layout_width="wrap_content"
+                            android:layout_height="@dimen/wh_34"
+                            android:layout_gravity="right"
+                            android:gravity="center"
+                            android:paddingLeft="@dimen/mg_15"
+                            android:paddingRight="@dimen/mg_15"
+                            android:text="@string/echo_use_unfold"
+                            android:textColor="#ff1887fb"
+                            android:textSize="@dimen/ts_12" />
+
+                        <TextView
+                            android:id="@+id/tv_echo_device_list"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="@dimen/mg_14"
+                            android:layout_marginLeft="@dimen/mg_15"
+                            android:layout_marginRight="@dimen/mg_15"
+                            android:layout_marginTop="@dimen/mg_36"
+                            android:textColor="#66111111"
+                            android:textSize="@dimen/ts_12"
+                            android:visibility="gone" />
+                    </FrameLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_echo_dev_list_empty"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="@dimen/mg_60"
+                        android:src="@drawable/ty_icon_echo" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="@dimen/mg_20"
+                        android:text="@string/echo_use_nodevice"
+                        android:textColor="#ff303030"
+                        android:textSize="@dimen/ts_16"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginBottom="@dimen/mg_32"
+                        android:layout_marginLeft="@dimen/mg_24"
+                        android:layout_marginRight="@dimen/mg_24"
+                        android:layout_marginTop="@dimen/mg_18"
+                        android:gravity="center"
+                        android:text="@string/echo_use_nodevice_describe"
+                        android:textColor="#99111111"
+                        android:textSize="@dimen/ts_14" />
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView xmlns:n3="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/cd_google_home"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/mg_15"
+                android:layout_marginRight="@dimen/mg_15"
+                android:layout_marginTop="@dimen/mg_6"
+                android:layout_marginBottom="@dimen/mg_6"
+                n3:cardBackgroundColor="@color/white"
+                n3:cardCornerRadius="@dimen/mg_10"
+                n3:cardPreventCornerOverlap="false"
+                n3:cardUseCompatPadding="false">
+
+                <LinearLayout
+                    android:id="@+id/ll_google_list"
+                    android:visibility="gone"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="290.0dip"
+                        android:layout_height="96.0dip"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="@dimen/mg_44"
+                        android:scaleType="center"
+                        android:src="@drawable/ty_icon_google" />
+
+                    <TextView
+                        android:id="@+id/tv_google_use"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginBottom="@dimen/mg_44"
+                        android:drawablePadding="@dimen/mg_6"
+                        android:drawableRight="@drawable/ty_more_grey"
+                        android:gravity="center"
+                        android:paddingBottom="@dimen/mg_8"
+                        android:paddingLeft="@dimen/mg_8"
+                        android:paddingRight="@dimen/mg_8"
+                        android:paddingTop="@dimen/mg_8"
+                        android:text="@string/echo_use_next"
+                        android:textColor="#cc303030"
+                        android:textSize="@dimen/ts_17"
+                        android:textStyle="bold" />
+
+                    <View style="@style/line_long" />
+
+                    <FrameLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:id="@+id/tv_google_list_tip"
+                            android:layout_width="wrap_content"
+                            android:layout_height="@dimen/wh_34"
+                            android:layout_marginLeft="@dimen/mg_15"
+                            android:gravity="center"
+                            android:textColor="#99111111"
+                            android:textSize="@dimen/ts_12" />
+
+                        <TextView
+                            android:id="@+id/tv_google_list_btn"
+                            android:layout_width="wrap_content"
+                            android:layout_height="@dimen/wh_34"
+                            android:layout_gravity="right"
+                            android:gravity="center"
+                            android:paddingLeft="@dimen/mg_15"
+                            android:paddingRight="@dimen/mg_15"
+                            android:text="@string/echo_use_unfold"
+                            android:textColor="#ff1887fb"
+                            android:textSize="@dimen/ts_12" />
+
+                        <TextView
+                            android:id="@+id/tv_google_dev_list"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="@dimen/mg_14"
+                            android:layout_marginLeft="@dimen/mg_15"
+                            android:layout_marginRight="@dimen/mg_15"
+                            android:layout_marginTop="@dimen/mg_36"
+                            android:textColor="#66111111"
+                            android:textSize="@dimen/ts_12"
+                            android:visibility="gone" />
+                    </FrameLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_google_list_empty"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="@dimen/mg_60"
+                        android:src="@drawable/ty_icon_google" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="@dimen/mg_20"
+                        android:text="@string/googlehome_use_noenquipment"
+                        android:textColor="#ff303030"
+                        android:textSize="@dimen/ts_16"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginBottom="@dimen/mg_32"
+                        android:layout_marginLeft="@dimen/mg_24"
+                        android:layout_marginRight="@dimen/mg_24"
+                        android:layout_marginTop="@dimen/mg_18"
+                        android:gravity="center"
+                        android:text="@string/googlehome_use_no"
+                        android:textColor="#99111111"
+                        android:textSize="@dimen/ts_14" />
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
+
+            <!--<android.support.v7.widget.CardView xmlns:n4="http://schemas.android.com/apk/res-auto"-->
+                <!--android:id="@+id/cd_ifttt"-->
+                <!--android:layout_width="fill_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_marginBottom="@dimen/mg_20"-->
+                <!--android:layout_marginLeft="@dimen/mg_15"-->
+                <!--android:layout_marginRight="@dimen/mg_15"-->
+                <!--android:layout_marginTop="@dimen/mg_6"-->
+                <!--n4:cardBackgroundColor="@color/white"-->
+                <!--n4:cardCornerRadius="@dimen/mg_10"-->
+                <!--n4:cardPreventCornerOverlap="false"-->
+                <!--n4:cardUseCompatPadding="false">-->
+
+                <!--<LinearLayout-->
+                    <!--android:id="@+id/ll_ifttt_list"-->
+                    <!--android:visibility="gone"-->
+                    <!--android:layout_width="fill_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:orientation="vertical">-->
+
+                    <!--<ImageView-->
+                        <!--android:layout_width="290.0dip"-->
+                        <!--android:layout_height="96.0dip"-->
+                        <!--android:layout_gravity="center_horizontal"-->
+                        <!--android:layout_marginTop="@dimen/mg_44"-->
+                        <!--android:scaleType="center"-->
+                        <!--android:src="@drawable/ty_icon_ifttt" />-->
+
+                    <!--<TextView-->
+                        <!--android:id="@+id/tv_ifttt_use"-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_gravity="center_horizontal"-->
+                        <!--android:layout_marginBottom="@dimen/mg_44"-->
+                        <!--android:drawablePadding="@dimen/mg_6"-->
+                        <!--android:drawableRight="@drawable/ty_more_grey"-->
+                        <!--android:gravity="center"-->
+                        <!--android:paddingBottom="@dimen/mg_8"-->
+                        <!--android:paddingLeft="@dimen/mg_8"-->
+                        <!--android:paddingRight="@dimen/mg_8"-->
+                        <!--android:paddingTop="@dimen/mg_8"-->
+                        <!--android:text="@string/echo_use_next"-->
+                        <!--android:textColor="#cc303030"-->
+                        <!--android:textSize="@dimen/ts_17"-->
+                        <!--android:textStyle="bold" />-->
+
+                    <!--<View style="@style/line_long" />-->
+
+                    <!--<FrameLayout-->
+                        <!--android:layout_width="fill_parent"-->
+                        <!--android:layout_height="wrap_content">-->
+
+                        <!--<TextView-->
+                            <!--android:id="@+id/tv_ifttt_list_tip"-->
+                            <!--android:layout_width="wrap_content"-->
+                            <!--android:layout_height="@dimen/wh_34"-->
+                            <!--android:layout_marginLeft="@dimen/mg_15"-->
+                            <!--android:gravity="center"-->
+                            <!--android:textColor="#99111111"-->
+                            <!--android:textSize="@dimen/ts_12" />-->
+
+                        <!--<TextView-->
+                            <!--android:id="@+id/tv_ifttt_list_btn"-->
+                            <!--android:layout_width="wrap_content"-->
+                            <!--android:layout_height="@dimen/wh_34"-->
+                            <!--android:layout_gravity="right"-->
+                            <!--android:gravity="center"-->
+                            <!--android:paddingLeft="@dimen/mg_15"-->
+                            <!--android:paddingRight="@dimen/mg_15"-->
+                            <!--android:text="@string/echo_use_unfold"-->
+                            <!--android:textColor="#ff1887fb"-->
+                            <!--android:textSize="@dimen/ts_12" />-->
+
+                        <!--<TextView-->
+                            <!--android:id="@+id/tv_ifttt_dev_list"-->
+                            <!--android:layout_width="wrap_content"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:layout_marginBottom="@dimen/mg_14"-->
+                            <!--android:layout_marginLeft="@dimen/mg_15"-->
+                            <!--android:layout_marginRight="@dimen/mg_15"-->
+                            <!--android:layout_marginTop="@dimen/mg_36"-->
+                            <!--android:textColor="#66111111"-->
+                            <!--android:textSize="@dimen/ts_12"-->
+                            <!--android:visibility="gone" />-->
+                    <!--</FrameLayout>-->
+                <!--</LinearLayout>-->
+
+                <!--<LinearLayout-->
+                    <!--android:id="@+id/ll_ifttt_list_empty"-->
+                    <!--android:layout_width="fill_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:orientation="vertical">-->
+
+                    <!--<ImageView-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_gravity="center_horizontal"-->
+                        <!--android:layout_marginTop="@dimen/mg_60"-->
+                        <!--android:src="@drawable/ty_icon_ifttt" />-->
+
+                    <!--<TextView-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_gravity="center_horizontal"-->
+                        <!--android:layout_marginTop="@dimen/mg_20"-->
+                        <!--android:text="@string/ifttt_use_noenquipment"-->
+                        <!--android:textColor="#ff303030"-->
+                        <!--android:textSize="@dimen/ts_16"-->
+                        <!--android:textStyle="bold" />-->
+
+                    <!--<TextView-->
+                        <!--android:layout_width="fill_parent"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_gravity="center_horizontal"-->
+                        <!--android:layout_marginBottom="@dimen/mg_32"-->
+                        <!--android:layout_marginLeft="@dimen/mg_24"-->
+                        <!--android:layout_marginRight="@dimen/mg_24"-->
+                        <!--android:layout_marginTop="@dimen/mg_18"-->
+                        <!--android:gravity="center"-->
+                        <!--android:text="@string/ifttt_use_nodevice_describe"-->
+                        <!--android:textColor="#99111111"-->
+                        <!--android:textSize="@dimen/ts_14" />-->
+                <!--</LinearLayout>-->
+            <!--</android.support.v7.widget.CardView>-->
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

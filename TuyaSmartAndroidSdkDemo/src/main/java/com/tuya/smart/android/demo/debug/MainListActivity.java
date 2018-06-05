@@ -8,6 +8,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 
+import com.tuya.smart.android.demo.activity.AddTimerDayActivity;
 import com.tuya.smart.android.demo.activity.DeviceColorPickActivity;
 import com.tuya.smart.android.demo.activity.DeviceModePickActivity;
 
@@ -16,8 +17,8 @@ import com.tuya.smart.android.demo.activity.DeviceModePickActivity;
  */
 
 public class MainListActivity extends ListActivity {
-    static final String[] NAMES = {"DeviceModePickActivity","DeviceColorPickActivity"};
-    static final Class<?>[] CLASS = {DeviceModePickActivity.class, DeviceColorPickActivity.class};
+    static final String[] NAMES = {"DeviceModePickActivity","DeviceColorPickActivity","HoloColorPickerActivity","AddTimerDayActivity"};
+    static final Class<?>[] CLASS = {DeviceModePickActivity.class, DeviceColorPickActivity.class,HoloColorPickerActivity.class, AddTimerDayActivity.class};
     static final String TAG = MainListActivity.class.getSimpleName();
     BaseAdapter adapter;
 

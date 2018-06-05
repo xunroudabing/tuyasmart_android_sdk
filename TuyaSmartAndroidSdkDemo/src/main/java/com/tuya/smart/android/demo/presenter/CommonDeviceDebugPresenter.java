@@ -225,18 +225,18 @@ public class CommonDeviceDebugPresenter extends BasePresenter implements IDevLis
         alertPickBean.setRangeKeys(rangesKey);
         alertPickBean.setRangeValues(rangesValue);
         alertPickBean.setTitle(String.format(mContext.getString(R.string.choose_dp_value), schemaBean.getId()));
-        AlertPickDialog.showAlertPickDialog((Activity) mContext, alertPickBean, new AlertPickDialog.AlertPickCallBack() {
-            @Override
-            public void confirm(String value) {
-                String dpId = schemaBean.getId();
-                sendCommand(dpId, value);
-            }
-
-            @Override
-            public void cancel() {
-
-            }
-        });
+//        AlertPickDialog.showAlertPickDialog((Activity) mContext, alertPickBean, new AlertPickDialog.AlertPickCallBack() {
+//            @Override
+//            public void confirm(String value) {
+//                String dpId = schemaBean.getId();
+//                sendCommand(dpId, value);
+//            }
+//
+//            @Override
+//            public void cancel() {
+//
+//            }
+//        });
     }
 
     @Override

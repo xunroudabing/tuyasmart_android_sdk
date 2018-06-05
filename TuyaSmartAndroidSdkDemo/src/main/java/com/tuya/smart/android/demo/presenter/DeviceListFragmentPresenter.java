@@ -14,6 +14,7 @@ import com.tuya.smart.android.demo.activity.DeviceColorPickActivity;
 import com.tuya.smart.android.demo.activity.SelectDeviceTypeActivity;
 import com.tuya.smart.android.demo.activity.SharedActivity;
 import com.tuya.smart.android.demo.activity.SwitchActivity;
+import com.tuya.smart.android.demo.bean.DeviceAndGroupBean;
 import com.tuya.smart.android.demo.config.CommonConfig;
 import com.tuya.smart.android.demo.fragment.DeviceListFragment;
 import com.tuya.smart.android.demo.test.utils.DialogUtil;
@@ -29,8 +30,10 @@ import com.tuya.smart.sdk.TuyaUser;
 import com.tuya.smart.sdk.api.IRequestCallback;
 import com.tuya.smart.sdk.api.ITuyaListChangedListener;
 import com.tuya.smart.sdk.bean.DeviceBean;
+import com.tuya.smart.sdk.bean.GroupBean;
 import com.tuya.smart.sdk.bean.TuyaListBean;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -57,8 +60,8 @@ public class DeviceListFragmentPresenter extends BasePresenter implements NetWor
     }
 
 
-    private void showDevIsNotOnlineTip(final DeviceBean deviceBean) {
-        final boolean isShared = deviceBean.isShare;
+    private void showDevIsNotOnlineTip(final DeviceAndGroupBean deviceBean) {
+        final boolean isShared = deviceBean.getIsShare();
         DialogUtil.customDialog(mActivity, mActivity.getString(R.string.title_device_offline),
                 mActivity.getString(R.string.content_device_offline),
                 mActivity.getString(isShared ? R.string.ty_offline_delete_share : R.string
@@ -108,7 +111,7 @@ public class DeviceListFragmentPresenter extends BasePresenter implements NetWor
 
     }
 
-    protected void onItemClick(DeviceBean devBean) {
+    protected void onItemClick(DeviceAndGroupBean devBean) {
         if (devBean == null) {
             ToastUtil.showToast(mActivity, R.string.no_device_found);
             return;
@@ -123,12 +126,22 @@ public class DeviceListFragmentPresenter extends BasePresenter implements NetWor
 
     }
 
-    private void gotoDeviceCommonActivity(DeviceBean devBean) {
+    private void gotoDeviceCommonActivity(DeviceAndGroupBean devBean) {
+        boolean isGroup = false;
+        if (devBean.type == 1) {
+            isGroup = false;
+        } else if (devBean.type == 2) {
+            isGroup = true;
+        }
         //跳转至控制界面
         Intent intent = new Intent(mActivity, DeviceColorPickActivity.class);
         intent.putExtra(DeviceColorPickActivity.INTNET_TITLE, devBean.getName());
         intent.putExtra(DeviceColorPickActivity.INTENT_DEVID, devBean.getDevId());
         intent.putExtra(DeviceColorPickActivity.INTENT_PRODUCTID, devBean.getProductId());
+        intent.putExtra(DeviceColorPickActivity.INTENT_ISGROUP, isGroup);
+        if(isGroup){
+            intent.putExtra(DeviceColorPickActivity.INTENT_GROUPID,devBean.group.getId());
+        }
         mActivity.startActivity(intent);
 //        Intent intent = new Intent(mActivity, DeviceCommonActivity.class);
 //        intent.putExtra(DeviceCommonPresenter.INTENT_DEVID, devBean.getDevId());
@@ -154,7 +167,7 @@ public class DeviceListFragmentPresenter extends BasePresenter implements NetWor
     public void addDevice() {
         final WifiManager mWifiManager = (WifiManager) mActivity.getApplicationContext()
                 .getSystemService(Context
-                .WIFI_SERVICE);
+                        .WIFI_SERVICE);
         if (!mWifiManager.isWifiEnabled()) {
             DialogUtil.simpleConfirmDialog(mActivity, mActivity.getString(R.string.open_wifi),
                     new DialogInterface.OnClickListener() {
@@ -174,7 +187,7 @@ public class DeviceListFragmentPresenter extends BasePresenter implements NetWor
     }
 
 
-    public void onDeviceClick(DeviceBean deviceBean) {
+    public void onDeviceClick(DeviceAndGroupBean deviceBean) {
         if (!deviceBean.getIsOnline()) {
             showDevIsNotOnlineTip(deviceBean);
             return;
@@ -182,7 +195,7 @@ public class DeviceListFragmentPresenter extends BasePresenter implements NetWor
         onItemClick(deviceBean);
     }
 
-    public boolean onDeviceLongClick(final DeviceBean deviceBean) {
+    public boolean onDeviceLongClick(final DeviceAndGroupBean deviceBean) {
         if (deviceBean.getIsShare()) {
             return false;
         }
@@ -192,7 +205,9 @@ public class DeviceListFragmentPresenter extends BasePresenter implements NetWor
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (which == DialogInterface.BUTTON_POSITIVE) {
-                    unBindDevice(deviceBean);
+                    if (deviceBean.type == 1) {
+                        unBindDevice(deviceBean);
+                    }
                 }
             }
         });
@@ -202,7 +217,7 @@ public class DeviceListFragmentPresenter extends BasePresenter implements NetWor
     /**
      * 移除网关
      */
-    private void unBindDevice(final DeviceBean deviceBean) {
+    private void unBindDevice(final DeviceAndGroupBean deviceBean) {
         ProgressUtil.showLoading(mActivity, R.string.loading);
         new TuyaDevice(deviceBean.getDevId()).removeDevice(new IControlCallback() {
             @Override
@@ -219,7 +234,7 @@ public class DeviceListFragmentPresenter extends BasePresenter implements NetWor
 
     }
 
-    private void updateDeviceData(List<DeviceBean> list) {
+    private void updateDeviceData(List<DeviceAndGroupBean> list) {
         if (list.size() == 0) {
             mView.showBackgroundView();
         } else {
@@ -231,7 +246,28 @@ public class DeviceListFragmentPresenter extends BasePresenter implements NetWor
 
 
     private void updateLocalData() {
-        updateDeviceData(TuyaUser.getDeviceInstance().getDevList());
+        //updateDeviceData(TuyaUser.getDeviceInstance().getDevList());
+        //调试信息
+        List<GroupBean> grouplist = TuyaUser.getDeviceInstance().getGroupList();
+        List<DeviceBean> devicelist = TuyaUser.getDeviceInstance().getDevList();
+        List<DeviceAndGroupBean> mixlist = new ArrayList<>();
+        if (devicelist != null) {
+            for (DeviceBean bean : devicelist) {
+                DeviceAndGroupBean item = new DeviceAndGroupBean();
+                item.device = bean;
+                item.type = 1;
+                mixlist.add(item);
+            }
+        }
+        if (grouplist != null) {
+            for (GroupBean bean : grouplist) {
+                DeviceAndGroupBean item = new DeviceAndGroupBean();
+                item.group = bean;
+                item.type = 2;
+                mixlist.add(item);
+            }
+        }
+        updateDeviceData(mixlist);
     }
 
 

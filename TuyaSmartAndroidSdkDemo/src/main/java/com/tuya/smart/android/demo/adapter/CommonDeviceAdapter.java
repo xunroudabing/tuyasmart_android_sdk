@@ -142,18 +142,24 @@ public class CommonDeviceAdapter extends BaseAdapter {
                 Map<String, Object> dps = deviceBean.getDps();
                 final int value_light = (int) dps.get("3");
                 final int value_temp = (int) dps.get("4");
+                final boolean on = (boolean) dps.get("1");
+                int switch_resid = R.drawable.ty_device_power_on;
+                if(!on){
+                    switch_resid =R.drawable.ty_device_power_off;
+                }
                 int per_light = value_light * 100 / 255;
                 int per_temp = value_temp * 100 / 255;
                 txtLight.setText(String.valueOf(per_light) + "%");
                 txtTemp.setText(String.valueOf(per_temp) + "%");
                 connect.setImageResource(resId);
                 device.setText(deviceBean.getName());
+                btnOff.setImageResource(switch_resid);
                 btnOffLayout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         try {
                             Map<String, Object> map_dp = TuyaUser.getDeviceInstance().getDev(deviceBean.getDevId()).getDps();
-                            boolean b = (boolean) map_dp.get("1");
+                            final boolean b = (boolean) map_dp.get("1");
                             Map<String, Object> map = new HashMap<>();
                             map.put("1", !b);
                             String json = JSONObject.toJSONString(map);
@@ -167,7 +173,11 @@ public class CommonDeviceAdapter extends BaseAdapter {
 
                                 @Override
                                 public void onSuccess() {
-
+                                    int switch_resid = R.drawable.ty_device_power_on;
+                                    if(!b){
+                                        switch_resid = R.drawable.ty_device_power_off;
+                                    }
+                                    btnOff.setImageResource(switch_resid);
                                 }
                             });
                         }catch (Exception ex){
@@ -180,9 +190,9 @@ public class CommonDeviceAdapter extends BaseAdapter {
                     public void onClick(View v) {
                         AlertPickDialog.showSeekBarPickDialog((Activity) contentView.getContext()
                                 , value_light,
-                                new AlertPickDialog.AlertPickCallBack() {
+                                new AlertPickDialog.AlertPickCallBack2() {
                                     @Override
-                                    public void confirm(String value) {
+                                    public void confirm(String value,boolean sw) {
                                         Log.d("CommonDevice", "confirm:" + value);
                                         if (!deviceBean.getIsOnline()) {
                                             return;
@@ -228,9 +238,9 @@ public class CommonDeviceAdapter extends BaseAdapter {
                     @Override
                     public void onClick(View v) {
                         AlertPickDialog.showSeekBarPickDialog((Activity) contentView.getContext(),value_temp,
-                                new AlertPickDialog.AlertPickCallBack() {
+                                new AlertPickDialog.AlertPickCallBack2() {
                                     @Override
-                                    public void confirm(String value) {
+                                    public void confirm(String value,boolean sw) {
                                         try {
                                             Log.d("CommonDeviceAdapter", "confirm:" + value);
                                             if (!deviceBean.getIsOnline()) {

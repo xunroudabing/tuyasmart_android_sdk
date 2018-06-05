@@ -45,10 +45,37 @@
                     android:src="@mipmap/ic_modepick_center"
                     android:tag="startbtn" />
             </com.tuya.smart.android.demo.widget.mode.PanContainer>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <ImageButton
+                    android:id="@+id/device_mode_btnSpeedDown"
+                    android:background="@null"
+                    android:src="@drawable/btn_speed_minus"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginLeft="35dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
 
+                <ImageButton
+                    android:id="@+id/device_mode_btnSpeedUp"
+                    android:background="@null"
+                    android:src="@drawable/btn_speed_plus"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="35dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </RelativeLayout>
+            <ImageButton
+                android:id="@+id/device_mode_btnMusic"
+                android:background="@null"
+                android:src="@drawable/btn_music_selector"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:orientation="vertical"
                 android:paddingLeft="20dp"
                 android:paddingRight="20dp">
@@ -98,6 +125,7 @@
                 android:orientation="horizontal"
                 android:gravity="center"
                 android:layout_marginTop="15dp"
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <ImageButton

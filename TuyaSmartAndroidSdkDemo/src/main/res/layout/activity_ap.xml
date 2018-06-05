@@ -19,7 +19,7 @@
         android:id="@+id/et_password"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:text="20112012pw"/>
+        android:text=""/>
 
     <Button
         android:id="@+id/btn_config_now"

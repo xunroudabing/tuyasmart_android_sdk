@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:gravity="center"
+    android:background="@color/white"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:orientation="vertical">
@@ -14,6 +16,15 @@
         android:textColor="@color/bottom_dialog_title_color"
         android:textSize="@dimen/ts_11"></TextView>
 
+    <Switch
+        android:id="@+id/action_item_switch"
+        android:thumb="@drawable/selector_thumb"
+        android:track="@drawable/selector_track"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_color"
+        android:textOff="关"
+        android:textOn="开" />
     <View style="@style/line_long"></View>
 
     <RelativeLayout

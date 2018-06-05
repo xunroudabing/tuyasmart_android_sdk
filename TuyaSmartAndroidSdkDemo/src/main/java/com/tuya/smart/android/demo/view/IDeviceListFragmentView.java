@@ -1,5 +1,6 @@
 package com.tuya.smart.android.demo.view;
 
+import com.tuya.smart.android.demo.bean.DeviceAndGroupBean;
 import com.tuya.smart.sdk.bean.DeviceBean;
 
 import java.util.List;
@@ -9,7 +10,7 @@ import java.util.List;
  */
 public interface IDeviceListFragmentView {
     //返回当前所有设备数量 用于判断是否显示空列表提示
-    void updateDeviceData(List<DeviceBean> myDevices);
+    void updateDeviceData(List<DeviceAndGroupBean> myDevices);
 
     void loadStart();
 

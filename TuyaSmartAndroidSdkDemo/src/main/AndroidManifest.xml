@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.tuya.smart.android.demo">
 
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <!-- sdcard -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -29,24 +30,24 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme"
         tools:replace="android:allowBackup">
-        <!-- 百度定位-->
+
+        <!-- 百度定位 -->
         <!-- 声明service组件 -->
         <service
             android:name="com.baidu.location.f"
             android:enabled="true"
-            android:process=":remote" >
-        </service>
+            android:process=":remote"></service>
         <!-- AK鉴权 -->
         <!-- meta-data需要写在application中 -->
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
-            android:value="ykMspwGaXrzGrRo6ZGCmVLIayTsBAhvZ" />  <!-- http://lbsyun.baidu.com/apiconsole/key -->
+            android:value="ykMspwGaXrzGrRo6ZGCmVLIayTsBAhvZ" /> <!-- http://lbsyun.baidu.com/apiconsole/key -->
         <meta-data
             android:name="TUYA_SMART_APPKEY"
-            android:value="t7ffkght83733gnxem95" />
+            android:value="8ss57as59kaj9sghjqcq" />
         <meta-data
             android:name="TUYA_SMART_SECRET"
-            android:value="ecctp8htv4vukdyynqk5js3p8gwghv58" />
+            android:value="ejhpgschncm755kq5d77kg8ddrnffryw" />
 
         <service android:name="org.eclipse.paho.android.service.MqttService" />
         <service android:name="com.tuya.smart.android.hardware.service.DevTransferService" />
@@ -232,14 +233,28 @@
         <activity
             android:name=".activity.DeviceColorPickActivity"
             android:theme="@style/Splash.Theme" />
-        <activity android:name=".activity.DeviceModePickActivity" android:theme="@style/Splash.Theme"></activity>
-        <activity android:name=".activity.AddTaskActivity" android:theme="@style/Splash.Theme"></activity>
-        <activity android:name=".activity.TaskDetailActivity" android:theme="@style/Splash.Theme"></activity>
-        <activity android:name=".activity.TaskSecondDetailActivity" android:theme="@style/Splash.Theme"></activity>
-        <activity android:name=".activity.AddGroupActivity" android:theme="@style/Splash.Theme"></activity>
-        <activity android:name=".debug.MainListActivity">
-
+        <activity
+            android:name=".activity.DeviceModePickActivity"
+            android:theme="@style/Splash.Theme" />
+        <activity
+            android:name=".activity.AddTaskActivity"
+            android:theme="@style/Splash.Theme" />
+        <activity
+            android:name=".activity.TaskDetailActivity"
+            android:theme="@style/Splash.Theme" />
+        <activity
+            android:name=".activity.TaskSecondDetailActivity"
+            android:theme="@style/Splash.Theme" />
+        <activity
+            android:name=".activity.AddGroupActivity"
+            android:theme="@style/Splash.Theme" />
+        <activity android:name=".activity.AddTimerActivity" android:theme="@style/Splash.Theme">
         </activity>
+        <activity android:name=".activity.ThirdEchoActivity" android:theme="@style/Splash.Theme"></activity>
+        <activity android:name=".activity.AddTimerDayActivity" android:theme="@style/Splash.Theme"></activity>
+        <activity android:name=".debug.MainListActivity">
+        </activity>
+        <activity android:name=".debug.HoloColorPickerActivity"></activity>
     </application>
 
 </manifest>

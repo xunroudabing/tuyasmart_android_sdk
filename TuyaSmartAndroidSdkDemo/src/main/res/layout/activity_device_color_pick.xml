@@ -16,16 +16,23 @@
         android:layout_height="wrap_content">
 
         <LinearLayout
+            android:padding="0dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <RelativeLayout
+                android:padding="0dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-
+                <com.larswerkman.holocolorpicker.ColorPicker
+                    android:id="@+id/holo_colorpicker"
+                    android:layout_centerHorizontal="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
                 <colorpickerview.oden.com.colorpicker.ColorPickerView
                     android:id="@+id/color_picker"
+                    android:visibility="gone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
@@ -47,8 +54,9 @@
                     android:layout_centerHorizontal="true"
                     android:layout_centerVertical="true"
                     android:text="W"
+                    android:textStyle="bold"
                     android:textColor="@color/textColor"
-                    android:textSize="@dimen/ts_24" />
+                    android:textSize="@dimen/ts_44" />
             </RelativeLayout>
 
             <LinearLayout
@@ -58,20 +66,35 @@
                 android:paddingLeft="20dp"
                 android:paddingRight="20dp">
 
+                <LinearLayout
+                    android:id="@+id/device_color_layoutLight"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
                 <TextView
+                    android:visibility="gone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
-                    android:layout_marginTop="10dp"
                     android:text="@string/seekbar_1"
                     android:textColor="@color/textColor"
                     android:textSize="@dimen/ts_12"
                     tools:text="@string/seekbar_1" />
                 <!-- 调光-->
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <ImageView
+                        android:src="@drawable/ic_seek_temp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
                 <SeekBar
                     android:id="@+id/device_color_seekbarLight"
                     android:max="230"
                     android:progress="0"
+                    android:layout_weight="1.0"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:maxHeight="15dp"
@@ -79,7 +102,23 @@
                     android:splitTrack="false"
                     android:thumb="@drawable/progress_thumb" />
 
+                    <TextView
+                        android:id="@+id/device_color_txtLightPercent"
+                        tools:text="90%"
+                        android:textColor="@color/textColor"
+                        android:textSize="@dimen/ts_14"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/device_color_layoutTemp"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
                 <TextView
+                    android:visibility="gone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
@@ -88,10 +127,20 @@
                     android:textColor="@color/textColor"
                     android:textSize="@dimen/ts_12"
                     tools:text="@string/seekbar_1" />
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <ImageView
+                        android:src="@drawable/ic_seek_light"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
                 <!-- 色温-->
                 <SeekBar
                     android:id="@+id/device_color_seekbarTemp"
                     android:max="255"
+                    android:layout_weight="1.0"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:maxHeight="15dp"
@@ -99,7 +148,23 @@
                     android:splitTrack="false"
                     android:thumb="@drawable/progress_thumb" />
 
+                    <TextView
+                        android:id="@+id/device_color_txtTempPercent"
+                        tools:text="90%"
+                        android:textColor="@color/textColor"
+                        android:textSize="@dimen/ts_14"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/device_color_layoutSu"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
                 <TextView
+                    android:visibility="gone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
@@ -108,18 +173,38 @@
                     android:textColor="@color/textColor"
                     android:textSize="@dimen/ts_12"
                     tools:text="@string/seekbar_1" />
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <ImageView
+                        android:src="@drawable/ic_seek_su"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
                 <!-- 素艳-->
                 <SeekBar
                     android:id="@+id/device_color_seekbarSu"
+                    android:layout_weight="1.0"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:maxHeight="15dp"
                     android:progressDrawable="@drawable/progress_drawable"
                     android:splitTrack="false"
-                    android:max="255"
+                    android:max="100"
                     android:thumb="@drawable/progress_thumb" />
-            </LinearLayout>
 
+                    <TextView
+                        android:id="@+id/device_color_txtSuPercent"
+                        tools:text="90%"
+                        android:textColor="@color/textColor"
+                        android:textSize="@dimen/ts_14"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+            </LinearLayout>
+            </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -116,7 +116,7 @@
     <dimen name="wh_6">6dp</dimen>
     <dimen name="wh_4">4dp</dimen>
     <dimen name="wh_2">2dp</dimen>
-
+    <dimen name="wh_34">34.0dip</dimen>
     <dimen name="edit_height">44dp</dimen>
 
     <dimen name="dialog_text_size">16sp</dimen>

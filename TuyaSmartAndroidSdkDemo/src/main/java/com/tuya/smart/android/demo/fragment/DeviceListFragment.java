@@ -17,6 +17,8 @@ import com.tuya.smart.android.common.utils.NetworkUtil;
 import com.tuya.smart.android.demo.R;
 import com.tuya.smart.android.demo.activity.BaseActivity;
 import com.tuya.smart.android.demo.adapter.CommonDeviceAdapter;
+import com.tuya.smart.android.demo.adapter.CommonGroupAndDeviceAdapter;
+import com.tuya.smart.android.demo.bean.DeviceAndGroupBean;
 import com.tuya.smart.android.demo.presenter.DeviceListFragmentPresenter;
 import com.tuya.smart.android.demo.utils.AnimationUtil;
 import com.tuya.smart.android.demo.view.IDeviceListFragmentView;
@@ -33,7 +35,7 @@ public class DeviceListFragment extends BaseFragment implements IDeviceListFragm
     private View mContentView;
     private DeviceListFragmentPresenter mDeviceListFragmentPresenter;
     private SwipeRefreshLayout mSwipeRefreshLayout;
-    private CommonDeviceAdapter mCommonDeviceAdapter;
+    private CommonGroupAndDeviceAdapter mCommonDeviceAdapter;
     private ListView mDevListView;
     private TextView mNetWorkTip;
     private View mRlView;
@@ -87,24 +89,24 @@ public class DeviceListFragment extends BaseFragment implements IDeviceListFragm
     }
 
     private void initAdapter() {
-        mCommonDeviceAdapter = new CommonDeviceAdapter(getActivity());
+        mCommonDeviceAdapter = new CommonGroupAndDeviceAdapter(getActivity());
         mDevListView.setAdapter(mCommonDeviceAdapter);
         mDevListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                return mDeviceListFragmentPresenter.onDeviceLongClick((DeviceBean) parent.getAdapter().getItem(position));
+                return mDeviceListFragmentPresenter.onDeviceLongClick((DeviceAndGroupBean) parent.getAdapter().getItem(position));
             }
         });
         mDevListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mDeviceListFragmentPresenter.onDeviceClick((DeviceBean) parent.getAdapter().getItem(position));
+                mDeviceListFragmentPresenter.onDeviceClick((DeviceAndGroupBean) parent.getAdapter().getItem(position));
             }
         });
     }
 
     @Override
-    public void updateDeviceData(List<DeviceBean> myDevices) {
+    public void updateDeviceData(List<DeviceAndGroupBean> myDevices) {
         if (mCommonDeviceAdapter != null) {
             mCommonDeviceAdapter.setData(myDevices);
         }

@@ -87,17 +87,17 @@ public class EditDpTestPresenter extends BasePresenter {
         alertPickBean.setRangeKeys(rangesKey);
         alertPickBean.setRangeValues(rangesValue);
         alertPickBean.setTitle(mContext.getString(R.string.choose_dp));
-        AlertPickDialog.showAlertPickDialog((Activity) mContext, alertPickBean, new AlertPickDialog.AlertPickCallBack() {
-            @Override
-            public void confirm(String value) {
-                switchDpDialog(value);
-            }
-
-            @Override
-            public void cancel() {
-
-            }
-        });
+//        AlertPickDialog.showAlertPickDialog((Activity) mContext, alertPickBean, new AlertPickDialog.AlertPickCallBack() {
+//            @Override
+//            public void confirm(String value) {
+//                switchDpDialog(value);
+//            }
+//
+//            @Override
+//            public void cancel() {
+//
+//            }
+//        });
     }
 
     private void switchDpDialog(String dpId) {
@@ -139,9 +139,9 @@ public class EditDpTestPresenter extends BasePresenter {
         alertPickBean.setRangeKeys(rangesKey);
         alertPickBean.setRangeValues(rangesValue);
         alertPickBean.setTitle(String.format(mContext.getString(R.string.choose_dp_value), schemaBean.getId()));
-        AlertPickDialog.showAlertPickDialog((Activity) mContext, alertPickBean, new AlertPickDialog.AlertPickCallBack() {
+        AlertPickDialog.showAlertPickDialog((Activity) mContext, alertPickBean, new AlertPickDialog.AlertPickCallBack2() {
             @Override
-            public void confirm(String value) {
+            public void confirm(String value,boolean sw) {
                 String dpId = schemaBean.getId();
                 log(dpId, value);
             }

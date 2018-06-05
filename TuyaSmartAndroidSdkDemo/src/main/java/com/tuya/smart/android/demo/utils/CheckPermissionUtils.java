@@ -125,6 +125,9 @@ public class CheckPermissionUtils {
         if (!addPermission(permissionsList, Manifest.permission.CAMERA)) {
             permissionsNeeded.add("CAMERA");
         }
+        if (!addPermission(permissionsList, Manifest.permission.RECORD_AUDIO)) {
+            permissionsNeeded.add("RECORD_AUDIO");
+        }
         if (permissionsList.size() > 0) {
             if (permissionsNeeded.size() > 0) {
                 // Need Rationale

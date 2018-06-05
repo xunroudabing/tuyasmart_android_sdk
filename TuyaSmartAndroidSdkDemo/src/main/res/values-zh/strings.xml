@@ -14,8 +14,8 @@
     <string name="device_state">设备状态：</string>
     <string name="action_settings">设置</string>
     <!-- add by hanzheng-->
-    <string name="title_choose_timer">定时关闭</string>
-    <string name="title_choose_delay">延时关闭</string>
+    <string name="title_choose_timer">定时</string>
+    <string name="title_choose_delay">延时</string>
     <string name="alert_colorisnull">请选择一个颜色</string>
     <string name="seekbar_1">调光</string>
     <string name="seekbar_2">色温</string>

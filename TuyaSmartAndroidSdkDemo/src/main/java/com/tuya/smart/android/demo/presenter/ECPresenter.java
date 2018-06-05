@@ -16,6 +16,7 @@ import com.tuya.smart.android.common.utils.NetworkUtil;
 import com.tuya.smart.android.demo.R;
 import com.tuya.smart.android.demo.activity.ECActivity;
 import com.tuya.smart.android.demo.activity.ECBindActivity;
+import com.tuya.smart.android.demo.config.CommonConfig;
 import com.tuya.smart.android.demo.test.utils.DialogUtil;
 import com.tuya.smart.android.demo.utils.ActivityUtils;
 import com.tuya.smart.android.demo.utils.ToastUtil;
@@ -81,7 +82,8 @@ public class ECPresenter extends BasePresenter {
             ToastUtil.showToast(mActivity, R.string.connect_phone_to_network);
         } else {
             //对密码进行加密处理
-
+            //保存密码
+            CommonConfig.setWifiPassword(mActivity,passWord);
             if (!is5GHz(ssid, mActivity)) {
                 gotoBindDeviceActivity(ssid, passWord);
             } else {

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="?attr/app_bg_color"
+    android:orientation="vertical"
+    android:gravity="center|top"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <include android:id="@+id/action_bar_layout" layout="@layout/toolbar_top_view" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:background="@color/white"
+        android:layout_centerHorizontal="true">
+
+        <!--android:layout_toRightOf="@id/np_hour"-->
+        <com.tuya.smart.android.demo.test.widget.NumberPicker
+            android:id="@+id/timer_pickerHour"
+            internalLayout="@layout/number_picker_with_selector_wheel"
+            android:layout_width="wrap_content"
+            android:layout_height="108dp"
+            android:layout_marginLeft="@dimen/mg_10"
+            android:background="@null"
+            android:theme="@style/SampleTheme"/>
+        <TextView
+            android:text=":"
+            android:textSize="@dimen/ts_24"
+            android:textColor="@color/black"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <com.tuya.smart.android.demo.test.widget.NumberPicker
+            android:id="@+id/timer_pickerMin"
+            internalLayout="@layout/number_picker_with_selector_wheel"
+            android:layout_width="wrap_content"
+            android:layout_height="108dp"
+            android:layout_marginLeft="@dimen/mg_10"
+            android:background="@null"
+            android:theme="@style/SampleTheme"/>
+    </LinearLayout>
+    
+    <LinearLayout
+        android:id="@+id/layout_timer_repeat"
+        android:background="@color/white"
+        android:padding="10dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+        android:text="@string/txt_repeat"
+        android:textColor="@color/textColor"
+        android:textSize="@dimen/ts_16"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/timer_txtRepeat"
+            android:text=""
+            tools:text="仅限一次"
+            android:textColor="@color/textColor"
+            android:textSize="@dimen/ts_16"
+            android:layout_weight="1.0"
+            android:gravity="right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <ImageView
+            android:src="@drawable/arrow_more"
+            android:layout_marginLeft="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_timer_switch"
+        android:background="@color/white"
+        android:padding="10dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:text="@string/txt_switch"
+            android:textColor="@color/textColor"
+            android:textSize="@dimen/ts_16"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/timer_txtSwitch"
+            android:text=""
+            tools:text="开"
+            android:textColor="@color/textColor"
+            android:textSize="@dimen/ts_16"
+            android:layout_weight="1.0"
+            android:gravity="right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <ImageView
+            android:src="@drawable/arrow_more"
+            android:layout_marginLeft="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+</LinearLayout>
