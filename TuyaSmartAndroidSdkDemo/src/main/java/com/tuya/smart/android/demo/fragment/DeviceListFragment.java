@@ -68,6 +68,11 @@ public class DeviceListFragment extends BaseFragment implements IDeviceListFragm
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         initPresenter();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         mDeviceListFragmentPresenter.getDataFromServer();
     }
 

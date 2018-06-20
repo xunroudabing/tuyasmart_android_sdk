@@ -14,6 +14,7 @@ import com.tuya.smart.android.demo.adapter.ItemClickSupport;
 import com.tuya.smart.sdk.TuyaScene;
 import com.tuya.smart.sdk.api.ITuyaDataCallback;
 import com.tuya.smart.sdk.bean.scene.condition.ConditionListBean;
+import com.tuya.smart.sdk.bean.scene.condition.property.BoolProperty;
 
 import java.util.List;
 
@@ -22,6 +23,7 @@ import java.util.List;
  */
 public class SelectSceneConditionListActivity extends BaseActivity {
     static final int REQUEST_SELECT_CONDITION = 100;
+    static final int REQUEST_SELECT_DEVICE = 101;
     static final String TAG = SelectSceneConditionListActivity.class.getSimpleName();
     RecyclerView mRecyclerView;
     ConditionListAdapter adapter;
@@ -46,15 +48,23 @@ public class SelectSceneConditionListActivity extends BaseActivity {
                     ConditionListBean bean = (ConditionListBean) data.getSerializableExtra
                             (ConditionDetailActivity.RESULT_CONDITIONLISTBEAN);
                     int position = adapter.getPosition(bean);
-                    Log.d(TAG,"getPosition=" + position);
+                    Log.d(TAG, "getPosition=" + position);
                     adapter.setConditionDetail(position, value);
-                    setResult(RESULT_OK,data);
+                    setResult(RESULT_OK, data);
                     finish();
                 } catch (Exception ex) {
                     Log.e(TAG, ex.toString());
                 }
 
-
+            }
+        }else if(requestCode == REQUEST_SELECT_DEVICE){
+            if(resultCode == RESULT_OK){
+                try {
+                    setResult(RESULT_OK, data);
+                    finish();
+                }catch (Exception ex){
+                    Log.e(TAG,ex.toString());
+                }
             }
         }
     }
@@ -74,6 +84,11 @@ public class SelectSceneConditionListActivity extends BaseActivity {
             @Override
             public void onSuccess(List<ConditionListBean> conditionListBeans) {
                 Log.d(TAG, "onSuccess:" + conditionListBeans);
+                ConditionListBean deviceBean = new ConditionListBean();
+                deviceBean.setName(getString(R.string.device_condition));
+                deviceBean.setType("device");
+                deviceBean.setProperty(new BoolProperty());
+                conditionListBeans.add(deviceBean);
                 bindRecyclerView(conditionListBeans);
             }
 
@@ -99,11 +114,18 @@ public class SelectSceneConditionListActivity extends BaseActivity {
                     ConditionListAdapter adapter = (ConditionListAdapter) recyclerView.getAdapter();
                     ConditionListBean item = adapter.getData(position);
                     Log.d(TAG, "onItemClicked:" + item.getName() + "," + item.getType());
-                    Intent intent = new Intent(SelectSceneConditionListActivity.this,
-                            ConditionDetailActivity.class);
-                    intent.putExtra(ConditionDetailActivity.INTENT_PARMS_CONDITION_BEAN, item);
-                    //startActivity(intent);
-                    startActivityForResult(intent, REQUEST_SELECT_CONDITION);
+                    if (item.getType().equals("device")) {
+                        Intent intent = new Intent(SelectSceneConditionListActivity.this,
+                                AddTaskActivity.class);
+                        intent.putExtra(ConditionDetailActivity.INTENT_PARMS_CONDITION_BEAN, item);
+                        startActivityForResult(intent, REQUEST_SELECT_DEVICE);
+                    } else {
+                        Intent intent = new Intent(SelectSceneConditionListActivity.this,
+                                ConditionDetailActivity.class);
+                        intent.putExtra(ConditionDetailActivity.INTENT_PARMS_CONDITION_BEAN, item);
+                        //startActivity(intent);
+                        startActivityForResult(intent, REQUEST_SELECT_CONDITION);
+                    }
 //                    IProperty property = item.getProperty();
 //                    if(item.getType().equals("condition")){
 //                        EnumProperty enumProperty = (EnumProperty) property;

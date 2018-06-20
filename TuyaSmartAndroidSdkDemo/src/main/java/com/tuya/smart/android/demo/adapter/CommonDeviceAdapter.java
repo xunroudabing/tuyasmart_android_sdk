@@ -115,6 +115,7 @@ public class CommonDeviceAdapter extends BaseAdapter {
                         txtFunction.setText(R.string.btn_commonuse);
                     }
                     functionLayout.setVisibility(visibility);
+                    btnOffLayout.setVisibility(visibility);
                 }
             });
 

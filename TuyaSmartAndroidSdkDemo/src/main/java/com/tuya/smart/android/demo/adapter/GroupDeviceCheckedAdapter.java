@@ -1,6 +1,7 @@
 package com.tuya.smart.android.demo.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +9,7 @@ import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -129,12 +131,20 @@ public class GroupDeviceCheckedAdapter extends BaseAdapter {
         ImageView mIcon;
         TextView mName;
         CheckBox mChk;
-
+        RelativeLayout mParent;
         public GroupDeviceViewHolder(View contentView) {
             super(contentView);
             mIcon = (ImageView) contentView.findViewById(R.id.iv_device_icon);
             mName = (TextView) contentView.findViewById(R.id.tv_device);
             mChk = (CheckBox) contentView.findViewById(R.id.list_group_device_item_chk);
+            mParent = (RelativeLayout) contentView.findViewById(R.id.list_group_device_item_parent);
+            mParent.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.d(TAG,"toggle");
+                    mChk.toggle();
+                }
+            });
         }
 
         @Override
@@ -142,6 +152,7 @@ public class GroupDeviceCheckedAdapter extends BaseAdapter {
             DeviceBean deviceBean = data.getDeviceBean();
             Picasso.with(TuyaSdk.getApplication()).load(deviceBean.getIconUrl()).into(mIcon);
             mName.setText(deviceBean.getName());
+            mChk.setOnCheckedChangeListener(null);
             mChk.setChecked(data.isChecked());
             mChk.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
@@ -151,18 +162,6 @@ public class GroupDeviceCheckedAdapter extends BaseAdapter {
                     if(otherAdapter != null){
                         otherAdapter.notifyDataSetChanged();
                     }
-//                    if(isChecked){
-//                        data.setChecked(!mShowChk);
-//                        notifyDataSetChanged();
-//                        if(otherAdapter != null){
-//                            otherAdapter.notifyDataSetChanged();
-//                        }
-//                    }else {
-//                        //已添加
-//                        if(mShowChk){
-//
-//                        }
-//                    }
                 }
             });
         }

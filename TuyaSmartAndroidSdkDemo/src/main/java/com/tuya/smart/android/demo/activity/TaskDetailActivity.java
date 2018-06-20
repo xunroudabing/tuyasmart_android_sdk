@@ -119,6 +119,7 @@ public class TaskDetailActivity extends BaseActivity {
             intent.putExtra(BUNDLE_DEVICEID, mDevId);
             intent.putExtra(BUNDLE_DEVICENAME, deviceName);
             intent.putExtra(BUNDLE_TASKDES, mTaskDescription);
+            intent.putExtras(getIntent());
             setResult(RESULT_OK, intent);
             finish();
         } catch (Exception ex) {

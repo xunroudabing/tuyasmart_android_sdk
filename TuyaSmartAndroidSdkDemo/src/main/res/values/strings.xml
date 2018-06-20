@@ -4,6 +4,7 @@
     <string name="alert_white_mode">白光模式开启</string>
     <string name="alert_color_mode">彩光模式开启</string>
     <string name="delete_group">解散群组</string>
+    <string name="device_condition">设备</string>
     <string name="txt_third">第三方接入</string>
     <string name="txt_add_group_added">已添加</string>
     <string name="txt_add_group_unadd">未添加</string>
@@ -21,6 +22,7 @@
     <string name="dialog_delcolor">确认删除?</string>
     <string name="dialog_title_delScene">确定删除该场景?</string>
     <string name="dialog_delScene_content">场景删除后,设备任务将无法正常执行</string>
+    <string name="alert_condition_task_equal">同一台设备无法同时作为条件和任务</string>
     <string name="alert_del_group_success">解散群组成功</string>
     <string name="alert_mode_startmusic">开启音乐模式</string>
     <string name="alert_mode_endmusic">关闭音乐模式</string>

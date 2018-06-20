@@ -20,7 +20,9 @@
             <EditText
                 android:id="@+id/add_group_editGroupName"
                 android:hint="输入群组名称"
+                android:textColor="@color/textColor"
                 android:textColorHint="@color/gray"
+                android:lines="1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
         </LinearLayout>

@@ -82,7 +82,7 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
     ImageView btnAddColor;
     ColorPickerView colorPickerView;
     ColorPicker mColorPicker;
-    int mCurrentColor = -1;
+    int mCurrentColor = -8388864;
     Queue<Integer> mColorQueue = new LinkedBlockingQueue<Integer>(5);
     boolean sw = true;
     private boolean isGroup = false;
@@ -316,6 +316,9 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
                         layoutTemp.setVisibility(View.GONE);
                     }
                 }
+            }else {
+                layoutTemp.setVisibility(View.VISIBLE);
+                layoutSu.setVisibility(View.GONE);
             }
 
             //初始化颜色列表
@@ -538,6 +541,7 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
             layoutTemp.setVisibility(View.GONE);
             Toast.makeText(DeviceColorPickActivity.this, R.string.alert_color_mode, Toast
                     .LENGTH_SHORT).show();
+            setLightColor(mCurrentColor);
         }
     }
 

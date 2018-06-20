@@ -133,7 +133,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
                     <ImageView
-                        android:src="@drawable/ic_seek_light"
+                        android:src="@drawable/ic_seek_su"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
                 <!-- 色温-->
@@ -180,7 +180,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
                     <ImageView
-                        android:src="@drawable/ic_seek_su"
+                        android:src="@drawable/ic_seek_light"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
                 <!-- 素艳-->

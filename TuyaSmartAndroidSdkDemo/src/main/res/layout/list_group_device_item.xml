@@ -7,9 +7,10 @@
     android:orientation="vertical">
 
     <RelativeLayout
+        android:id="@+id/list_group_device_item_parent"
         android:layout_width="match_parent"
         android:layout_height="80dp"
-
+        android:clickable="true"
         android:minHeight="80dp"
         android:orientation="vertical">
 

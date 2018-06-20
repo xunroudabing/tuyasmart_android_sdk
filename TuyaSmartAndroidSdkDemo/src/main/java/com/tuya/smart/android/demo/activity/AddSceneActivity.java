@@ -24,10 +24,13 @@ import com.tuya.smart.sdk.bean.scene.SceneBean;
 import com.tuya.smart.sdk.bean.scene.SceneCondition;
 import com.tuya.smart.sdk.bean.scene.SceneTask;
 import com.tuya.smart.sdk.bean.scene.condition.ConditionListBean;
+import com.tuya.smart.sdk.bean.scene.condition.property.BoolProperty;
 import com.tuya.smart.sdk.bean.scene.condition.property.EnumProperty;
 import com.tuya.smart.sdk.bean.scene.condition.property.ValueProperty;
+import com.tuya.smart.sdk.bean.scene.condition.rule.BoolRule;
 import com.tuya.smart.sdk.bean.scene.condition.rule.EnumRule;
 import com.tuya.smart.sdk.bean.scene.condition.rule.ValueRule;
+import com.tuya.smart.sdk.bean.scene.dev.SceneDevBean;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -41,11 +44,14 @@ public class AddSceneActivity extends BaseActivity implements View.OnClickListen
     static final int REQUEST_ADD_CONDITION = 100;
     static final int REQUEST_ADD_TASK = 101;
     static final String TAG = AddSceneActivity.class.getSimpleName();
+    boolean mIsTrue = true;
     ValueRule mValueRule;
     SceneBean mSceneBean;
+    String mConditionDevId;
     ConditionListBean mConditionListBean;
     PlaceFacadeBean mPlaceFacadeBean;
     SceneTask mSceneTask;
+    SceneDevBean mSceneDevBean;
     SceneCondition mCondition;
     View conditionView, taskView;
     String mEnumValue;
@@ -88,6 +94,20 @@ public class AddSceneActivity extends BaseActivity implements View.OnClickListen
                     String type = mConditionListBean.getType();
                     String operator = data.getStringExtra(ConditionDetailActivity.RESULT_COMPARE);
                     mValueRule = ValueRule.newInstance(type, operator, Integer.valueOf(value));
+                } else if (mConditionListBean.getProperty() instanceof BoolProperty) {
+                    String json = data.getStringExtra(TaskDetailActivity.BUNDLE_DATA);
+                    mConditionDevId = data.getStringExtra(TaskDetailActivity.BUNDLE_DEVICEID);
+                    String devicename = data.getStringExtra(TaskDetailActivity.BUNDLE_DEVICENAME);
+                    String taskdes = data.getStringExtra(TaskDetailActivity.BUNDLE_TASKDES);
+                    mSceneDevBean = (SceneDevBean) data.getSerializableExtra(TaskDetailActivity
+                            .INTENT_SCENE_BEAN);
+                    showCondition(taskdes, devicename);
+                    if(!TextUtils.isEmpty(json)) {
+                        HashMap<String, Object> map = JSONObject.parseObject(json, HashMap.class);
+                        if(map.containsKey("1")){
+                            mIsTrue = (boolean)map.get("1");
+                        }
+                    }
                 }
             }
         } else if (requestCode == REQUEST_ADD_TASK) {
@@ -232,6 +252,9 @@ public class AddSceneActivity extends BaseActivity implements View.OnClickListen
             } else if (mConditionListBean.getProperty() instanceof ValueProperty) {
                 mCondition = SceneCondition.createWeatherCondition(mPlaceFacadeBean,
                         mConditionListBean.getType(), mValueRule);
+            } else {
+
+
             }
         }
 
@@ -284,6 +307,23 @@ public class AddSceneActivity extends BaseActivity implements View.OnClickListen
             } else if (mConditionListBean.getProperty() instanceof ValueProperty) {
                 condition = SceneCondition.createWeatherCondition(mPlaceFacadeBean,
                         mConditionListBean.getType(), mValueRule);
+            } else if (mConditionListBean.getProperty() instanceof BoolProperty) {
+                //为了避免循环控制，同一台设备无法同时作为条件和任务。
+                if(mSceneTask.getEntityId().equals(mConditionDevId)){
+                    Toast.makeText(AddSceneActivity.this,R.string.alert_condition_task_equal,Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                BoolProperty devProperty = (BoolProperty) mConditionListBean.getProperty();
+                HashMap<Boolean, String> boolMap = devProperty.getBoolMap();
+                BoolRule boolRule = BoolRule.newInstance(
+                        "dp1",    //"dp" + dpId
+                        mIsTrue    //触发条件的bool
+                );
+                condition = SceneCondition.createDevCondition(
+                        mSceneDevBean,    //设备
+                        "1",        //dpId
+                        boolRule    //规则
+                );
             }
         }
 

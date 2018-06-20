@@ -13,6 +13,7 @@ import com.tuya.smart.android.demo.R;
 import com.tuya.smart.android.demo.adapter.SceneDeviceAdapter;
 import com.tuya.smart.sdk.TuyaScene;
 import com.tuya.smart.sdk.api.ITuyaDataCallback;
+import com.tuya.smart.sdk.bean.scene.condition.ConditionListBean;
 import com.tuya.smart.sdk.bean.scene.dev.SceneDevBean;
 
 import java.util.List;
@@ -29,6 +30,7 @@ public class AddTaskActivity extends BaseActivity {
     SwipeRefreshLayout mRefreshLayout;
     ListView mListView;
     SceneDeviceAdapter mAdapter;
+    ConditionListBean mConditionListBean;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +39,7 @@ public class AddTaskActivity extends BaseActivity {
         initToolbar();
         initMenu();
         initViews();
+        initData();
         getTaskDevList();
     }
 
@@ -44,6 +47,10 @@ public class AddTaskActivity extends BaseActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CHOOSE_FUNCTION) {
             if (resultCode == RESULT_OK) {
+                if (mConditionListBean != null) {
+                    data.putExtra(ConditionDetailActivity.RESULT_CONDITIONLISTBEAN,
+                            mConditionListBean);
+                }
                 setResult(RESULT_OK, data);
                 finish();
             }
@@ -53,6 +60,13 @@ public class AddTaskActivity extends BaseActivity {
     protected void initMenu() {
         setTitle(R.string.title_choosedevice);
         setDisplayHomeAsUpEnabled();
+    }
+
+    protected void initData() {
+        if (getIntent().hasExtra(ConditionDetailActivity.INTENT_PARMS_CONDITION_BEAN)) {
+            mConditionListBean = (ConditionListBean) getIntent().getSerializableExtra
+                    (ConditionDetailActivity.INTENT_PARMS_CONDITION_BEAN);
+        }
     }
 
     protected void initViews() {
@@ -68,6 +82,7 @@ public class AddTaskActivity extends BaseActivity {
                     Intent intent = new Intent(AddTaskActivity.this, TaskDetailActivity.class);
                     intent.putExtra(TaskDetailActivity.INTENT_DEVICEID, bean.devId);
                     intent.putExtra(TaskDetailActivity.INTENT_DEVICENAME, bean.getName());
+                    intent.putExtra(TaskDetailActivity.INTENT_SCENE_BEAN, bean);
                     startActivityForResult(intent, REQUEST_CHOOSE_FUNCTION);
                 } catch (Exception ex) {
                     Log.e(TAG, ex.toString());

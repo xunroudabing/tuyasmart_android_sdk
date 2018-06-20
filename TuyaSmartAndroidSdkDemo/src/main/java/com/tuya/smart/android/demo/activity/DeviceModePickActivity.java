@@ -56,6 +56,7 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
     CheckPermissionUtils checkPermission;
     boolean mSwitch = true;
     boolean mMusicStart = false;
+    int mCurrentPostion = 0;
     int mValue;//明度
     int mSpeed = 10;
     SeekBar seekBarLight, seekBarSu;
@@ -81,8 +82,8 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
             switch (msg.what) {
                 case ACTION_MODE_POSITION:
                     try {
-                        int positon = (int) msg.obj;
-                        setMode(positon);
+                        mCurrentPostion = (int) msg.obj;
+                        setMode(mCurrentPostion);
                     } catch (Exception ex) {
                         Log.e(TAG, ex.toString());
                     }
@@ -289,6 +290,7 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
                 try {
                     mSpeed = mSpeed - 10;
                     mSpeed = Math.max(0, mSpeed);
+                    setMode(mCurrentPostion);
                 } catch (Exception ex) {
                     Log.e(TAG, ex.toString());
                 }
@@ -297,6 +299,7 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
                 try {
                     mSpeed = mSpeed + 10;
                     mSpeed = Math.min(99, mSpeed);
+                    setMode(mCurrentPostion);
                 } catch (Exception ex) {
                     Log.e(TAG, ex.toString());
                 }
@@ -609,17 +612,20 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
 
     protected void startMusicListen() {
         mMusicStart = !mMusicStart;
-        if(mMusicStart) {
+        if (mMusicStart) {
             mAudioUtils.setCallBack(new AudioUtils.ICallback() {
                 @Override
                 public void onVolume(double v) {
-                    mHandler.sendMessage(Message.obtain(mHandler, ACTION_MUSIC, (int) v));
+                    if (v > 80D) {
+                        Log.d(TAG, "onVolume:" + v);
+                        mHandler.sendMessage(Message.obtain(mHandler, ACTION_MUSIC, (int) v));
+                    }
                 }
             });
             mAudioUtils.startRecord();
             btnMusic.setImageResource(R.drawable.btn_music_pressed);
             Toast.makeText(this, R.string.alert_mode_startmusic, Toast.LENGTH_SHORT).show();
-        }else {
+        } else {
             mAudioUtils.stopRecord();
             btnMusic.setImageResource(R.drawable.btn_music_nor);
             Toast.makeText(this, R.string.alert_mode_endmusic, Toast.LENGTH_SHORT).show();
