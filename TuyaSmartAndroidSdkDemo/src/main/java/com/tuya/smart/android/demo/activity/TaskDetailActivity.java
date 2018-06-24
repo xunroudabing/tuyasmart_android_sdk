@@ -21,6 +21,7 @@ import com.tuya.smart.sdk.api.ITuyaDataCallback;
 import com.tuya.smart.sdk.bean.scene.dev.SceneDevBean;
 import com.tuya.smart.sdk.bean.scene.dev.TaskListBean;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -163,12 +164,19 @@ public class TaskDetailActivity extends BaseActivity {
                 new ITuyaDataCallback<List<TaskListBean>>() {
                     @Override
                     public void onSuccess(List<TaskListBean> conditionActionBeans) {
-                        List<TaskListBean> list = conditionActionBeans;
-                        for (TaskListBean bean : list) {
-                            Log.d(TAG, "bean.name" + bean.getName() + " " + bean.getTasks()
-                                    .toString());
+                        if (conditionActionBeans != null) {
+                            List<TaskListBean> list = new ArrayList<>();
+                            for (TaskListBean bean : conditionActionBeans) {
+                                Log.d(TAG, "bean.name" + bean.getName() + " " + bean.getDpId() +
+                                        "," + bean.getTasks()
+                                        .toString());
+                                if (bean.getDpId() == 1) {
+                                    list.add(bean);
+                                    break;
+                                }
+                            }
+                            bindListView(list);
                         }
-                        bindListView(list);
                     }
 
                     @Override

@@ -305,7 +305,7 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
                     int temp_per = value_temp * 100 / 255;
                     txtLightPer.setText(String.valueOf(light_per) + "%");
                     txtTempPer.setText(String.valueOf(temp_per) + "%");
-                    txtSuPer.setText("0%");
+                    txtSuPer.setText("100%");
                     if (color.equals("white")) {
                         mWhiteMode = true;
                         layoutTemp.setVisibility(View.VISIBLE);
@@ -316,7 +316,7 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
                         layoutTemp.setVisibility(View.GONE);
                     }
                 }
-            }else {
+            } else {
                 layoutTemp.setVisibility(View.VISIBLE);
                 layoutSu.setVisibility(View.GONE);
             }
@@ -464,21 +464,33 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
     }
 
     protected void deleteGroup() {
-        mTuyaGroup.dismissGroup(new IControlCallback() {
+        DialogUtil.simpleConfirmDialog(DeviceColorPickActivity.this, getString(R.string
+                .alert_confirm_delete_group), new DialogInterface.OnClickListener() {
             @Override
-            public void onError(String s, String s1) {
-                String error = "解散群组失败:" + s1;
-                Toast.makeText(DeviceColorPickActivity.this, error,
-                        Toast.LENGTH_SHORT).show();
-            }
+            public void onClick(DialogInterface dialog, int which) {
+                if (which == DialogInterface.BUTTON_POSITIVE) {
+                    mTuyaGroup.dismissGroup(new IControlCallback() {
+                        @Override
+                        public void onError(String s, String s1) {
+                            String error = "解散群组失败:" + s1;
+                            Toast.makeText(DeviceColorPickActivity.this, error,
+                                    Toast.LENGTH_SHORT).show();
+                        }
 
-            @Override
-            public void onSuccess() {
-                Toast.makeText(DeviceColorPickActivity.this, R.string.alert_del_group_success,
-                        Toast.LENGTH_SHORT).show();
-                finish();
+                        @Override
+                        public void onSuccess() {
+                            Toast.makeText(DeviceColorPickActivity.this, R.string
+                                            .alert_del_group_success,
+                                    Toast.LENGTH_SHORT).show();
+                            finish();
+                        }
+                    });
+                } else {
+                    dialog.dismiss();
+                }
             }
         });
+
     }
 
     protected void setLightColor(int color) {
@@ -599,14 +611,17 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
                 }
             }
 
-            int progress = seekBarColor.getProgress();
-            int p = Math.min(progress, 255);
+            int progress = seekBarLight.getProgress();
+            int p = Math.min(progress, 230);
             //16进制颜色转int
             //int i = (int) Long.parseLong("FF" + rgb_str, 16);
             float[] hsv = new float[3];
             Color.colorToHSV(color, hsv);
-            hsv[1] = (float) (value / 100);
-            hsv[2] = (float) (p / 255);
+            float hsv1 = (float) (value / 100F);
+            float hsv2 = (float) (p / 230F);
+            hsv[1] = Math.max(hsv1, 0.6F);
+            hsv[2] = hsv2;
+            Log.d(TAG, "hsv[1]=" + hsv[1] + ",hsv[2]=" + hsv[2]);
             int convertColor = Color.HSVToColor(hsv);
 
             String color_hex = Integer.toHexString(convertColor).toLowerCase().substring(2);
@@ -647,7 +662,7 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
     }
 
     protected void setTimer() {
-        Intent intent = new Intent(this, AddTimerActivity.class);
+        Intent intent = new Intent(this, TimerListActivity.class);
         intent.putExtras(getIntent());
         startActivity(intent);
 //        Calendar calendar = Calendar.getInstance();
@@ -749,6 +764,23 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
             Map<String, Object> map = new HashMap<>();
             map.put("1", sw);
             timerManager.addTimerWithTask("timer", mDevId, "0000000", map, time, new
+                    IResultStatusCallback() {
+                        @Override
+                        public void onSuccess() {
+                            Log.d(TAG, "设置定时器成功：" + time);
+                        }
+
+                        @Override
+                        public void onError(String s, String s1) {
+
+                        }
+                    });
+        } else {
+            final TuyaTimerManager timerManager = new TuyaTimerManager();
+            Map<String, Object> map = new HashMap<>();
+            map.put("1", sw);
+            timerManager.addTimerWithTask("timer", String.valueOf(mGroupId), "0000000", map,
+                    time, new
                     IResultStatusCallback() {
                         @Override
                         public void onSuccess() {

@@ -288,8 +288,8 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
         switch (v.getId()) {
             case R.id.device_mode_btnSpeedDown:
                 try {
-                    mSpeed = mSpeed - 10;
-                    mSpeed = Math.max(0, mSpeed);
+                    mSpeed = mSpeed + 10;
+                    mSpeed = Math.min(99, mSpeed);
                     setMode(mCurrentPostion);
                 } catch (Exception ex) {
                     Log.e(TAG, ex.toString());
@@ -297,8 +297,8 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
                 break;
             case R.id.device_mode_btnSpeedUp:
                 try {
-                    mSpeed = mSpeed + 10;
-                    mSpeed = Math.min(99, mSpeed);
+                    mSpeed = mSpeed - 10;
+                    mSpeed = Math.max(0, mSpeed);
                     setMode(mCurrentPostion);
                 } catch (Exception ex) {
                     Log.e(TAG, ex.toString());

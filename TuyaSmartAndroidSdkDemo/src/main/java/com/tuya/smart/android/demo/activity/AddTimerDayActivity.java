@@ -1,12 +1,11 @@
 package com.tuya.smart.android.demo.activity;
 
-import android.nfc.Tag;
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+import android.text.TextUtils;
 import android.view.View;
 
 import com.tuya.smart.android.demo.R;
-import com.tuya.smart.android.demo.config.CommonConfig;
 import com.tuya.smart.android.demo.widget.DayChooseWidget;
 
 /**
@@ -15,6 +14,9 @@ import com.tuya.smart.android.demo.widget.DayChooseWidget;
  */
 
 public class AddTimerDayActivity extends BaseActivity {
+    public static final String RESULT_LOOP = "RESULT_LOOP";
+    public static final String RESULT_LOOP_STRING = "RESULT_LOOP_STRING";
+    public static final String INTENT_TIMER_LOOP = "INTENT_TIMER_LOOP";
     static final String TAG = AddTimerActivity.class.getSimpleName();
     DayChooseWidget[] array;
     DayChooseWidget day0, day1, day2, day3, day4, day5, day6;
@@ -31,13 +33,20 @@ public class AddTimerDayActivity extends BaseActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
         String str = getSelectedValue();
-        Log.d(TAG,"getSelectedValue=" + str);
-        CommonConfig.setChooseDay(getApplicationContext(),str);
         String txt = getSelectedText();
-        Log.d(TAG,"getSelectedValue=" + txt);
-        CommonConfig.setChooseDayString(getApplicationContext(),txt);
+        Intent intent = new Intent();
+        intent.putExtra(RESULT_LOOP, str);
+        intent.putExtra(RESULT_LOOP_STRING, txt);
+        setResult(RESULT_OK, intent);
+        super.onBackPressed();
+
+//        String str = getSelectedValue();
+//        Log.d(TAG, "getSelectedValue=" + str);
+//        CommonConfig.setChooseDay(getApplicationContext(), str);
+//        String txt = getSelectedText();
+//        Log.d(TAG, "getSelectedValue=" + txt);
+//        CommonConfig.setChooseDayString(getApplicationContext(), txt);
     }
 
     protected void initMenu() {
@@ -46,11 +55,13 @@ public class AddTimerDayActivity extends BaseActivity {
         setDisplayHomeAsUpEnabled(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 String str = getSelectedValue();
-                Log.d(TAG,"getSelectedValue=" + str);
-                CommonConfig.setChooseDay(getApplicationContext(),str);
                 String txt = getSelectedText();
-                CommonConfig.setChooseDayString(getApplicationContext(),txt);
+                Intent intent = new Intent();
+                intent.putExtra(RESULT_LOOP, str);
+                intent.putExtra(RESULT_LOOP_STRING, txt);
+                setResult(RESULT_OK, intent);
                 finish();
             }
         });
@@ -74,38 +85,43 @@ public class AddTimerDayActivity extends BaseActivity {
         day6.setDay(getString(R.string.txt_day6));
     }
 
-    protected String getSelectedValue(){
+    protected String getSelectedValue() {
         StringBuilder builder = new StringBuilder();
-        for(int i = 0;i<array.length;i++){
+        for (int i = 0; i < array.length; i++) {
             String s = "0";
-            if(array[i].getChecked()){
+            if (array[i].getChecked()) {
                 s = "1";
             }
             builder.append(s);
         }
-        return  builder.toString();
+        return builder.toString();
     }
 
-    protected String getSelectedText(){
+    protected String getSelectedText() {
         StringBuilder builder = new StringBuilder();
-        for(int i = 0;i<array.length;i++){
+        for (int i = 0; i < array.length; i++) {
 
-            if(array[i].getChecked()){
+            if (array[i].getChecked()) {
                 String s = array[i].getDay();
                 builder.append(s + ",");
             }
 
         }
-        return  builder.toString();
+        if (builder.length() <= 0) {
+            return getString(R.string.txt_onlyonce);
+        }
+        return builder.toString();
     }
 
-    protected void bindData(){
-        String str = CommonConfig.getChooseDay(getApplicationContext());
-        char[] chars = str.toCharArray();
-        for(int i = 0;i<chars.length;i++){
-            if(chars[i] == '1'){
-                if(i < array.length){
-                    array[i].setChecked(true);
+    protected void bindData() {
+        String str = getIntent().getStringExtra(INTENT_TIMER_LOOP);
+        if (!TextUtils.isEmpty(str)) {
+            char[] chars = str.toCharArray();
+            for (int i = 0; i < chars.length; i++) {
+                if (chars[i] == '1') {
+                    if (i < array.length) {
+                        array[i].setChecked(true);
+                    }
                 }
             }
         }

@@ -251,6 +251,7 @@
         <activity android:name=".activity.AddTimerActivity" android:theme="@style/Splash.Theme">
         </activity>
         <activity android:name=".activity.ThirdEchoActivity" android:theme="@style/Splash.Theme"></activity>
+        <activity android:name=".activity.TimerListActivity" android:theme="@style/Splash.Theme"></activity>
         <activity android:name=".activity.AddTimerDayActivity" android:theme="@style/Splash.Theme"></activity>
         <activity android:name=".debug.MainListActivity">
         </activity>

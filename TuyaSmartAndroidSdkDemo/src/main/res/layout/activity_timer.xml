@@ -61,7 +61,7 @@
 
         <TextView
             android:id="@+id/timer_txtRepeat"
-            android:text=""
+            android:text="@string/txt_onlyonce"
             tools:text="仅限一次"
             android:textColor="@color/textColor"
             android:textSize="@dimen/ts_16"
@@ -94,7 +94,7 @@
 
         <TextView
             android:id="@+id/timer_txtSwitch"
-            android:text=""
+            android:text="@string/swtich_open"
             tools:text="开"
             android:textColor="@color/textColor"
             android:textSize="@dimen/ts_16"

@@ -99,13 +99,16 @@ public class AddSceneActivity extends BaseActivity implements View.OnClickListen
                     mConditionDevId = data.getStringExtra(TaskDetailActivity.BUNDLE_DEVICEID);
                     String devicename = data.getStringExtra(TaskDetailActivity.BUNDLE_DEVICENAME);
                     String taskdes = data.getStringExtra(TaskDetailActivity.BUNDLE_TASKDES);
-                    mSceneDevBean = (SceneDevBean) data.getSerializableExtra(TaskDetailActivity
-                            .INTENT_SCENE_BEAN);
+//                    mSceneDevBean = (SceneDevBean) data.getSerializableExtra(TaskDetailActivity
+//                            .INTENT_SCENE_BEAN);
+                    String devbean_json = data.getStringExtra(TaskDetailActivity.INTENT_SCENE_BEAN);
+                    Log.d(TAG, "mSceneDevBean=" + devbean_json);
+                    mSceneDevBean = JSONObject.parseObject(devbean_json, SceneDevBean.class);
                     showCondition(taskdes, devicename);
-                    if(!TextUtils.isEmpty(json)) {
+                    if (!TextUtils.isEmpty(json)) {
                         HashMap<String, Object> map = JSONObject.parseObject(json, HashMap.class);
-                        if(map.containsKey("1")){
-                            mIsTrue = (boolean)map.get("1");
+                        if (map.containsKey("1")) {
+                            mIsTrue = (boolean) map.get("1");
                         }
                     }
                 }
@@ -309,8 +312,9 @@ public class AddSceneActivity extends BaseActivity implements View.OnClickListen
                         mConditionListBean.getType(), mValueRule);
             } else if (mConditionListBean.getProperty() instanceof BoolProperty) {
                 //为了避免循环控制，同一台设备无法同时作为条件和任务。
-                if(mSceneTask.getEntityId().equals(mConditionDevId)){
-                    Toast.makeText(AddSceneActivity.this,R.string.alert_condition_task_equal,Toast.LENGTH_SHORT).show();
+                if (mSceneTask.getEntityId().equals(mConditionDevId)) {
+                    Toast.makeText(AddSceneActivity.this, R.string.alert_condition_task_equal,
+                            Toast.LENGTH_SHORT).show();
                     return;
                 }
                 BoolProperty devProperty = (BoolProperty) mConditionListBean.getProperty();
@@ -341,7 +345,7 @@ public class AddSceneActivity extends BaseActivity implements View.OnClickListen
 
                     @Override
                     public void onError(String s, String s1) {
-
+                        Log.e(TAG, "create scene fail," + s + "," + s1);
                     }
                 });
 

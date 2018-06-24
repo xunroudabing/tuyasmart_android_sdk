@@ -93,7 +93,7 @@
                 <SeekBar
                     android:id="@+id/device_color_seekbarLight"
                     android:max="230"
-                    android:progress="0"
+                    android:progress="230"
                     android:layout_weight="1.0"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -107,6 +107,7 @@
                         tools:text="90%"
                         android:textColor="@color/textColor"
                         android:textSize="@dimen/ts_14"
+                        android:minWidth="30dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
                 </LinearLayout>
@@ -140,6 +141,7 @@
                 <SeekBar
                     android:id="@+id/device_color_seekbarTemp"
                     android:max="255"
+                    android:progress="255"
                     android:layout_weight="1.0"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -153,6 +155,7 @@
                         tools:text="90%"
                         android:textColor="@color/textColor"
                         android:textSize="@dimen/ts_14"
+                        android:minWidth="30dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
                 </LinearLayout>
@@ -192,14 +195,17 @@
                     android:maxHeight="15dp"
                     android:progressDrawable="@drawable/progress_drawable"
                     android:splitTrack="false"
+                    android:progress="100"
                     android:max="100"
                     android:thumb="@drawable/progress_thumb" />
 
                     <TextView
                         android:id="@+id/device_color_txtSuPercent"
                         tools:text="90%"
+                        android:text="100%"
                         android:textColor="@color/textColor"
                         android:textSize="@dimen/ts_14"
+                        android:minWidth="30dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
                 </LinearLayout>

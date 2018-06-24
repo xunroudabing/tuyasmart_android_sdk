@@ -9,6 +9,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 
+import com.alibaba.fastjson.JSONObject;
 import com.tuya.smart.android.demo.R;
 import com.tuya.smart.android.demo.adapter.SceneDeviceAdapter;
 import com.tuya.smart.sdk.TuyaScene;
@@ -79,10 +80,11 @@ public class AddTaskActivity extends BaseActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 try {
                     SceneDevBean bean = mAdapter.getItem(position);
+                    String json = JSONObject.toJSONString(bean);
                     Intent intent = new Intent(AddTaskActivity.this, TaskDetailActivity.class);
                     intent.putExtra(TaskDetailActivity.INTENT_DEVICEID, bean.devId);
                     intent.putExtra(TaskDetailActivity.INTENT_DEVICENAME, bean.getName());
-                    intent.putExtra(TaskDetailActivity.INTENT_SCENE_BEAN, bean);
+                    intent.putExtra(TaskDetailActivity.INTENT_SCENE_BEAN, json);
                     startActivityForResult(intent, REQUEST_CHOOSE_FUNCTION);
                 } catch (Exception ex) {
                     Log.e(TAG, ex.toString());
