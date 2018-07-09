@@ -33,6 +33,9 @@ import java.util.Map;
 
 public class TaskDetailActivity extends BaseActivity {
     public static final int REQUEST_SECOND = 101;
+    public static final String BUNDLE_RULE_TYPE = "BUNDLE_RULE_TYPE";
+    public static final String BUNDLE_RULE = "BUNDLE_RULE";
+    public static final String BUNDLE_DPID = "BUNDLE_DPID";
     public static final String BUNDLE_TASKDES = "BUNDLE_TASKDES";
     public static final String BUNDLE_DEVICEID = "BUNDLE_DEVICEID";
     public static final String BUNDLE_DEVICENAME = "BUNDLE_DEVICENAME";
@@ -44,8 +47,11 @@ public class TaskDetailActivity extends BaseActivity {
     RecyclerView mRecyclerView;
     FunctionListItemRecyclerAdapter mAdapter;
     SceneDevBean mBean;
+    String mRule;
+    String mRuleType;
     String mDevId;
     String mTaskDescription;
+    String mDpId;
     Map<String, Object> mMap = new HashMap<String, Object>();
 
     @Override
@@ -64,13 +70,17 @@ public class TaskDetailActivity extends BaseActivity {
         if (requestCode == REQUEST_SECOND) {
             if (resultCode == RESULT_OK) {
                 mTaskDescription = data.getStringExtra(TaskSecondDetailActivity.BUNDLE_TASK_DES);
+                int position = data.getIntExtra(DeviceValueConditonActivity.BUNDLE_POSITION, 0);
                 String json = data.getStringExtra(TaskSecondDetailActivity.BUNDLE_TASK);
                 Log.d(TAG, "json:" + json);
                 Map<String, Object> map = JSONObject.parseObject(json, Map.class);
                 mMap.putAll(map);
+                mRule = data.getStringExtra(DeviceValueConditonActivity.BUNDLE_RULE);
+                mRuleType = data.getStringExtra(DeviceValueConditonActivity.BUNDLE_RULE_TYPE);
+                mDpId = data.getStringExtra(DeviceValueConditonActivity.BUNDLE_DPID);
                 if (mAdapter != null) {
                     String dpname = data.getStringExtra(TaskSecondDetailActivity.BUNDLE_DPNAME);
-                    mAdapter.setSelectedValue(dpname);
+                    mAdapter.setSelectedValue(position, dpname);
                 }
             }
         }
@@ -116,6 +126,9 @@ public class TaskDetailActivity extends BaseActivity {
             String deviceName = getIntent().getStringExtra(INTENT_DEVICENAME);
             String json = JSONObject.toJSONString(mMap);
             Intent intent = new Intent();
+            intent.putExtra(BUNDLE_DPID, mDpId);
+            intent.putExtra(BUNDLE_RULE, mRule);
+            intent.putExtra(BUNDLE_RULE_TYPE, mRuleType);
             intent.putExtra(BUNDLE_DATA, json);
             intent.putExtra(BUNDLE_DEVICEID, mDevId);
             intent.putExtra(BUNDLE_DEVICENAME, deviceName);
@@ -143,11 +156,26 @@ public class TaskDetailActivity extends BaseActivity {
                     FunctionListItemRecyclerAdapter adapter = (FunctionListItemRecyclerAdapter)
                             recyclerView.getAdapter();
                     TaskListBean bean = adapter.getTaskListBean(position);
-                    Intent intent = new Intent(TaskDetailActivity.this, TaskSecondDetailActivity
-                            .class);
-                    intent.putExtra(TaskSecondDetailActivity.INTENT_PARMS_DATA, bean);
-                    //startActivity(intent);
-                    startActivityForResult(intent, REQUEST_SECOND);
+                    long dpid = bean.getDpId();
+                    if (dpid == 3 || dpid == 4) {
+                        Intent intent = new Intent(TaskDetailActivity.this,
+                                DeviceValueConditonActivity
+                                        .class);
+                        intent.putExtra(DeviceValueConditonActivity.INTENT_POSITION, position);
+                        intent.putExtra(TaskSecondDetailActivity.INTENT_PARMS_DATA, bean);
+                        intent.putExtra(DeviceValueConditonActivity.INTENT_DPID, String.valueOf
+                                (dpid));
+                        startActivityForResult(intent, REQUEST_SECOND);
+                    } else {
+                        Intent intent = new Intent(TaskDetailActivity.this, TaskSecondDetailActivity
+                                .class);
+                        intent.putExtra(DeviceValueConditonActivity.INTENT_DPID, String.valueOf
+                                (dpid));
+                        intent.putExtra(TaskSecondDetailActivity.INTENT_POSITION, position);
+                        intent.putExtra(TaskSecondDetailActivity.INTENT_PARMS_DATA, bean);
+                        //startActivity(intent);
+                        startActivityForResult(intent, REQUEST_SECOND);
+                    }
                 } catch (Exception ex) {
                     Log.e(TAG, ex.toString());
                 }
@@ -166,16 +194,16 @@ public class TaskDetailActivity extends BaseActivity {
                     public void onSuccess(List<TaskListBean> conditionActionBeans) {
                         if (conditionActionBeans != null) {
                             List<TaskListBean> list = new ArrayList<>();
+                            //DpId 1-开关 bool 3-亮度 value 4-冷暖 value 2-模式 enum
                             for (TaskListBean bean : conditionActionBeans) {
                                 Log.d(TAG, "bean.name" + bean.getName() + " " + bean.getDpId() +
-                                        "," + bean.getTasks()
-                                        .toString());
-                                if (bean.getDpId() == 1) {
+                                        "," + bean.getTasks().toString());
+                                if (bean.getDpId() == 1 || bean.getDpId() == 2 || bean.getDpId()
+                                        == 3 || bean.getDpId() == 4) {
                                     list.add(bean);
-                                    break;
                                 }
                             }
-                            bindListView(list);
+                            bindListView(conditionActionBeans);
                         }
                     }
 

@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.kyleduo.switchbutton.SwitchButton;
 import com.tuya.smart.android.demo.R;
@@ -115,8 +116,12 @@ public class TimerListActivity extends BaseActivity {
 
     //请求定时列表
     protected void getTimerTaskStatusList() {
+        String devId = mDevId;
+        if(isGroup){
+            devId = String.valueOf(mGroupId);
+        }
         final TuyaTimerManager timerManager = new TuyaTimerManager();
-        timerManager.getAllTimerWithDeviceId(mDevId, new IGetAllTimerWithDevIdCallback() {
+        timerManager.getAllTimerWithDeviceId(devId, new IGetAllTimerWithDevIdCallback() {
             @Override
             public void onSuccess(ArrayList<TimerTask> arrayList) {
                 bindListView(arrayList);
@@ -133,7 +138,7 @@ public class TimerListActivity extends BaseActivity {
     protected void bindListView(ArrayList<TimerTask> arrayList) {
         if (arrayList != null && arrayList.size() > 0) {
             TimerTask timerTask = arrayList.get(0);
-            if (timerTask.getTimerList().size() > 0) {
+            if (timerTask.getTimerList() != null && timerTask.getTimerList().size() > 0) {
                 mTaskAdapter = new TimerTaskAdapter(timerTask.getTimerList());
                 mListview.setAdapter(mTaskAdapter);
                 mListview.setVisibility(View.VISIBLE);
@@ -147,6 +152,7 @@ public class TimerListActivity extends BaseActivity {
             mEmptyLayout.setVisibility(View.VISIBLE);
             mListview.setVisibility(View.GONE);
         }
+
     }
 
     protected void deleteTimer(final Timer timer) {

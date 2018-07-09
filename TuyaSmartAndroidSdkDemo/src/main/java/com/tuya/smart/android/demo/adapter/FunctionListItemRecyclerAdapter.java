@@ -21,13 +21,14 @@ public class FunctionListItemRecyclerAdapter extends RecyclerView
         .Adapter<FunctionListItemRecyclerAdapter.FunctionListItemViewHolder> {
     List<TaskListBean> mData;
     String mSelectedValue;
-
+    int mSelectedPosition = 0;
     public FunctionListItemRecyclerAdapter(List<TaskListBean> list) {
         mData = list;
     }
 
-    public void setSelectedValue(String value) {
+    public void setSelectedValue(int position,String value) {
         mSelectedValue = value;
+        mSelectedPosition = position;
         notifyDataSetChanged();
     }
 
@@ -41,9 +42,11 @@ public class FunctionListItemRecyclerAdapter extends RecyclerView
     public void onBindViewHolder(FunctionListItemViewHolder functionListItemViewHolder, int i) {
         TaskListBean bean = mData.get(i);
         functionListItemViewHolder.txtView.setText(bean.getName());
-        if (!TextUtils.isEmpty(mSelectedValue)) {
+        if (!TextUtils.isEmpty(mSelectedValue) && mSelectedPosition == i) {
             functionListItemViewHolder.txtSelected.setText(mSelectedValue);
             functionListItemViewHolder.txtSelected.setVisibility(View.VISIBLE);
+        }else {
+            functionListItemViewHolder.txtSelected.setVisibility(View.GONE);
         }
 
     }

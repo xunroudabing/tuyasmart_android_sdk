@@ -294,9 +294,9 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
                     String rgb_str = dp5.substring(0, 6);
                     mCurrentColor = Color.parseColor("#" + rgb_str);
                     if (b) {
-                        btnSwitch.setImageResource(R.drawable.btn_switch);
-                    } else {
                         btnSwitch.setImageResource(R.drawable.btn_switch_off);
+                    } else {
+                        btnSwitch.setImageResource(R.drawable.btn_switch);
                     }
                     seekBarLight.setProgress(value_light);
                     seekBarColor.setProgress(value_temp);
@@ -518,9 +518,9 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
             Map<String, Object> map = new HashMap<>();
             map.put("1", !b);
             if (!b) {
-                btnSwitch.setImageResource(R.drawable.btn_switch);
-            } else {
                 btnSwitch.setImageResource(R.drawable.btn_switch_off);
+            } else {
+                btnSwitch.setImageResource(R.drawable.btn_switch);
             }
             final String value = JSONObject.toJSONString(map);
             sendDp(value);
@@ -531,9 +531,9 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
             final String value = JSONObject.toJSONString(map);
             sendDp(value);
             if (!sw) {
-                btnSwitch.setImageResource(R.drawable.btn_switch);
-            } else {
                 btnSwitch.setImageResource(R.drawable.btn_switch_off);
+            } else {
+                btnSwitch.setImageResource(R.drawable.btn_switch);
             }
         }
 
@@ -613,13 +613,37 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
 
             int progress = seekBarLight.getProgress();
             int p = Math.min(progress, 230);
+            //***********
+//            int red = Color.red(color);
+//            int green = Color.green(color);
+//            int blue = Color.blue(color);
+//            int newRed = 0;
+//            int newGreen = 0;
+//            int newBlue = 0;
+//            if (red < 50) {
+//                newRed = 0;
+//            } else if (red > 250) {
+//                newRed = 255;
+//            }
+//            if (green < 50) {
+//                newGreen = 0;
+//            } else if (green > 250) {
+//                newGreen = 255;
+//            }
+//            if (blue < 50) {
+//                newBlue = 0;
+//            } else if (blue > 250) {
+//                newBlue = 255;
+//            }
+//            int newColor = Color.rgb(newRed, newGreen, newBlue);
             //16进制颜色转int
             //int i = (int) Long.parseLong("FF" + rgb_str, 16);
             float[] hsv = new float[3];
             Color.colorToHSV(color, hsv);
             float hsv1 = (float) (value / 100F);
             float hsv2 = (float) (p / 230F);
-            hsv[1] = Math.max(hsv1, 0.6F);
+            float h1 = 0.6F + (0.4F * (value / 100F));
+            hsv[1] = h1;
             hsv[2] = hsv2;
             Log.d(TAG, "hsv[1]=" + hsv[1] + ",hsv[2]=" + hsv[2]);
             int convertColor = Color.HSVToColor(hsv);
@@ -781,17 +805,17 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
             map.put("1", sw);
             timerManager.addTimerWithTask("timer", String.valueOf(mGroupId), "0000000", map,
                     time, new
-                    IResultStatusCallback() {
-                        @Override
-                        public void onSuccess() {
-                            Log.d(TAG, "设置定时器成功：" + time);
-                        }
+                            IResultStatusCallback() {
+                                @Override
+                                public void onSuccess() {
+                                    Log.d(TAG, "设置定时器成功：" + time);
+                                }
 
-                        @Override
-                        public void onError(String s, String s1) {
+                                @Override
+                                public void onError(String s, String s1) {
 
-                        }
-                    });
+                                }
+                            });
         }
     }
 

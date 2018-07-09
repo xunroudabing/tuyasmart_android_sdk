@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONObject;
+import com.google.gson.Gson;
 import com.tuya.smart.android.demo.R;
 import com.tuya.smart.android.demo.test.utils.DialogUtil;
 import com.tuya.smart.sdk.TuyaScene;
@@ -29,6 +30,7 @@ import com.tuya.smart.sdk.bean.scene.condition.property.EnumProperty;
 import com.tuya.smart.sdk.bean.scene.condition.property.ValueProperty;
 import com.tuya.smart.sdk.bean.scene.condition.rule.BoolRule;
 import com.tuya.smart.sdk.bean.scene.condition.rule.EnumRule;
+import com.tuya.smart.sdk.bean.scene.condition.rule.Rule;
 import com.tuya.smart.sdk.bean.scene.condition.rule.ValueRule;
 import com.tuya.smart.sdk.bean.scene.dev.SceneDevBean;
 
@@ -45,6 +47,8 @@ public class AddSceneActivity extends BaseActivity implements View.OnClickListen
     static final int REQUEST_ADD_TASK = 101;
     static final String TAG = AddSceneActivity.class.getSimpleName();
     boolean mIsTrue = true;
+    String mDpId;
+    Rule mDeviceRule;
     ValueRule mValueRule;
     SceneBean mSceneBean;
     String mConditionDevId;
@@ -61,7 +65,6 @@ public class AddSceneActivity extends BaseActivity implements View.OnClickListen
     FrameLayout addCondition, addTask;
     TextView txtDevice, txtTask;
     TextView btnDel;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -112,6 +115,28 @@ public class AddSceneActivity extends BaseActivity implements View.OnClickListen
                         }
                     }
                 }
+                String rule = data.getStringExtra(TaskDetailActivity.BUNDLE_RULE);
+                String ruleType = data.getStringExtra(TaskDetailActivity.BUNDLE_RULE_TYPE);
+                mDpId = data.getStringExtra(TaskDetailActivity.BUNDLE_DPID);
+                Log.d(TAG, "rule=" + rule + ",ruleType=" + ruleType + ",mDpId=" + mDpId);
+                //设备条件
+                if (!TextUtils.isEmpty(rule) && !TextUtils.isEmpty(ruleType)) {
+                    Gson gson = new Gson();
+                    if (ruleType.equals("value")) {
+                        ValueRule vr = gson.fromJson(rule, ValueRule.class);
+                        //ValueRule vr = ValueRule.newInstance("bright_value", ">", 96);
+//                        ValueRule vr = JSONObject.parseObject(rule,ValueRule.class);
+                        mDeviceRule = vr;
+                    } else if (ruleType.equals("bool")) {
+                        BoolRule br = gson.fromJson(rule, BoolRule.class);
+                        //BoolRule br = JSONObject.parseObject(rule,BoolRule.class);
+                        mDeviceRule = br;
+                    } else if (ruleType.equals("enum")) {
+                        EnumRule er = gson.fromJson(rule, EnumRule.class);
+                        //EnumRule er = JSONObject.parseObject(rule,EnumRule.class);
+                        mDeviceRule = er;
+                    }
+                }
             }
         } else if (requestCode == REQUEST_ADD_TASK) {
             if (resultCode == RESULT_OK) {
@@ -152,6 +177,7 @@ public class AddSceneActivity extends BaseActivity implements View.OnClickListen
     }
 
     protected void initViews() {
+
         btnDel = (TextView) findViewById(R.id.tv_scene_delete);
         txtDevice = (TextView) findViewById(R.id.scene_task_txtDevice);
         txtTask = (TextView) findViewById(R.id.scene_task_txtTask);
@@ -167,6 +193,8 @@ public class AddSceneActivity extends BaseActivity implements View.OnClickListen
         addTask = (FrameLayout) findViewById(R.id.fl_add_task);
         addTask.setOnClickListener(this);
         btnDel.setOnClickListener(this);
+        conditionView.setOnClickListener(this);
+        taskView.setOnClickListener(this);
     }
 
     protected void initParms() {
@@ -255,9 +283,24 @@ public class AddSceneActivity extends BaseActivity implements View.OnClickListen
             } else if (mConditionListBean.getProperty() instanceof ValueProperty) {
                 mCondition = SceneCondition.createWeatherCondition(mPlaceFacadeBean,
                         mConditionListBean.getType(), mValueRule);
-            } else {
-
-
+            } else if (mConditionListBean.getProperty() instanceof BoolProperty) {
+                //为了避免循环控制，同一台设备无法同时作为条件和任务。
+                if (mSceneTask.getEntityId().equals(mConditionDevId)) {
+                    Toast.makeText(AddSceneActivity.this, R.string.alert_condition_task_equal,
+                            Toast.LENGTH_SHORT).show();
+                    return;
+                }
+//                BoolProperty devProperty = (BoolProperty) mConditionListBean.getProperty();
+//                HashMap<Boolean, String> boolMap = devProperty.getBoolMap();
+//                BoolRule boolRule = BoolRule.newInstance(
+//                        "dp1",    //"dp" + dpId
+//                        mIsTrue    //触发条件的bool
+//                );
+                mCondition = SceneCondition.createDevCondition(
+                        mSceneDevBean,    //设备
+                        mDpId,        //dpId
+                        mDeviceRule    //规则
+                );
             }
         }
 
@@ -317,16 +360,16 @@ public class AddSceneActivity extends BaseActivity implements View.OnClickListen
                             Toast.LENGTH_SHORT).show();
                     return;
                 }
-                BoolProperty devProperty = (BoolProperty) mConditionListBean.getProperty();
-                HashMap<Boolean, String> boolMap = devProperty.getBoolMap();
-                BoolRule boolRule = BoolRule.newInstance(
-                        "dp1",    //"dp" + dpId
-                        mIsTrue    //触发条件的bool
-                );
+//                BoolProperty devProperty = (BoolProperty) mConditionListBean.getProperty();
+//                HashMap<Boolean, String> boolMap = devProperty.getBoolMap();
+//                BoolRule boolRule = BoolRule.newInstance(
+//                        "dp1",    //"dp" + dpId
+//                        mIsTrue    //触发条件的bool
+//                );
                 condition = SceneCondition.createDevCondition(
                         mSceneDevBean,    //设备
-                        "1",        //dpId
-                        boolRule    //规则
+                        mDpId,        //dpId
+                        mDeviceRule    //规则
                 );
             }
         }
@@ -375,6 +418,16 @@ public class AddSceneActivity extends BaseActivity implements View.OnClickListen
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.scene_condition_include:
+                Intent intent2 = new Intent(this, SelectSceneConditionListActivity.class);
+                //startActivity(intent);
+                startActivityForResult(intent2, REQUEST_ADD_CONDITION);
+                break;
+            case R.id.scene_task_include:
+                Intent intent3 = new Intent(this, AddTaskActivity.class);
+                //startActivity(intent);
+                startActivityForResult(intent3, REQUEST_ADD_TASK);
+                break;
             case R.id.fl_add_condition:
                 Intent intent = new Intent(this, SelectSceneConditionListActivity.class);
                 //startActivity(intent);

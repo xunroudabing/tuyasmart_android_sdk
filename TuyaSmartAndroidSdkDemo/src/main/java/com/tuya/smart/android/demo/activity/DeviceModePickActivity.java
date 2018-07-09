@@ -562,7 +562,7 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
                 Map<String, Object> map_dp = TuyaUser.getDeviceInstance().getDev(mDevId).getDps();
                 int v3 = (int) map_dp.get("3");
                 int v4 = (int) map_dp.get("4");
-                String v = String.format("%s%s%d01000000", Integer
+                String v = String.format("%s%s%d01ffffff", Integer
                         .toHexString(v3), Integer.toHexString(v4), mSpeed);
                 Map<String, Object> map = new HashMap<>();
                 map.put("2", "scene_1");
@@ -570,7 +570,7 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
                 final String value = JSONObject.toJSONString(map);
                 sendDp(value);
             } else {
-                String v = String.format("ffff%d01000000", mSpeed);
+                String v = String.format("ffff%d01ffffff", mSpeed);
                 Map<String, Object> map = new HashMap<>();
                 map.put("2", "scene_1");
                 map.put("7", v);

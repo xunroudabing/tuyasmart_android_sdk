@@ -87,7 +87,8 @@ public class SceneListFragment extends BaseFragment {
             public boolean onMenuItemClick(MenuItem menuItem) {
                 if (menuItem.getItemId() == R.id.action_add_scene) {
                     Intent intent = new Intent(getActivity(), AddSceneActivity.class);
-                    startActivity(intent);
+                    //startActivity(intent);
+                    startActivityForResult(intent, REQUEST_ADD_SCENE);
                 }
                 return false;
             }
@@ -136,7 +137,7 @@ public class SceneListFragment extends BaseFragment {
                 SceneListItemBean bean = adapter.getData(position);
                 Intent intent = new Intent(getActivity(), AddSceneActivity.class);
                 intent.putExtra(AddSceneActivity.INTENT_SCENEBEAN, bean);
-                startActivityForResult(intent,REQUEST_ADD_SCENE);
+                startActivityForResult(intent, REQUEST_ADD_SCENE);
             }
         });
     }
@@ -147,7 +148,7 @@ public class SceneListFragment extends BaseFragment {
             @Override
             public void onSuccess(List<SceneBean> result) {
                 Log.d(TAG, "onSuccess");
-                List<SceneListItemBean> list = SceneListItemBean.addAll(getActivity(),result);
+                List<SceneListItemBean> list = SceneListItemBean.addAll(getActivity(), result);
                 for (SceneBean bean : result) {
                     Log.d(TAG, bean.getName() + "," + bean.getId() + "," + bean.getCode());
 

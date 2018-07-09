@@ -12,6 +12,8 @@ import com.tuya.smart.android.demo.R;
 import com.tuya.smart.android.demo.adapter.DividerItemDecoration;
 import com.tuya.smart.android.demo.adapter.FunctionSecondListItemRecyclerAdapter;
 import com.tuya.smart.android.demo.adapter.ItemClickSupport;
+import com.tuya.smart.sdk.bean.scene.condition.rule.BoolRule;
+import com.tuya.smart.sdk.bean.scene.condition.rule.EnumRule;
 import com.tuya.smart.sdk.bean.scene.dev.TaskListBean;
 
 import java.util.HashMap;
@@ -23,15 +25,25 @@ import java.util.Map;
  */
 
 public class TaskSecondDetailActivity extends BaseActivity {
+    /**
+     * value enum bool
+     */
+    public static final String BUNDLE_RULE_TYPE = "BUNDLE_RULE_TYPE";
+    public static final String BUNDLE_RULE = "BUNDLE_RULE";
+    public static final String BUNDLE_DPID = "BUNDLE_DPID";
+    public static final String BUNDLE_POSITION = "BUNDLE_POSITION";
     public static final String BUNDLE_DPNAME = "BUNDLE_DPNAME";
     public static final String BUNDLE_TASK_DES = "BUNDLE_TASK_DES";
     public static final String BUNDLE_DEVICE_NAME = "BUNDLE_DEVICE_NAME";
     public static final String BUNDLE_TASK = "BUNDLE_TASK";
+    public static final String INTENT_DPID = "INTENT_DPID";//1-开关 2-模式
+    public static final String INTENT_POSITION = "INTENT_POSITION";
     public static final String INTENT_PARMS_DATA = "INTENT_PARMS_DATA";
     static final String TAG = TaskSecondDetailActivity.class.getSimpleName();
     RecyclerView mRecyclerView;
     FunctionSecondListItemRecyclerAdapter mAdapter;
     TaskListBean mBean;
+    String mDpId = "1";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +62,7 @@ public class TaskSecondDetailActivity extends BaseActivity {
 
     protected void initParms() {
         mBean = (TaskListBean) getIntent().getSerializableExtra(INTENT_PARMS_DATA);
+        mDpId = getIntent().getStringExtra(INTENT_DPID);
     }
 
     protected void initMenu() {
@@ -79,10 +92,59 @@ public class TaskSecondDetailActivity extends BaseActivity {
                     String des = adapter.getDpName(position);
                     Map<String, Object> map = new HashMap<String, Object>();
                     map.put(String.valueOf(mBean.getDpId()), object);
+                    //模式
+                    if (mBean.getDpId() == 2L) {
+                        String o = object.toString();
+                        //柔光
+                        if (o.equals("scene_1")) {
+                            String s1 = String.format("ffff%d01ffffff", 20);
+                            map.put("7", s1);
+                        }
+                        //缤纷
+                        else if (o.equals("scene_2")) {
+                            String s2 = String.format
+                                    ("ffff%d060000f5f4cb06f100ec25fb10f1000aa699b8", 20);
+                            map.put("8", s2);
+                        }
+                        //炫彩
+                        else if (o.equals("scene_3")) {
+                            String s3 = String.format("ffff%d01ff0000", 20);
+                            map.put("9", s3);
+                        }
+                        //斑斓
+                        else if (o.equals("scene_4")) {
+                            String s4 = "ffff30060000f5f4cb06f1000927fb101be1f4e500f5";
+                            map.put("10", s4);
+                        } else if (o.equals("colour")) {
+                            map.put("5", "ff00000000ffff");
+                        }
+                    } else if (mBean.getDpId() == 3L) {
+                        map.put("2", "white");
+                    }
                     final String value = JSONObject.toJSONString(map);
+                    Log.d(TAG, "value=" + value);
                     String task_des = String.format("%s：%s", mBean.getName(), des);
                     Log.d(TAG, "result=" + value + " task_des=" + task_des);
+                    String ruleType = "bool";
+                    String rule = "";
+                    //开关
+                    if (mDpId.equals("1")) {
+                        ruleType = "bool";
+                        BoolRule br = BoolRule.newInstance("dp1", Boolean.valueOf(object.toString
+                                ()));
+                        rule = JSONObject.toJSONString(br);
+                    }
+                    //模式
+                    else if (mDpId.equals("2")) {
+                        ruleType = "enum";
+                        EnumRule er = EnumRule.newInstance("dp2", object.toString());
+                        rule = JSONObject.toJSONString(er);
+                    }
                     Intent intent = new Intent();
+                    intent.putExtra(BUNDLE_DPID, mDpId);
+                    intent.putExtra(BUNDLE_RULE, rule);
+                    intent.putExtra(BUNDLE_RULE_TYPE, ruleType);
+                    intent.putExtra(BUNDLE_POSITION, getIntent().getIntExtra(INTENT_POSITION, 0));
                     intent.putExtra(BUNDLE_DPNAME, des);
                     intent.putExtra(BUNDLE_TASK_DES, task_des);
                     intent.putExtra(BUNDLE_TASK, value);
