@@ -23,11 +23,17 @@ public class ConditionListAdapter extends RecyclerView.Adapter<ConditionListAdap
     List<ConditionListBean> mList;
     int position_show = -1;
     String value = "";
+    String type_show = "";
     public ConditionListAdapter(List<ConditionListBean> list) {
         mList = list;
     }
     public void setConditionDetail(int positon,String v){
         position_show = positon;
+        value = v;
+        notifyDataSetChanged();
+    }
+    public void setConditionDetail(String type,String v){
+        type_show = type;
         value = v;
         notifyDataSetChanged();
     }
@@ -64,6 +70,11 @@ public class ConditionListAdapter extends RecyclerView.Adapter<ConditionListAdap
                     conditionListViewHolder.txtValue.setText(value);
                     conditionListViewHolder.txtValue.setVisibility(View.VISIBLE);
                 }
+            }
+        }else if(!TextUtils.isEmpty(type_show)){
+            if(item.getType().equals(type_show)){
+                conditionListViewHolder.txtValue.setText(value);
+                conditionListViewHolder.txtValue.setVisibility(View.VISIBLE);
             }
         }
     }

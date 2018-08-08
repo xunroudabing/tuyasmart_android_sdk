@@ -17,6 +17,7 @@ import com.tuya.smart.android.demo.TuyaSmartApp;
 import com.tuya.smart.android.demo.adapter.ConditionDetailRecyclerAdapter;
 import com.tuya.smart.android.demo.adapter.DividerItemDecoration;
 import com.tuya.smart.android.demo.adapter.ItemClickSupport;
+import com.tuya.smart.android.demo.bean.SceneConditonBean;
 import com.tuya.smart.sdk.TuyaScene;
 import com.tuya.smart.sdk.api.ITuyaDataCallback;
 import com.tuya.smart.sdk.bean.scene.PlaceFacadeBean;
@@ -24,6 +25,8 @@ import com.tuya.smart.sdk.bean.scene.condition.ConditionListBean;
 import com.tuya.smart.sdk.bean.scene.condition.property.EnumProperty;
 import com.tuya.smart.sdk.bean.scene.condition.property.ValueProperty;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import cn.carbswang.android.numberpickerview.library.NumberPickerView;
@@ -32,12 +35,14 @@ import cn.carbswang.android.numberpickerview.library.NumberPickerView;
  * 条件详情-选择条件二及页面
  */
 public class ConditionDetailActivity extends BaseActivity {
+    public static final String RESULT_SCENECONDITIONBEAN = "RESULT_SCENECONDITIONBEAN";
     public static final String RESULT_CITYBEAN = "RESULT_CITYBEAN";
     public static final String RESULT_CONDITIONLISTBEAN = "RESULT_CONDITIONLISTBEAN";
     public static final String RESULT_KEY = "RESULT_KEY";
     public static final String RESULT_DES = "RESULT_DES";
     public static final String RESULT_COMPARE = "RESULT_COMPARE";
     public static final String RESULT_VALUE = "RESULT_VALUE";
+    public static final String INTENT_SCENEBEAN = "INTENT_SCENEBEAN";
     public static final String INTENT_PARMS_CONDITION_BEAN = "INTENT_PARMS_CONDITION_BEAN";
     public static final int REQUEST_SELECT_CITY = 100;
     static final String[] TEXT1_ARRAY = {"小于", "等于", "大于"};
@@ -55,6 +60,7 @@ public class ConditionDetailActivity extends BaseActivity {
     ConditionDetailRecyclerAdapter adapter;
     NumberPickerView picker1, picker2;
     LinearLayout pickerLayout;
+    SceneConditonBean mConditonBean;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,6 +127,7 @@ public class ConditionDetailActivity extends BaseActivity {
 
     protected void initData() {
         try {
+            mConditonBean = (SceneConditonBean) getIntent().getSerializableExtra(INTENT_SCENEBEAN);
             mConditionListBean = (ConditionListBean) getIntent()
                     .getSerializableExtra(INTENT_PARMS_CONDITION_BEAN);
             Log.d(TAG, "ConditionListBean.type=" + mConditionListBean.getType() + ",name=" +
@@ -140,6 +147,23 @@ public class ConditionDetailActivity extends BaseActivity {
             } else if (mConditionListBean.getProperty() instanceof ValueProperty) {
                 ValueProperty property = (ValueProperty) mConditionListBean.getProperty();
 
+            }
+
+            //绑定数据
+            if (mConditonBean != null) {
+                String entitySubIds = mConditonBean.entitySubIds;
+                if (entitySubIds.equals(type)) {
+                    if (entitySubIds.equals("temp")) {
+                        bindPicker(mConditonBean.expr);
+                    } else {
+                        //枚举类型绑定
+                        String value = mConditonBean.expr.get(mConditonBean.expr.size() - 1)
+                                .toString();
+                        if (adapter != null) {
+                            adapter.setChecked(value);
+                        }
+                    }
+                }
             }
         } catch (Exception ex) {
             Log.e(TAG, ex.toString());
@@ -190,10 +214,36 @@ public class ConditionDetailActivity extends BaseActivity {
 
     }
 
+    protected void bindPicker(List<Object> expr) {
+        try {
+            if (expr.size() == 3) {
+                String compare = expr.get(1).toString();
+                String value = expr.get(2).toString();
+                int cIndex = -1;
+                if (compare.equals("<")) {
+                    cIndex = 0;
+                } else if (compare.equals("==")) {
+                    cIndex = 1;
+                } else if (compare.equals(">")) {
+                    cIndex = 2;
+                }
+                if (cIndex > 0) {
+                    picker1.setValue(cIndex);
+                }
+                int v = Integer.valueOf(value);
+                if (v < VALUE2_ARRAY.length) {
+                    picker2.setValue(v);
+                }
+            }
+        } catch (Exception ex) {
+            Log.e(TAG, ex.toString());
+        }
+
+    }
+
     //保存
     protected void save() {
         String type = mConditionListBean.getType();
-
         Intent data = new Intent();
         if (type.equals("temp")) {
             String compare_value = VALUE1_ARRAY[picker1.getValue()];
@@ -206,7 +256,6 @@ public class ConditionDetailActivity extends BaseActivity {
             data.putExtra(RESULT_VALUE, temp_value);
             data.putExtra(RESULT_DES, des);
 
-
         } else {
             Map.Entry<Object, String> item = adapter.getChecked();
             Log.d(TAG, "save=" + item.toString());
@@ -218,7 +267,39 @@ public class ConditionDetailActivity extends BaseActivity {
 
         data.putExtra(RESULT_CONDITIONLISTBEAN, mConditionListBean);
         data.putExtra(RESULT_CITYBEAN, mCityBean);
-
+        //构造绑定数据
+        if (mConditonBean == null) {
+            mConditonBean = new SceneConditonBean();
+        }
+        mConditonBean.entitySubIds = type;
+        List<Object> list = new ArrayList<>();
+        list.add("$" + type);
+        String expr = "";
+        String compare = "==";
+        String value = "";
+        if (type.equals("temp")) {
+            int index = picker1.getValue();
+            if (index == 0) {
+                compare = "<";
+            } else if (index == 1) {
+                compare = "==";
+            } else if (index == 2) {
+                compare = ">";
+            }
+            value = VALUE2_ARRAY[picker2.getValue()];
+            expr = String.format("%s%s", TEXT1_ARRAY[picker1.getValue()],
+                    TEXT2_ARRAY[picker2.getValue()]);
+        }else {
+            Map.Entry<Object, String> item = adapter.getChecked();
+            value = item.getKey().toString();
+            expr = adapter.getChecked().getValue();
+        }
+        list.add(compare);
+        list.add(value);
+        mConditonBean.exprDisplay = expr;
+        mConditonBean.expr = list;
+        //构造结束
+        data.putExtra(RESULT_SCENECONDITIONBEAN, mConditonBean);
         setResult(RESULT_OK, data);
         finish();
     }

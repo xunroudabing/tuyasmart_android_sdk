@@ -12,12 +12,17 @@ import com.tuya.smart.android.demo.R;
 import com.tuya.smart.android.demo.adapter.DividerItemDecoration;
 import com.tuya.smart.android.demo.adapter.FunctionSecondListItemRecyclerAdapter;
 import com.tuya.smart.android.demo.adapter.ItemClickSupport;
+import com.tuya.smart.android.demo.bean.SceneActionBean;
+import com.tuya.smart.android.demo.bean.SceneConditonBean;
 import com.tuya.smart.sdk.bean.scene.condition.rule.BoolRule;
 import com.tuya.smart.sdk.bean.scene.condition.rule.EnumRule;
 import com.tuya.smart.sdk.bean.scene.dev.TaskListBean;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 选择功能-二级页面
@@ -25,6 +30,8 @@ import java.util.Map;
  */
 
 public class TaskSecondDetailActivity extends BaseActivity {
+    public static final String RESULT_SCENECONDITIONBEAN = "RESULT_SCENECONDITIONBEAN";
+    public static final String BUNDLE_SCENE_ACTION = "BUNDLE_SCENE_ACTION";
     /**
      * value enum bool
      */
@@ -37,13 +44,18 @@ public class TaskSecondDetailActivity extends BaseActivity {
     public static final String BUNDLE_DEVICE_NAME = "BUNDLE_DEVICE_NAME";
     public static final String BUNDLE_TASK = "BUNDLE_TASK";
     public static final String INTENT_DPID = "INTENT_DPID";//1-开关 2-模式
+    public static final String INTENT_SCENE_ACTION = "INTENT_SCENE_ACTION";
     public static final String INTENT_POSITION = "INTENT_POSITION";
     public static final String INTENT_PARMS_DATA = "INTENT_PARMS_DATA";
+    public static final String INTENT_SCENEBEAN = "INTENT_SCENEBEAN";
     static final String TAG = TaskSecondDetailActivity.class.getSimpleName();
     RecyclerView mRecyclerView;
     FunctionSecondListItemRecyclerAdapter mAdapter;
     TaskListBean mBean;
     String mDpId = "1";
+    SceneActionBean mActionBean;
+    //用于设备条件
+    SceneConditonBean mConditonBean;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +75,8 @@ public class TaskSecondDetailActivity extends BaseActivity {
     protected void initParms() {
         mBean = (TaskListBean) getIntent().getSerializableExtra(INTENT_PARMS_DATA);
         mDpId = getIntent().getStringExtra(INTENT_DPID);
+        mActionBean = (SceneActionBean) getIntent().getSerializableExtra(INTENT_SCENE_ACTION);
+        mConditonBean = (SceneConditonBean) getIntent().getSerializableExtra(INTENT_SCENEBEAN);
     }
 
     protected void initMenu() {
@@ -81,6 +95,31 @@ public class TaskSecondDetailActivity extends BaseActivity {
                 .VERTICAL_LIST));
         mRecyclerView.setLayoutManager(manager);
         mRecyclerView.setAdapter(mAdapter);
+        if (mActionBean != null) {
+            try {
+                Map<String, Object> property = mActionBean.executorProperty;
+                if (property != null) {
+                    if (property.size() > 0) {
+                        Set<String> keys = property.keySet();
+                        String[] array = new String[keys.size()];
+                        keys.toArray(array);
+                        String key = array[0];
+                        String value = property.get(key).toString();
+                        mAdapter.setSelected(value);
+                    }
+                }
+            } catch (Exception ex) {
+                Log.e(TAG, ex.toString());
+            }
+        } else if (mConditonBean != null) {
+            try {
+                List<Object> expr = mConditonBean.expr;
+                String v = expr.get(expr.size() - 1).toString();
+                mAdapter.setSelected(v);
+            } catch (Exception ex) {
+                Log.e(TAG, ex.toString());
+            }
+        }
         ItemClickSupport.addTo(mRecyclerView).setOnItemClickListener(new ItemClickSupport
                 .OnItemClickListener() {
             @Override
@@ -123,7 +162,7 @@ public class TaskSecondDetailActivity extends BaseActivity {
                     }
                     final String value = JSONObject.toJSONString(map);
                     Log.d(TAG, "value=" + value);
-                    String task_des = String.format("%s：%s", mBean.getName(), des);
+                    String task_des = String.format("%s:%s", mBean.getName(), des);
                     Log.d(TAG, "result=" + value + " task_des=" + task_des);
                     String ruleType = "bool";
                     String rule = "";
@@ -148,6 +187,23 @@ public class TaskSecondDetailActivity extends BaseActivity {
                     intent.putExtra(BUNDLE_DPNAME, des);
                     intent.putExtra(BUNDLE_TASK_DES, task_des);
                     intent.putExtra(BUNDLE_TASK, value);
+                    if (mActionBean == null) {
+                        mActionBean = new SceneActionBean();
+                    }
+                    mActionBean.executorProperty = map;
+                    mActionBean.actionDisplay = task_des;
+                    intent.putExtra(BUNDLE_SCENE_ACTION, mActionBean);
+                    if(mConditonBean == null){
+                        mConditonBean = new SceneConditonBean();
+                    }
+                    mConditonBean.entitySubIds = mDpId;
+                    List<Object> list = new ArrayList<>();
+                    list.add("dp" + mDpId);
+                    list.add("==");
+                    list.add(object.toString());
+                    mConditonBean.expr = list;
+                    mConditonBean.exprDisplay = task_des;
+                    intent.putExtra(RESULT_SCENECONDITIONBEAN, mConditonBean);
                     setResult(RESULT_OK, intent);
                     finish();
                 } catch (Exception ex) {

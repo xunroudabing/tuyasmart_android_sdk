@@ -52,7 +52,19 @@
             android:layout_marginRight="15dp"
             android:src="@drawable/arrow_more" />
 
-
+        <TextView
+            android:id="@+id/tv_actions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/mg_10"
+            android:layout_toRightOf="@id/tv_device"
+            android:layout_toLeftOf="@id/iv_device_arrow"
+            android:ellipsize="end"
+            android:gravity="end"
+            android:singleLine="true"
+            android:text="?attr/app_name"
+            android:textColor="?attr/list_secondary_color" />
         <View
             android:id="@+id/line_long"
             style="@style/line_long"

@@ -35,6 +35,22 @@ public class ConditionDetailRecyclerAdapter extends RecyclerView
         return array[postion_checked];
     }
 
+    public void setChecked(String obj) {
+        Set<Object> keys = mMap.keySet();
+        if (keys != null) {
+            if (keys.contains(obj)) {
+                int index = 0;
+                for (Object key : keys) {
+                    if (key.toString().equals(obj)) {
+                        break;
+                    }
+                    index++;
+                }
+                setChecked(index);
+            }
+        }
+    }
+
     public void setChecked(int position) {
         if (position < mMap.size()) {
             postion_checked = position;

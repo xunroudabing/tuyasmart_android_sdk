@@ -16,6 +16,8 @@ import com.tuya.smart.android.demo.R;
 import com.tuya.smart.android.demo.adapter.DividerItemDecoration;
 import com.tuya.smart.android.demo.adapter.FunctionListItemRecyclerAdapter;
 import com.tuya.smart.android.demo.adapter.ItemClickSupport;
+import com.tuya.smart.android.demo.bean.SceneActionBean;
+import com.tuya.smart.android.demo.bean.SceneConditonBean;
 import com.tuya.smart.sdk.TuyaScene;
 import com.tuya.smart.sdk.api.ITuyaDataCallback;
 import com.tuya.smart.sdk.bean.scene.dev.SceneDevBean;
@@ -25,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 选择功能
@@ -33,6 +36,8 @@ import java.util.Map;
 
 public class TaskDetailActivity extends BaseActivity {
     public static final int REQUEST_SECOND = 101;
+    public static final String RESULT_SCENECONDITIONBEAN = "RESULT_SCENECONDITIONBEAN";
+    public static final String BUNDLE_SCENE_ACTION = "BUNDLE_SCENE_ACTION";
     public static final String BUNDLE_RULE_TYPE = "BUNDLE_RULE_TYPE";
     public static final String BUNDLE_RULE = "BUNDLE_RULE";
     public static final String BUNDLE_DPID = "BUNDLE_DPID";
@@ -40,6 +45,8 @@ public class TaskDetailActivity extends BaseActivity {
     public static final String BUNDLE_DEVICEID = "BUNDLE_DEVICEID";
     public static final String BUNDLE_DEVICENAME = "BUNDLE_DEVICENAME";
     public static final String BUNDLE_DATA = "BUNDLE_DATA";
+    public static final String INTENT_SCENE_ACTION = "INTENT_SCENE_ACTION";
+    public static final String INTENT_SCENEBEAN = "INTENT_SCENEBEAN";
     public static final String INTENT_SCENE_BEAN = "INTENT_SCENE_BEAN";
     public static final String INTENT_DEVICEID = "INTENT_DEVICEID";
     public static final String INTENT_DEVICENAME = "INTENT_DEVICENAME";
@@ -53,6 +60,9 @@ public class TaskDetailActivity extends BaseActivity {
     String mTaskDescription;
     String mDpId;
     Map<String, Object> mMap = new HashMap<String, Object>();
+    SceneActionBean mActionBean;
+    //用于设备条件
+    SceneConditonBean mConditonBean;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +88,25 @@ public class TaskDetailActivity extends BaseActivity {
                 mRule = data.getStringExtra(DeviceValueConditonActivity.BUNDLE_RULE);
                 mRuleType = data.getStringExtra(DeviceValueConditonActivity.BUNDLE_RULE_TYPE);
                 mDpId = data.getStringExtra(DeviceValueConditonActivity.BUNDLE_DPID);
+                //add by hanzheng 2018-7-16 15:13
+                if (mActionBean != null) {
+                    SceneActionBean temp = (SceneActionBean) data.getSerializableExtra
+                            (BUNDLE_SCENE_ACTION);
+                    mActionBean.executorProperty = temp.executorProperty;
+                    mActionBean.actionDisplay = temp.actionDisplay;
+                    mActionBean.entityId = mDevId;
+                } else {
+                    mActionBean = (SceneActionBean) data.getSerializableExtra(BUNDLE_SCENE_ACTION);
+                    if (mActionBean != null) {
+                        mActionBean.entityId = mDevId;
+                    }
+                }
+                //end by hanzheng
+                mConditonBean = (SceneConditonBean) data.getSerializableExtra
+                        (RESULT_SCENECONDITIONBEAN);
+                if (mConditonBean != null) {
+                    mConditonBean.entityId = mDevId;
+                }
                 if (mAdapter != null) {
                     String dpname = data.getStringExtra(TaskSecondDetailActivity.BUNDLE_DPNAME);
                     mAdapter.setSelectedValue(position, dpname);
@@ -94,6 +123,8 @@ public class TaskDetailActivity extends BaseActivity {
         //mBean = (SceneDevBean) getIntent().getSerializableExtra(INTENT_SCENE_BEAN);
         mDevId = getIntent().getStringExtra(INTENT_DEVICEID);
         //Log.d(TAG,"mBean.id" + mBean.devId + "," + mBean.name);
+        mActionBean = (SceneActionBean) getIntent().getSerializableExtra(INTENT_SCENE_ACTION);
+        mConditonBean = (SceneConditonBean) getIntent().getSerializableExtra(INTENT_SCENEBEAN);
     }
 
     protected void initMenu() {
@@ -134,6 +165,12 @@ public class TaskDetailActivity extends BaseActivity {
             intent.putExtra(BUNDLE_DEVICENAME, deviceName);
             intent.putExtra(BUNDLE_TASKDES, mTaskDescription);
             intent.putExtras(getIntent());
+            if (mActionBean != null) {
+                intent.putExtra(BUNDLE_SCENE_ACTION, mActionBean);
+            }
+            if (mConditonBean != null) {
+                intent.putExtra(RESULT_SCENECONDITIONBEAN, mConditonBean);
+            }
             setResult(RESULT_OK, intent);
             finish();
         } catch (Exception ex) {
@@ -148,6 +185,34 @@ public class TaskDetailActivity extends BaseActivity {
                 .VERTICAL_LIST));
         mRecyclerView.setLayoutManager(manager);
         mRecyclerView.setAdapter(mAdapter);
+        if (mActionBean != null) {
+            try {
+                Map<String, Object> property = mActionBean.executorProperty;
+                if (property != null) {
+                    if (property.size() > 0) {
+                        Set<String> keys = property.keySet();
+                        String[] array = new String[keys.size()];
+                        keys.toArray(array);
+                        String key = array[array.length - 1];
+                        String value = property.get(key).toString();
+                        long k = Long.valueOf(key);
+                        if (k > 4) {
+                            key = array[0];
+                        }
+                        mAdapter.setSelectedValue(key, mActionBean.getShortActionDisplay());
+                    }
+                }
+            } catch (Exception ex) {
+                Log.e(TAG, ex.toString());
+            }
+        } else if (mConditonBean != null) {
+            try {
+                //List<Object> expr = mConditonBean.expr;
+                mAdapter.setSelectedValue(mConditonBean.entitySubIds, mConditonBean.getShortDisplay());
+            } catch (Exception ex) {
+                Log.e(TAG, ex.toString());
+            }
+        }
         ItemClickSupport.addTo(mRecyclerView).setOnItemClickListener(new ItemClickSupport
                 .OnItemClickListener() {
             @Override
@@ -165,6 +230,7 @@ public class TaskDetailActivity extends BaseActivity {
                         intent.putExtra(TaskSecondDetailActivity.INTENT_PARMS_DATA, bean);
                         intent.putExtra(DeviceValueConditonActivity.INTENT_DPID, String.valueOf
                                 (dpid));
+                        intent.putExtras(getIntent());
                         startActivityForResult(intent, REQUEST_SECOND);
                     } else {
                         Intent intent = new Intent(TaskDetailActivity.this, TaskSecondDetailActivity
@@ -174,6 +240,7 @@ public class TaskDetailActivity extends BaseActivity {
                         intent.putExtra(TaskSecondDetailActivity.INTENT_POSITION, position);
                         intent.putExtra(TaskSecondDetailActivity.INTENT_PARMS_DATA, bean);
                         //startActivity(intent);
+                        intent.putExtras(getIntent());
                         startActivityForResult(intent, REQUEST_SECOND);
                     }
                 } catch (Exception ex) {

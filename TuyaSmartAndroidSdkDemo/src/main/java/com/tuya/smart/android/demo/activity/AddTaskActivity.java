@@ -12,6 +12,8 @@ import android.widget.RelativeLayout;
 import com.alibaba.fastjson.JSONObject;
 import com.tuya.smart.android.demo.R;
 import com.tuya.smart.android.demo.adapter.SceneDeviceAdapter;
+import com.tuya.smart.android.demo.bean.SceneActionBean;
+import com.tuya.smart.android.demo.bean.SceneConditonBean;
 import com.tuya.smart.sdk.TuyaScene;
 import com.tuya.smart.sdk.api.ITuyaDataCallback;
 import com.tuya.smart.sdk.bean.scene.condition.ConditionListBean;
@@ -25,14 +27,19 @@ import java.util.List;
  */
 
 public class AddTaskActivity extends BaseActivity {
+    public static final String BUNDLE_SCENE_ACTION = "BUNDLE_SCENE_ACTION";
+    public static final String INTENT_SCENEBEAN = "INTENT_SCENEBEAN";
+    public static final String INTENT_SCENE_ACTION = "INTENT_SCENE_ACTION";
     static final int REQUEST_CHOOSE_FUNCTION = 101;
     static final String TAG = AddTaskActivity.class.getSimpleName();
+    SceneActionBean mActionBean;
     RelativeLayout mDataEmpty;
     SwipeRefreshLayout mRefreshLayout;
     ListView mListView;
     SceneDeviceAdapter mAdapter;
     ConditionListBean mConditionListBean;
-
+    //用于设备条件
+    SceneConditonBean mConditonBean;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,6 +59,7 @@ public class AddTaskActivity extends BaseActivity {
                     data.putExtra(ConditionDetailActivity.RESULT_CONDITIONLISTBEAN,
                             mConditionListBean);
                 }
+                //mActionBean = (SceneActionBean) data.getSerializableExtra(BUNDLE_SCENE_ACTION);
                 setResult(RESULT_OK, data);
                 finish();
             }
@@ -67,6 +75,13 @@ public class AddTaskActivity extends BaseActivity {
         if (getIntent().hasExtra(ConditionDetailActivity.INTENT_PARMS_CONDITION_BEAN)) {
             mConditionListBean = (ConditionListBean) getIntent().getSerializableExtra
                     (ConditionDetailActivity.INTENT_PARMS_CONDITION_BEAN);
+        }
+        mActionBean = (SceneActionBean) getIntent().getSerializableExtra(INTENT_SCENE_ACTION);
+        mConditonBean = (SceneConditonBean) getIntent().getSerializableExtra(INTENT_SCENEBEAN);
+        if (mActionBean != null) {
+            mAdapter.setDevAction(mActionBean.entityId, mActionBean.actionDisplay);
+        }else if(mConditonBean != null){
+            mAdapter.setDevAction(mConditonBean.entityId, mConditonBean.exprDisplay);
         }
     }
 
@@ -85,6 +100,7 @@ public class AddTaskActivity extends BaseActivity {
                     intent.putExtra(TaskDetailActivity.INTENT_DEVICEID, bean.devId);
                     intent.putExtra(TaskDetailActivity.INTENT_DEVICENAME, bean.getName());
                     intent.putExtra(TaskDetailActivity.INTENT_SCENE_BEAN, json);
+                    intent.putExtras(getIntent());
                     startActivityForResult(intent, REQUEST_CHOOSE_FUNCTION);
                 } catch (Exception ex) {
                     Log.e(TAG, ex.toString());

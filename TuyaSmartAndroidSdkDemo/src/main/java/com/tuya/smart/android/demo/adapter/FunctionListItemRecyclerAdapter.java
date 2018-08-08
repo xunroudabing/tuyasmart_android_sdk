@@ -2,6 +2,7 @@ package com.tuya.smart.android.demo.adapter;
 
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,14 +20,36 @@ import java.util.List;
 
 public class FunctionListItemRecyclerAdapter extends RecyclerView
         .Adapter<FunctionListItemRecyclerAdapter.FunctionListItemViewHolder> {
+    static final String TAG = FunctionListItemRecyclerAdapter.class.getSimpleName();
     List<TaskListBean> mData;
     String mSelectedValue;
     int mSelectedPosition = 0;
+
     public FunctionListItemRecyclerAdapter(List<TaskListBean> list) {
         mData = list;
     }
 
-    public void setSelectedValue(int position,String value) {
+    public void setSelectedValue(String dp, String value) {
+        try {
+            int postion = 0;
+            boolean contains = false;
+            for (TaskListBean bean : mData) {
+                if (bean.getDpId() == Long.valueOf(dp)) {
+                    contains = true;
+                    break;
+                }
+                postion++;
+            }
+            if (contains) {
+                setSelectedValue(postion, value);
+            }
+        } catch (Exception ex) {
+            Log.e(TAG, ex.toString());
+        }
+
+    }
+
+    public void setSelectedValue(int position, String value) {
         mSelectedValue = value;
         mSelectedPosition = position;
         notifyDataSetChanged();
@@ -45,7 +68,7 @@ public class FunctionListItemRecyclerAdapter extends RecyclerView
         if (!TextUtils.isEmpty(mSelectedValue) && mSelectedPosition == i) {
             functionListItemViewHolder.txtSelected.setText(mSelectedValue);
             functionListItemViewHolder.txtSelected.setVisibility(View.VISIBLE);
-        }else {
+        } else {
             functionListItemViewHolder.txtSelected.setVisibility(View.GONE);
         }
 

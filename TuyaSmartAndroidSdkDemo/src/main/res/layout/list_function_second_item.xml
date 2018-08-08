@@ -17,5 +17,11 @@
         android:textColor="@color/text_color"
         android:textSize="@dimen/ts_16" />
 
-
+    <ImageView
+        android:id="@+id/tv_item_imgChk"
+        android:layout_gravity="center|right"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/mg_20"
+        android:layout_width="wrap_content"
+        android:src="@drawable/ty_list_selected" />
 </LinearLayout>

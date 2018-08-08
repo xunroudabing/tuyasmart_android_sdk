@@ -16,6 +16,8 @@ import android.widget.Toast;
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
 import com.tuya.smart.android.demo.R;
+import com.tuya.smart.android.demo.bean.SceneActionBean;
+import com.tuya.smart.android.demo.bean.SceneConditonBean;
 import com.tuya.smart.android.demo.test.utils.DialogUtil;
 import com.tuya.smart.sdk.TuyaScene;
 import com.tuya.smart.sdk.api.ITuyaDataCallback;
@@ -42,6 +44,7 @@ import java.util.List;
  * 新建场景
  */
 public class AddSceneActivity extends BaseActivity implements View.OnClickListener {
+    public static final String BUNDLE_SCENE_ACTION = "BUNDLE_SCENE_ACTION";
     public static final String INTENT_SCENEBEAN = "INTENT_SCENEBEAN";
     static final int REQUEST_ADD_CONDITION = 100;
     static final int REQUEST_ADD_TASK = 101;
@@ -51,6 +54,8 @@ public class AddSceneActivity extends BaseActivity implements View.OnClickListen
     Rule mDeviceRule;
     ValueRule mValueRule;
     SceneBean mSceneBean;
+    SceneConditonBean mConditonBean;
+    SceneActionBean mActionBean;
     String mConditionDevId;
     ConditionListBean mConditionListBean;
     PlaceFacadeBean mPlaceFacadeBean;
@@ -65,6 +70,7 @@ public class AddSceneActivity extends BaseActivity implements View.OnClickListen
     FrameLayout addCondition, addTask;
     TextView txtDevice, txtTask;
     TextView btnDel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,6 +85,8 @@ public class AddSceneActivity extends BaseActivity implements View.OnClickListen
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_ADD_CONDITION) {
             if (resultCode == RESULT_OK) {
+                mConditonBean = (SceneConditonBean) data.getSerializableExtra
+                        (ConditionDetailActivity.RESULT_SCENECONDITIONBEAN);
                 mEnumValue = data.getStringExtra(ConditionDetailActivity.RESULT_KEY);
                 String value = data.getStringExtra(ConditionDetailActivity.RESULT_VALUE);
                 Log.d(TAG, "onActivityResult:value=" + value + ",key=" + mEnumValue);
@@ -150,6 +158,7 @@ public class AddSceneActivity extends BaseActivity implements View.OnClickListen
                     HashMap<String, Object> map = JSONObject.parseObject(json, HashMap.class);
                     mSceneTask = SceneTask.createDpTask(devid, map);
                 }
+                mActionBean = (SceneActionBean) data.getSerializableExtra(BUNDLE_SCENE_ACTION);
             }
         }
     }
@@ -211,6 +220,33 @@ public class AddSceneActivity extends BaseActivity implements View.OnClickListen
                 showCondition(mCondition.getExprDisplay(), mCondition.getEntityName());
             }
             editSceneName.setText(mSceneBean.getName());
+            mConditonBean = new SceneConditonBean();
+            //用于数据绑定
+            if (mSceneBean.getConditions() != null) {
+                if (mSceneBean.getConditions().size() > 0) {
+                    SceneCondition condition = mSceneBean.getConditions().get(0);
+                    mConditonBean.entitySubIds = condition.getEntitySubIds();
+                    mConditonBean.entityId = condition.getEntityId();
+                    String expr = condition.getExprDisplay();
+                    String[] array = expr.split(":");
+                    if (array.length > 1) {
+                        mConditonBean.exprDisplay = array[1];
+                    }
+                    if (condition.getExpr().size() > 0) {
+                        mConditonBean.expr = condition.getExpr().get(0);
+                    }
+                }
+            }
+            if (mSceneBean.getActions() != null) {
+                if (mSceneBean.getActions().size() > 0) {
+                    SceneTask task = mSceneBean.getActions().get(0);
+                    mActionBean = new SceneActionBean();
+                    mActionBean.actionDisplay = task.getActionDisplay();
+                    mActionBean.executorProperty = task.getExecutorProperty();
+                    mActionBean.id = task.getId();
+                    mActionBean.entityId = task.getEntityId();
+                }
+            }
         }
     }
 
@@ -345,14 +381,18 @@ public class AddSceneActivity extends BaseActivity implements View.OnClickListen
                 EnumRule enumRule = EnumRule.newInstance(
                         mConditionListBean.getType(),  //类别
                         mEnumValue);        //选定的枚举值
-                condition = SceneCondition.createWeatherCondition(
-                        mPlaceFacadeBean,    //城市
-                        mConditionListBean.getType(),        //类别
-                        enumRule            //规则
-                );
+                if(mPlaceFacadeBean != null) {
+                    condition = SceneCondition.createWeatherCondition(
+                            mPlaceFacadeBean,    //城市
+                            mConditionListBean.getType(),        //类别
+                            enumRule            //规则
+                    );
+                }
             } else if (mConditionListBean.getProperty() instanceof ValueProperty) {
-                condition = SceneCondition.createWeatherCondition(mPlaceFacadeBean,
-                        mConditionListBean.getType(), mValueRule);
+                if(mPlaceFacadeBean != null) {
+                    condition = SceneCondition.createWeatherCondition(mPlaceFacadeBean,
+                            mConditionListBean.getType(), mValueRule);
+                }
             } else if (mConditionListBean.getProperty() instanceof BoolProperty) {
                 //为了避免循环控制，同一台设备无法同时作为条件和任务。
                 if (mSceneTask.getEntityId().equals(mConditionDevId)) {
@@ -421,21 +461,35 @@ public class AddSceneActivity extends BaseActivity implements View.OnClickListen
             case R.id.scene_condition_include:
                 Intent intent2 = new Intent(this, SelectSceneConditionListActivity.class);
                 //startActivity(intent);
+                if (mConditonBean != null) {
+                    intent2.putExtra(SelectSceneConditionListActivity.INTENT_SCENEBEAN,
+                            mConditonBean);
+                }
                 startActivityForResult(intent2, REQUEST_ADD_CONDITION);
                 break;
             case R.id.scene_task_include:
                 Intent intent3 = new Intent(this, AddTaskActivity.class);
                 //startActivity(intent);
+                if (mActionBean != null) {
+                    intent3.putExtra(AddTaskActivity.INTENT_SCENE_ACTION, mActionBean);
+                }
                 startActivityForResult(intent3, REQUEST_ADD_TASK);
                 break;
             case R.id.fl_add_condition:
                 Intent intent = new Intent(this, SelectSceneConditionListActivity.class);
                 //startActivity(intent);
+                if (mConditonBean != null) {
+                    intent.putExtra(SelectSceneConditionListActivity.INTENT_SCENEBEAN,
+                            mConditonBean);
+                }
                 startActivityForResult(intent, REQUEST_ADD_CONDITION);
                 break;
             case R.id.fl_add_task:
                 Intent intent1 = new Intent(this, AddTaskActivity.class);
                 //startActivity(intent);
+                if (mActionBean != null) {
+                    intent1.putExtra(AddTaskActivity.INTENT_SCENE_ACTION, mActionBean);
+                }
                 startActivityForResult(intent1, REQUEST_ADD_TASK);
                 break;
             case R.id.tv_scene_delete:

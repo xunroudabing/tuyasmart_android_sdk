@@ -26,7 +26,8 @@ public class SceneDeviceAdapter extends BaseAdapter {
     private final List<SceneDevBean> mDevs;
     private final LayoutInflater mInflater;
     private Context mContext;
-
+    private String devId;
+    private String devAction;
     public SceneDeviceAdapter(Context context) {
         mDevs = new ArrayList<>();
         mContext = context;
@@ -34,7 +35,11 @@ public class SceneDeviceAdapter extends BaseAdapter {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
     }
-
+    public void setDevAction(String devid,String action){
+        devId = devid;
+        devAction = action;
+        notifyDataSetChanged();
+    }
     @Override
     public int getCount() {
         return mDevs.size();
@@ -61,6 +66,9 @@ public class SceneDeviceAdapter extends BaseAdapter {
             holder = (SceneDeviceAdapter.DeviceViewHolder) convertView.getTag();
         }
         holder.initData(mDevs.get(position));
+        if(mDevs.get(position).getDevId().equals(devId)){
+            holder.setAction(devAction);
+        }
         return convertView;
     }
 
@@ -76,13 +84,13 @@ public class SceneDeviceAdapter extends BaseAdapter {
         ImageView connect;
         ImageView deviceIcon;
         TextView device;
-
+        TextView action;
         DeviceViewHolder(final View contentView) {
             super(contentView);
             connect = (ImageView) contentView.findViewById(R.id.iv_device_list_dot);
             deviceIcon = (ImageView) contentView.findViewById(R.id.iv_device_icon);
             device = (TextView) contentView.findViewById(R.id.tv_device);
-
+            action = (TextView) contentView.findViewById(R.id.tv_actions);
         }
 
         @Override
@@ -103,7 +111,13 @@ public class SceneDeviceAdapter extends BaseAdapter {
                     resId = R.drawable.ty_devicelist_dot_gray;
                 }
             }
+            action.setText(null);
+            action.setVisibility(View.GONE);
             connect.setImageResource(resId);
+        }
+        public void setAction(String str){
+            action.setText(str);
+            action.setVisibility(View.VISIBLE);
         }
     }
 }
