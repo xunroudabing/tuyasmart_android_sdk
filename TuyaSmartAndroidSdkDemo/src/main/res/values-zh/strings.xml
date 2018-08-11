@@ -79,6 +79,7 @@
     <string name="device_type_1">照明</string>
     <string name="device_type_2">开关</string>
     <string name="device_type_3">插座</string>
+    <string name="device_type_4">照明(蓝牙)</string>
     <string name="home_scene">智能场景</string>
     <string name="ty_smart_scene_start">执行</string>
     <string name="scene_item1">到家</string>

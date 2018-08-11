@@ -12,8 +12,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.tuya.smart.android.demo.R;
 import com.tuya.smart.android.demo.bean.SceneActionBean;
 import com.tuya.smart.android.demo.bean.SceneConditonBean;
-import com.tuya.smart.sdk.bean.scene.condition.rule.ValueRule;
-import com.tuya.smart.sdk.bean.scene.dev.TaskListBean;
+import com.tuya.smart.home.sdk.bean.scene.condition.rule.ValueRule;
+import com.tuya.smart.home.sdk.bean.scene.dev.TaskListBean;
+
 
 import java.util.ArrayList;
 import java.util.HashMap;

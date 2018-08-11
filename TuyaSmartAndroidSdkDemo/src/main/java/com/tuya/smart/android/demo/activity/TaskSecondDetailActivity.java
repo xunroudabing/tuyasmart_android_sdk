@@ -14,9 +14,9 @@ import com.tuya.smart.android.demo.adapter.FunctionSecondListItemRecyclerAdapter
 import com.tuya.smart.android.demo.adapter.ItemClickSupport;
 import com.tuya.smart.android.demo.bean.SceneActionBean;
 import com.tuya.smart.android.demo.bean.SceneConditonBean;
-import com.tuya.smart.sdk.bean.scene.condition.rule.BoolRule;
-import com.tuya.smart.sdk.bean.scene.condition.rule.EnumRule;
-import com.tuya.smart.sdk.bean.scene.dev.TaskListBean;
+import com.tuya.smart.home.sdk.bean.scene.condition.rule.BoolRule;
+import com.tuya.smart.home.sdk.bean.scene.condition.rule.EnumRule;
+import com.tuya.smart.home.sdk.bean.scene.dev.TaskListBean;
 
 import java.util.ArrayList;
 import java.util.HashMap;

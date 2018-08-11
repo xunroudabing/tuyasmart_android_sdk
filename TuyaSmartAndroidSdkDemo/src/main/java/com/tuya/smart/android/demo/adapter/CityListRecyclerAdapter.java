@@ -9,7 +9,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.tuya.smart.android.demo.R;
-import com.tuya.smart.sdk.bean.scene.PlaceFacadeBean;
+import com.tuya.smart.home.sdk.bean.scene.PlaceFacadeBean;
+
 
 import java.util.List;
 

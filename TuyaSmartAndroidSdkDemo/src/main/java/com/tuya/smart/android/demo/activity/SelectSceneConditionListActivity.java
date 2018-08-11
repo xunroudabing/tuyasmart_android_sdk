@@ -13,12 +13,11 @@ import com.tuya.smart.android.demo.adapter.ConditionListAdapter;
 import com.tuya.smart.android.demo.adapter.DividerItemDecoration;
 import com.tuya.smart.android.demo.adapter.ItemClickSupport;
 import com.tuya.smart.android.demo.bean.SceneConditonBean;
-import com.tuya.smart.sdk.TuyaScene;
-import com.tuya.smart.sdk.api.ITuyaDataCallback;
-import com.tuya.smart.sdk.bean.scene.SceneBean;
-import com.tuya.smart.sdk.bean.scene.SceneCondition;
-import com.tuya.smart.sdk.bean.scene.condition.ConditionListBean;
-import com.tuya.smart.sdk.bean.scene.condition.property.BoolProperty;
+import com.tuya.smart.home.sdk.TuyaHomeSdk;
+import com.tuya.smart.home.sdk.bean.scene.condition.ConditionListBean;
+import com.tuya.smart.home.sdk.bean.scene.condition.property.BoolProperty;
+import com.tuya.smart.home.sdk.callback.ITuyaResultCallback;
+
 
 import java.util.List;
 
@@ -90,8 +89,7 @@ public class SelectSceneConditionListActivity extends BaseActivity {
     }
 
     protected void getConditionList() {
-
-        TuyaScene.getTuyaSceneManager().getConditionList(new ITuyaDataCallback<List<ConditionListBean>>() {
+        TuyaHomeSdk.getSceneManagerInstance().getConditionList(true, new ITuyaResultCallback<List<ConditionListBean>>() {
             @Override
             public void onSuccess(List<ConditionListBean> conditionListBeans) {
                 Log.d(TAG, "onSuccess:" + conditionListBeans);

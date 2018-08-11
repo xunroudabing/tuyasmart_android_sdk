@@ -14,10 +14,11 @@ import com.tuya.smart.android.demo.R;
 import com.tuya.smart.android.demo.adapter.SceneDeviceAdapter;
 import com.tuya.smart.android.demo.bean.SceneActionBean;
 import com.tuya.smart.android.demo.bean.SceneConditonBean;
-import com.tuya.smart.sdk.TuyaScene;
-import com.tuya.smart.sdk.api.ITuyaDataCallback;
-import com.tuya.smart.sdk.bean.scene.condition.ConditionListBean;
-import com.tuya.smart.sdk.bean.scene.dev.SceneDevBean;
+import com.tuya.smart.home.sdk.TuyaHomeSdk;
+import com.tuya.smart.home.sdk.bean.scene.condition.ConditionListBean;
+import com.tuya.smart.home.sdk.callback.ITuyaResultCallback;
+import com.tuya.smart.sdk.bean.DeviceBean;
+
 
 import java.util.List;
 
@@ -94,7 +95,7 @@ public class AddTaskActivity extends BaseActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 try {
-                    SceneDevBean bean = mAdapter.getItem(position);
+                    DeviceBean bean = mAdapter.getItem(position);
                     String json = JSONObject.toJSONString(bean);
                     Intent intent = new Intent(AddTaskActivity.this, TaskDetailActivity.class);
                     intent.putExtra(TaskDetailActivity.INTENT_DEVICEID, bean.devId);
@@ -110,9 +111,12 @@ public class AddTaskActivity extends BaseActivity {
     }
 
     protected void getTaskDevList() {
-        TuyaScene.getTuyaSceneManager().getTaskDevList(new ITuyaDataCallback<List<SceneDevBean>>() {
+        //hanzheng to do
+        long homeId = 1L;
+        TuyaHomeSdk.getSceneManagerInstance().getTaskDevList(homeId, new ITuyaResultCallback<List<DeviceBean>>() {
+
             @Override
-            public void onSuccess(List<SceneDevBean> sceneDevBeans) {
+            public void onSuccess(List<DeviceBean> sceneDevBeans) {
                 if (sceneDevBeans != null && sceneDevBeans.size() > 0) {
                     mAdapter.setData(sceneDevBeans);
                     mDataEmpty.setVisibility(View.GONE);
@@ -122,7 +126,8 @@ public class AddTaskActivity extends BaseActivity {
             }
 
             @Override
-            public void onError(String errorCode, String errorMessage) {
+            public void onError(String s, String s1) {
+
             }
         });
     }

@@ -13,8 +13,9 @@ import android.widget.Toast;
 
 import com.tuya.smart.android.demo.R;
 import com.tuya.smart.android.demo.bean.SceneListItemBean;
-import com.tuya.smart.sdk.TuyaScene;
-import com.tuya.smart.sdk.api.scene.IExecuteSceneCallback;
+import com.tuya.smart.home.sdk.TuyaHomeSdk;
+import com.tuya.smart.sdk.api.IResultCallback;
+
 
 import java.util.List;
 
@@ -63,17 +64,17 @@ public class SceneListRecyclerAdapter extends RecyclerView.Adapter<SceneListRecy
             sceneListItemViewHolder.btnExecute.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    TuyaScene.getTuyaSmartScene(item.getId()).executeScene(new IExecuteSceneCallback() {
+                    TuyaHomeSdk.newSceneInstance(item.getId()).executeScene(new IResultCallback() {
+                        @Override
+                        public void onError(String s, String s1) {
+
+                        }
+
                         @Override
                         public void onSuccess() {
                             Log.d(TAG, "onSuccess");
                             Toast.makeText(mContext, R.string.alert_scene_execute, Toast
                                     .LENGTH_SHORT).show();
-                        }
-
-                        @Override
-                        public void onError(String s, String s1) {
-                            Log.d(TAG, s + s1);
                         }
                     });
                 }

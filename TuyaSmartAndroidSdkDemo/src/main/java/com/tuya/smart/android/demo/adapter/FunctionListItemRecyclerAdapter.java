@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.tuya.smart.android.demo.R;
-import com.tuya.smart.sdk.bean.scene.dev.TaskListBean;
+import com.tuya.smart.home.sdk.bean.scene.dev.TaskListBean;
 
 import java.util.List;
 

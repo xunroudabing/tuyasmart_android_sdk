@@ -3,7 +3,8 @@ package com.tuya.smart.android.demo.bean;
 import android.content.Context;
 
 import com.tuya.smart.android.demo.R;
-import com.tuya.smart.sdk.bean.scene.SceneBean;
+import com.tuya.smart.home.sdk.bean.scene.SceneBean;
+
 
 import java.util.ArrayList;
 import java.util.List;

@@ -38,6 +38,7 @@ import com.tuya.smart.sdk.TuyaDevice;
 import com.tuya.smart.sdk.TuyaGroup;
 import com.tuya.smart.sdk.TuyaTimerManager;
 import com.tuya.smart.sdk.TuyaUser;
+import com.tuya.smart.sdk.api.IResultCallback;
 import com.tuya.smart.sdk.api.IResultStatusCallback;
 import com.tuya.smart.sdk.api.ITuyaGroup;
 
@@ -469,7 +470,7 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (which == DialogInterface.BUTTON_POSITIVE) {
-                    mTuyaGroup.dismissGroup(new IControlCallback() {
+                    mTuyaGroup.dismissGroup(new IResultCallback() {
                         @Override
                         public void onError(String s, String s1) {
                             String error = "解散群组失败:" + s1;
@@ -861,10 +862,9 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
     protected void sendDp(String json) {
         Log.d(TAG, "sendDp:" + json);
         if (!isGroup) {
-            mTuyaDevice.publishDps(json, new IControlCallback() {
+            mTuyaDevice.publishDps(json, new IResultCallback() {
                 @Override
                 public void onError(String s, String s1) {
-                    //mView.showMessage("send command failure");
                     Log.d(TAG, "onError:" + s + "," + s1);
                 }
 
@@ -874,7 +874,7 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
                 }
             });
         } else {
-            mTuyaGroup.publishDps(json, new IControlCallback() {
+            mTuyaGroup.publishDps(json, new IResultCallback() {
                 @Override
                 public void onError(String s, String s1) {
                     Log.d(TAG, "onError:" + s + "," + s1);

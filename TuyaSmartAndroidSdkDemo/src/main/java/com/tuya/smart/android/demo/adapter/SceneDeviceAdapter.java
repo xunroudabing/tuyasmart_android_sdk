@@ -12,7 +12,6 @@ import com.squareup.picasso.Picasso;
 import com.tuya.smart.android.demo.R;
 import com.tuya.smart.sdk.TuyaSdk;
 import com.tuya.smart.sdk.bean.DeviceBean;
-import com.tuya.smart.sdk.bean.scene.dev.SceneDevBean;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +22,7 @@ import java.util.List;
 
 public class SceneDeviceAdapter extends BaseAdapter {
     static final String TAG = SceneDeviceAdapter.class.getSimpleName();
-    private final List<SceneDevBean> mDevs;
+    private final List<DeviceBean> mDevs;
     private final LayoutInflater mInflater;
     private Context mContext;
     private String devId;
@@ -46,7 +45,7 @@ public class SceneDeviceAdapter extends BaseAdapter {
     }
 
     @Override
-    public SceneDevBean getItem(int position) {
+    public DeviceBean getItem(int position) {
         return mDevs.get(position);
     }
 
@@ -72,7 +71,7 @@ public class SceneDeviceAdapter extends BaseAdapter {
         return convertView;
     }
 
-    public void setData(List<SceneDevBean> myDevices) {
+    public void setData(List<DeviceBean> myDevices) {
         mDevs.clear();
         if (myDevices != null) {
             mDevs.addAll(myDevices);
@@ -80,7 +79,7 @@ public class SceneDeviceAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
-    private static class DeviceViewHolder extends ViewHolder<SceneDevBean> {
+    private static class DeviceViewHolder extends ViewHolder<DeviceBean> {
         ImageView connect;
         ImageView deviceIcon;
         TextView device;
@@ -94,18 +93,19 @@ public class SceneDeviceAdapter extends BaseAdapter {
         }
 
         @Override
-        public void initData(final SceneDevBean deviceBean) {
+        public void initData(final DeviceBean deviceBean) {
             Picasso.with(TuyaSdk.getApplication()).load(deviceBean.getIconUrl()).into(deviceIcon);
             device.setText(deviceBean.getName());
             final int resId;
             if (deviceBean.getIsOnline()) {
-                if (deviceBean.isShare()) {
+
+                if (deviceBean.getIsShare()) {
                     resId = R.drawable.ty_devicelist_share_green;
                 } else {
                     resId = R.drawable.ty_devicelist_dot_green;
                 }
             } else {
-                if (deviceBean.isShare()) {
+                if (deviceBean.getIsShare()) {
                     resId = R.drawable.ty_devicelist_share_gray;
                 } else {
                     resId = R.drawable.ty_devicelist_dot_gray;

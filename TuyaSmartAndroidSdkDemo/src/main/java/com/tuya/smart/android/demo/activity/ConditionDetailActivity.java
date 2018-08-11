@@ -18,12 +18,13 @@ import com.tuya.smart.android.demo.adapter.ConditionDetailRecyclerAdapter;
 import com.tuya.smart.android.demo.adapter.DividerItemDecoration;
 import com.tuya.smart.android.demo.adapter.ItemClickSupport;
 import com.tuya.smart.android.demo.bean.SceneConditonBean;
-import com.tuya.smart.sdk.TuyaScene;
-import com.tuya.smart.sdk.api.ITuyaDataCallback;
-import com.tuya.smart.sdk.bean.scene.PlaceFacadeBean;
-import com.tuya.smart.sdk.bean.scene.condition.ConditionListBean;
-import com.tuya.smart.sdk.bean.scene.condition.property.EnumProperty;
-import com.tuya.smart.sdk.bean.scene.condition.property.ValueProperty;
+import com.tuya.smart.home.sdk.TuyaHomeSdk;
+import com.tuya.smart.home.sdk.bean.scene.PlaceFacadeBean;
+import com.tuya.smart.home.sdk.bean.scene.condition.ConditionListBean;
+import com.tuya.smart.home.sdk.bean.scene.condition.property.EnumProperty;
+import com.tuya.smart.home.sdk.bean.scene.condition.property.ValueProperty;
+import com.tuya.smart.home.sdk.callback.ITuyaResultCallback;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -175,23 +176,22 @@ public class ConditionDetailActivity extends BaseActivity {
         final BDLocation location = TuyaSmartApp.getInstance().getLocation();
         if (location != null) {
             txtCity.setText(location.getCity());
-            TuyaScene.getTuyaSceneManager().getCityByLatLng(String.valueOf(location.getLongitude
-                    ()), String.valueOf(location.getLatitude()), new
-                    ITuyaDataCallback<PlaceFacadeBean>() {
+            TuyaHomeSdk.getSceneManagerInstance().getCityByLatLng(String.valueOf(location.getLongitude
+                    ()), String.valueOf(location.getLatitude()), new ITuyaResultCallback<PlaceFacadeBean>() {
 
-                        @Override
-                        public void onSuccess(PlaceFacadeBean placeFacadeBean) {
-                            Log.d(TAG, "onSuccess:" + placeFacadeBean.getCity() + "," + location
-                                    .getCity());
-                            placeFacadeBean.setArea(placeFacadeBean.getCity());
-                            mCityBean = placeFacadeBean;
-                        }
+                @Override
+                public void onSuccess(PlaceFacadeBean placeFacadeBean) {
+                    Log.d(TAG, "onSuccess:" + placeFacadeBean.getCity() + "," + location
+                            .getCity());
+                    placeFacadeBean.setArea(placeFacadeBean.getCity());
+                    mCityBean = placeFacadeBean;
+                }
 
-                        @Override
-                        public void onError(String s, String s1) {
+                @Override
+                public void onError(String s, String s1) {
 
-                        }
-                    });
+                }
+            });
         }
     }
 

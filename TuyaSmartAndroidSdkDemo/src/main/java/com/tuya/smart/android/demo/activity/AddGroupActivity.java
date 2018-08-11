@@ -11,9 +11,8 @@ import android.widget.Toast;
 
 import com.tuya.smart.android.demo.R;
 import com.tuya.smart.android.demo.adapter.GroupDeviceCheckedAdapter;
-import com.tuya.smart.sdk.TuyaGroup;
-import com.tuya.smart.sdk.api.ICreateGroupCallback;
-import com.tuya.smart.sdk.api.IGetDevsFromGroupByPidCallback;
+import com.tuya.smart.home.sdk.TuyaHomeSdk;
+import com.tuya.smart.home.sdk.callback.ITuyaResultCallback;
 import com.tuya.smart.sdk.bean.GroupDeviceBean;
 
 import java.util.ArrayList;
@@ -92,41 +91,45 @@ public class AddGroupActivity extends BaseActivity {
                 }
             }
         }
-        TuyaGroup.getGroupInstance().createNewGroup(mProductId, groupName, devid_list, new
-                ICreateGroupCallback() {
-                    @Override
-                    public void onSuccess(long l) {
-                        Log.d(TAG, "createNewGroup.onSuccess:" + l);
-                        Toast.makeText(AddGroupActivity.this, R.string.alert_group_add_sucess,
-                                Toast.LENGTH_SHORT).show();
-                        finish();
-                    }
+        //hanzheng to do homeId
+        long homeId = 1L;
+        TuyaHomeSdk.newHomeInstance(homeId).createGroup(mProductId, groupName, devid_list, new
+                ITuyaResultCallback<Long>() {
+            @Override
+            public void onSuccess(Long l) {
+                Log.d(TAG, "createNewGroup.onSuccess:" + l);
+                Toast.makeText(AddGroupActivity.this, R.string.alert_group_add_sucess,
+                        Toast.LENGTH_SHORT).show();
+                finish();
+            }
 
-                    @Override
-                    public void onError(String s, String s1) {
-                        Log.e(TAG, "createNewGroup.onError:" + s + "," + s1);
-                    }
-                });
+            @Override
+            public void onError(String s, String s1) {
+                Log.e(TAG, "createNewGroup.onError:" + s + "," + s1);
+            }
+        });
     }
 
     protected void getGroupDevList() {
         mProductId = getIntent().getStringExtra(DeviceColorPickActivity.INTENT_PRODUCTID);
-        TuyaGroup.getGroupInstance().getGroupDevList(mProductId, new
-                IGetDevsFromGroupByPidCallback() {
-                    @Override
-                    public void onSuccess(List<GroupDeviceBean> bizResult) {
-                        for (GroupDeviceBean bean : bizResult) {
-                            bean.setChecked(false);
-                        }
-                        bindUncheckListView(bizResult);
-                        bindCheckedListView(bizResult);
-                        mGroupDeviceBeans = bizResult;
-                    }
+        //hanzheng to do homeId
+        TuyaHomeSdk.newHomeInstance(1L).queryDeviceListToAddGroup(mProductId, new
+                ITuyaResultCallback<List<GroupDeviceBean>>() {
 
-                    @Override
-                    public void onError(String errorCode, String errorMsg) {
+            @Override
+            public void onSuccess(List<GroupDeviceBean> bizResult) {
+                for (GroupDeviceBean bean : bizResult) {
+                    bean.setChecked(false);
+                }
+                bindUncheckListView(bizResult);
+                bindCheckedListView(bizResult);
+                mGroupDeviceBeans = bizResult;
+            }
 
-                    }
-                });
+            @Override
+            public void onError(String s, String s1) {
+
+            }
+        });
     }
 }

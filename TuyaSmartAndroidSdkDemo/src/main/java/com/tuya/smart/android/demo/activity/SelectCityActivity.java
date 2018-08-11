@@ -14,9 +14,10 @@ import com.tuya.smart.android.demo.TuyaSmartApp;
 import com.tuya.smart.android.demo.adapter.CityListRecyclerAdapter;
 import com.tuya.smart.android.demo.adapter.DividerItemDecoration;
 import com.tuya.smart.android.demo.adapter.ItemClickSupport;
-import com.tuya.smart.sdk.TuyaScene;
-import com.tuya.smart.sdk.api.ITuyaDataCallback;
-import com.tuya.smart.sdk.bean.scene.PlaceFacadeBean;
+import com.tuya.smart.home.sdk.TuyaHomeSdk;
+import com.tuya.smart.home.sdk.bean.scene.PlaceFacadeBean;
+import com.tuya.smart.home.sdk.callback.ITuyaResultCallback;
+
 
 import java.util.List;
 
@@ -59,21 +60,21 @@ public class SelectCityActivity extends BaseActivity {
         final BDLocation location = TuyaSmartApp.getInstance().getLocation();
         if (location != null) {
             txtLocationCity.setText(location.getCity());
-            TuyaScene.getTuyaSceneManager().getCityByLatLng(String.valueOf(location.getLongitude
-                    ()), String.valueOf(location.getLatitude()), new
-                    ITuyaDataCallback<PlaceFacadeBean>() {
-
-                        @Override
-                        public void onSuccess(PlaceFacadeBean placeFacadeBean) {
-                            Log.d(TAG, "onSuccess:" + placeFacadeBean.getCity() + "," + location.getCity());
-
-                        }
-
-                        @Override
-                        public void onError(String s, String s1) {
-
-                        }
-                    });
+//            TuyaScene.getTuyaSceneManager().getCityByLatLng(String.valueOf(location.getLongitude
+//                    ()), String.valueOf(location.getLatitude()), new
+//                    ITuyaDataCallback<PlaceFacadeBean>() {
+//
+//                        @Override
+//                        public void onSuccess(PlaceFacadeBean placeFacadeBean) {
+//                            Log.d(TAG, "onSuccess:" + placeFacadeBean.getCity() + "," + location.getCity());
+//
+//                        }
+//
+//                        @Override
+//                        public void onError(String s, String s1) {
+//
+//                        }
+//                    });
         }
     }
     protected void bindCityList(List<PlaceFacadeBean> list) {
@@ -107,8 +108,8 @@ public class SelectCityActivity extends BaseActivity {
     }
 
     protected void requestCityList() {
-        TuyaScene.getTuyaSceneManager().getCityListByCountryCode("CN", new
-                ITuyaDataCallback<List<PlaceFacadeBean>>() {
+        TuyaHomeSdk.getSceneManagerInstance().getCityListByCountryCode("CN", new ITuyaResultCallback<List<PlaceFacadeBean>>() {
+
             @Override
             public void onSuccess(List<PlaceFacadeBean> placeFacadeBeans) {
                 bindCityList(placeFacadeBeans);

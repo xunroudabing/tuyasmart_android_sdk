@@ -4,7 +4,6 @@ import android.content.Context;
 
 import com.tuya.smart.android.common.utils.TuyaUtil;
 import com.tuya.smart.android.device.TuyaSmartDevice;
-import com.tuya.smart.android.device.config.GWConfig;
 import com.tuya.smart.android.mvp.presenter.BasePresenter;
 import com.tuya.smart.sdk.bean.DeviceBean;
 

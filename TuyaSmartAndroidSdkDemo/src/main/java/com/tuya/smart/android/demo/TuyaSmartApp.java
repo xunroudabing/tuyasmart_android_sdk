@@ -12,6 +12,7 @@ import com.baidu.location.BDLocation;
 import com.tuya.smart.android.demo.activity.LoginActivity;
 import com.tuya.smart.android.demo.service.LocationService;
 import com.tuya.smart.android.demo.utils.ApplicationInfoUtil;
+import com.tuya.smart.home.sdk.TuyaHomeSdk;
 import com.tuya.smart.sdk.TuyaSdk;
 import com.tuya.smart.sdk.api.INeedLoginListener;
 
@@ -37,6 +38,17 @@ public class TuyaSmartApp extends Application {
     }
 
     private void initSdk() {
+        TuyaHomeSdk.init(this);
+        TuyaHomeSdk.setOnNeedLoginListener(new INeedLoginListener() {
+            @Override
+            public void onNeedLogin(Context context) {
+                Intent intent = new Intent(context, LoginActivity.class);
+                if (!(context instanceof Activity)) {
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                }
+                startActivity(intent);
+            }
+        });
         TuyaSdk.init(this);
         TuyaSdk.setOnNeedLoginListener(new INeedLoginListener() {
             @Override

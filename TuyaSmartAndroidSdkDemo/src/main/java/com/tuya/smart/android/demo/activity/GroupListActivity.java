@@ -10,10 +10,7 @@ import android.widget.ListView;
 import com.tuya.smart.android.demo.*;
 import com.tuya.smart.android.demo.adapter.GroupDeviceAdapter;
 import com.tuya.smart.android.demo.presenter.GroupCommonPresenter;
-import com.tuya.smart.android.device.event.GwRelationEvent;
-import com.tuya.smart.android.device.event.GwRelationUpdateEventModel;
-import com.tuya.smart.android.device.event.GwUpdateEvent;
-import com.tuya.smart.android.device.event.GwUpdateEventModel;
+import com.tuya.smart.home.sdk.TuyaHomeSdk;
 import com.tuya.smart.sdk.TuyaSdk;
 import com.tuya.smart.sdk.TuyaUser;
 import com.tuya.smart.sdk.bean.GroupBean;
@@ -24,7 +21,9 @@ import java.util.List;
 /**
  * Created by letian on 16/8/27.
  */
-public class GroupListActivity extends BaseActivity implements GwRelationEvent, GwUpdateEvent {
+public class GroupListActivity extends BaseActivity
+        //implements GwRelationEvent, GwUpdateEvent
+{
 
 
     public SwipeRefreshLayout swipeRefreshLayout;
@@ -55,16 +54,17 @@ public class GroupListActivity extends BaseActivity implements GwRelationEvent, 
 
             @Override
             public void onRefresh() {
-                TuyaUser.getDeviceInstance().queryDevList();
+                //hanzheng to do queryDevList
+                //TuyaUser.getDeviceInstance().queryDevList();
+
             }
         });
 
         initAdapter();
 
         loadStart();
-
-        TuyaUser.getDeviceInstance().queryDevList();
-
+        //hanzheng to do queryDevList
+        //TuyaUser.getDeviceInstance().queryDevList();
 
     }
 
@@ -119,13 +119,13 @@ public class GroupListActivity extends BaseActivity implements GwRelationEvent, 
         loadFinish();
     }
 
-    @Override
-    public void onEventMainThread(GwRelationUpdateEventModel event) {
-        updateData(TuyaUser.getDeviceInstance().getGroupList());
-    }
-
-    @Override
-    public void onEventMainThread(GwUpdateEventModel event) {
-        updateData(TuyaUser.getDeviceInstance().getGroupList());
-    }
+//    @Override
+//    public void onEventMainThread(GwRelationUpdateEventModel event) {
+//        updateData(TuyaUser.getDeviceInstance().getGroupList());
+//    }
+//
+//    @Override
+//    public void onEventMainThread(GwUpdateEventModel event) {
+//        updateData(TuyaUser.getDeviceInstance().getGroupList());
+//    }
 }

@@ -19,22 +19,24 @@ import com.tuya.smart.android.demo.R;
 import com.tuya.smart.android.demo.bean.SceneActionBean;
 import com.tuya.smart.android.demo.bean.SceneConditonBean;
 import com.tuya.smart.android.demo.test.utils.DialogUtil;
-import com.tuya.smart.sdk.TuyaScene;
+import com.tuya.smart.home.sdk.TuyaHomeSdk;
+import com.tuya.smart.home.sdk.api.ITuyaHomeScene;
+import com.tuya.smart.home.sdk.bean.scene.PlaceFacadeBean;
+import com.tuya.smart.home.sdk.bean.scene.SceneBean;
+import com.tuya.smart.home.sdk.bean.scene.SceneCondition;
+import com.tuya.smart.home.sdk.bean.scene.SceneTask;
+import com.tuya.smart.home.sdk.bean.scene.condition.ConditionListBean;
+import com.tuya.smart.home.sdk.bean.scene.condition.property.BoolProperty;
+import com.tuya.smart.home.sdk.bean.scene.condition.property.EnumProperty;
+import com.tuya.smart.home.sdk.bean.scene.condition.property.ValueProperty;
+import com.tuya.smart.home.sdk.bean.scene.condition.rule.BoolRule;
+import com.tuya.smart.home.sdk.bean.scene.condition.rule.EnumRule;
+import com.tuya.smart.home.sdk.bean.scene.condition.rule.Rule;
+import com.tuya.smart.home.sdk.bean.scene.condition.rule.ValueRule;
+import com.tuya.smart.home.sdk.callback.ITuyaResultCallback;
 import com.tuya.smart.sdk.api.ITuyaDataCallback;
-import com.tuya.smart.sdk.api.scene.IDeleteSceneCallback;
-import com.tuya.smart.sdk.bean.scene.PlaceFacadeBean;
-import com.tuya.smart.sdk.bean.scene.SceneBean;
-import com.tuya.smart.sdk.bean.scene.SceneCondition;
-import com.tuya.smart.sdk.bean.scene.SceneTask;
-import com.tuya.smart.sdk.bean.scene.condition.ConditionListBean;
-import com.tuya.smart.sdk.bean.scene.condition.property.BoolProperty;
-import com.tuya.smart.sdk.bean.scene.condition.property.EnumProperty;
-import com.tuya.smart.sdk.bean.scene.condition.property.ValueProperty;
-import com.tuya.smart.sdk.bean.scene.condition.rule.BoolRule;
-import com.tuya.smart.sdk.bean.scene.condition.rule.EnumRule;
-import com.tuya.smart.sdk.bean.scene.condition.rule.Rule;
-import com.tuya.smart.sdk.bean.scene.condition.rule.ValueRule;
-import com.tuya.smart.sdk.bean.scene.dev.SceneDevBean;
+import com.tuya.smart.sdk.bean.DeviceBean;
+
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -60,7 +62,7 @@ public class AddSceneActivity extends BaseActivity implements View.OnClickListen
     ConditionListBean mConditionListBean;
     PlaceFacadeBean mPlaceFacadeBean;
     SceneTask mSceneTask;
-    SceneDevBean mSceneDevBean;
+    DeviceBean mSceneDevBean;
     SceneCondition mCondition;
     View conditionView, taskView;
     String mEnumValue;
@@ -114,7 +116,7 @@ public class AddSceneActivity extends BaseActivity implements View.OnClickListen
 //                            .INTENT_SCENE_BEAN);
                     String devbean_json = data.getStringExtra(TaskDetailActivity.INTENT_SCENE_BEAN);
                     Log.d(TAG, "mSceneDevBean=" + devbean_json);
-                    mSceneDevBean = JSONObject.parseObject(devbean_json, SceneDevBean.class);
+                    mSceneDevBean = JSONObject.parseObject(devbean_json, DeviceBean.class);
                     showCondition(taskdes, devicename);
                     if (!TextUtils.isEmpty(json)) {
                         HashMap<String, Object> map = JSONObject.parseObject(json, HashMap.class);
@@ -213,7 +215,8 @@ public class AddSceneActivity extends BaseActivity implements View.OnClickListen
             List<SceneCondition> conditions = mSceneBean.getConditions();
             if (tasks != null && tasks.size() > 0) {
                 mSceneTask = tasks.get(0);
-                showTask(mSceneTask.getEntityName(), mSceneTask.getActionDisplay());
+                //hanzheng to do SceneTask.getActionDisplay
+                //showTask(mSceneTask.getEntityName(), mSceneTask.getActionDisplay());
             }
             if (conditions != null && conditions.size() > 0) {
                 mCondition = conditions.get(0);
@@ -233,7 +236,7 @@ public class AddSceneActivity extends BaseActivity implements View.OnClickListen
                         mConditonBean.exprDisplay = array[1];
                     }
                     if (condition.getExpr().size() > 0) {
-                        mConditonBean.expr = condition.getExpr().get(0);
+                        mConditonBean.expr = condition.getExpr();
                     }
                 }
             }
@@ -241,7 +244,8 @@ public class AddSceneActivity extends BaseActivity implements View.OnClickListen
                 if (mSceneBean.getActions().size() > 0) {
                     SceneTask task = mSceneBean.getActions().get(0);
                     mActionBean = new SceneActionBean();
-                    mActionBean.actionDisplay = task.getActionDisplay();
+                    //hanzheng to do getActionDisplay
+                    //mActionBean.actionDisplay = task.getActionDisplay();
                     mActionBean.executorProperty = task.getExecutorProperty();
                     mActionBean.id = task.getId();
                     mActionBean.entityId = task.getEntityId();
@@ -259,19 +263,20 @@ public class AddSceneActivity extends BaseActivity implements View.OnClickListen
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             if (which == DialogInterface.BUTTON_POSITIVE) {
-                                TuyaScene.getTuyaSmartScene(mSceneBean.getId()).deleteScene(new IDeleteSceneCallback() {
-                                    @Override
-                                    public void onSuccess() {
-                                        Log.d(TAG, "del scene success");
-                                        setResult(RESULT_OK);
-                                        finish();
-                                    }
-
-                                    @Override
-                                    public void onError(String s, String s1) {
-                                        Log.d(TAG, "del scene error:" + s1);
-                                    }
-                                });
+                                //hanzheng to do TuyaScene
+//                                TuyaScene.getTuyaSmartScene(mSceneBean.getId()).deleteScene(new IDeleteSceneCallback() {
+//                                    @Override
+//                                    public void onSuccess() {
+//                                        Log.d(TAG, "del scene success");
+//                                        setResult(RESULT_OK);
+//                                        finish();
+//                                    }
+//
+//                                    @Override
+//                                    public void onError(String s, String s1) {
+//                                        Log.d(TAG, "del scene error:" + s1);
+//                                    }
+//                                });
                             } else if (which == DialogInterface.BUTTON_NEGATIVE) {
 
                             }
@@ -332,11 +337,13 @@ public class AddSceneActivity extends BaseActivity implements View.OnClickListen
 //                        "dp1",    //"dp" + dpId
 //                        mIsTrue    //触发条件的bool
 //                );
-                mCondition = SceneCondition.createDevCondition(
-                        mSceneDevBean,    //设备
-                        mDpId,        //dpId
-                        mDeviceRule    //规则
-                );
+
+                //hanzheng to do SceneCondition.createDevCondition
+//                mCondition = SceneCondition.createDevCondition(
+//                        mSceneDevBean,    //设备
+//                        mDpId,        //dpId
+//                        mDeviceRule    //规则
+//                );
             }
         }
 
@@ -344,21 +351,22 @@ public class AddSceneActivity extends BaseActivity implements View.OnClickListen
         mSceneBean.setConditions(Collections.singletonList(mCondition)); //更改场景条件
         mSceneBean.setActions(Collections.singletonList(mSceneTask)); //更改场景任务
         String sceneId = mSceneBean.getId();  //获取场景id以初始化TuyaSmartScene类
-        TuyaScene.getTuyaSmartScene(sceneId).modifyScene(
-                mSceneBean,  //修改后的场景数据类
-                new ITuyaDataCallback<SceneBean>() {
-                    @Override
-                    public void onSuccess(SceneBean sceneBean) {
-                        Log.d(TAG, "Modify Scene Success");
-                        setResult(RESULT_OK);
-                        finish();
-                    }
-
-                    @Override
-                    public void onError(String errorCode, String errorMessage) {
-                        Log.e(TAG, errorMessage);
-                    }
-                });
+        //hanzheng to do Scene
+//        TuyaScene.getTuyaSmartScene(sceneId).modifyScene(
+//                mSceneBean,  //修改后的场景数据类
+//                new ITuyaDataCallback<SceneBean>() {
+//                    @Override
+//                    public void onSuccess(SceneBean sceneBean) {
+//                        Log.d(TAG, "Modify Scene Success");
+//                        setResult(RESULT_OK);
+//                        finish();
+//                    }
+//
+//                    @Override
+//                    public void onError(String errorCode, String errorMessage) {
+//                        Log.e(TAG, errorMessage);
+//                    }
+//                });
     }
 
     protected void createScene() {
@@ -406,36 +414,36 @@ public class AddSceneActivity extends BaseActivity implements View.OnClickListen
 //                        "dp1",    //"dp" + dpId
 //                        mIsTrue    //触发条件的bool
 //                );
-                condition = SceneCondition.createDevCondition(
-                        mSceneDevBean,    //设备
-                        mDpId,        //dpId
-                        mDeviceRule    //规则
-                );
+
+                //hanzheng to do SceneCondition.createDevCondition
+//                condition = SceneCondition.createDevCondition(
+//                        mSceneDevBean,    //设备
+//                        mDpId,        //dpId
+//                        mDeviceRule    //规则
+//                );
             }
         }
-
-        TuyaScene.getTuyaSceneManager().createScene(sceneName, condition, Collections
-                .singletonList(mSceneTask), new
-                ITuyaDataCallback<SceneBean>() {
-                    @Override
-                    public void onSuccess(SceneBean sceneBean) {
-                        Log.d(TAG, "create scene success");
-                        Toast.makeText(AddSceneActivity.this, R.string
-                                .alert_create_scene_success, Toast.LENGTH_SHORT).show();
-                        setResult(RESULT_OK);
-                        finish();
-                    }
-
-                    @Override
-                    public void onError(String s, String s1) {
-                        Log.e(TAG, "create scene fail," + s + "," + s1);
-                    }
-                });
+        //hanzheng to do homeId background
+        long homeId = 1L;
+        TuyaHomeSdk.getSceneManagerInstance().createScene(homeId, sceneName, "", Collections.singletonList(condition), Collections.singletonList(mSceneTask), SceneBean.MATCH_TYPE_OR, new ITuyaResultCallback<SceneBean>() {
+            @Override
+            public void onSuccess(SceneBean sceneBean) {
+                Log.d(TAG, "create scene success");
+                Toast.makeText(AddSceneActivity.this, R.string
+                        .alert_create_scene_success, Toast.LENGTH_SHORT).show();
+                setResult(RESULT_OK);
+                finish();
+            }
+            @Override
+            public void onError(String s, String s1) {
+                Log.e(TAG, "create scene fail," + s + "," + s1);
+            }
+        });
 
     }
 
     protected void getConditionList() {
-        TuyaScene.getTuyaSceneManager().getConditionList(new ITuyaDataCallback<List<ConditionListBean>>() {
+        TuyaHomeSdk.getSceneManagerInstance().getConditionList(true, new ITuyaResultCallback<List<ConditionListBean>>() {
             @Override
             public void onSuccess(List<ConditionListBean> conditionListBeans) {
                 for (ConditionListBean bean : conditionListBeans) {

@@ -18,10 +18,11 @@ import com.tuya.smart.android.demo.adapter.FunctionListItemRecyclerAdapter;
 import com.tuya.smart.android.demo.adapter.ItemClickSupport;
 import com.tuya.smart.android.demo.bean.SceneActionBean;
 import com.tuya.smart.android.demo.bean.SceneConditonBean;
-import com.tuya.smart.sdk.TuyaScene;
+import com.tuya.smart.home.sdk.TuyaHomeSdk;
+import com.tuya.smart.home.sdk.bean.scene.dev.TaskListBean;
+import com.tuya.smart.home.sdk.callback.ITuyaResultCallback;
 import com.tuya.smart.sdk.api.ITuyaDataCallback;
-import com.tuya.smart.sdk.bean.scene.dev.SceneDevBean;
-import com.tuya.smart.sdk.bean.scene.dev.TaskListBean;
+import com.tuya.smart.sdk.bean.DeviceBean;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,7 +54,7 @@ public class TaskDetailActivity extends BaseActivity {
     static final String TAG = TaskDetailActivity.class.getSimpleName();
     RecyclerView mRecyclerView;
     FunctionListItemRecyclerAdapter mAdapter;
-    SceneDevBean mBean;
+    DeviceBean mBean;
     String mRule;
     String mRuleType;
     String mDevId;
@@ -254,30 +255,29 @@ public class TaskDetailActivity extends BaseActivity {
         if (TextUtils.isEmpty(mDevId)) {
             return;
         }
-        TuyaScene.getTuyaSceneManager().getDevOperationList(
-                mDevId, //设备id
-                new ITuyaDataCallback<List<TaskListBean>>() {
-                    @Override
-                    public void onSuccess(List<TaskListBean> conditionActionBeans) {
-                        if (conditionActionBeans != null) {
-                            List<TaskListBean> list = new ArrayList<>();
-                            //DpId 1-开关 bool 3-亮度 value 4-冷暖 value 2-模式 enum
-                            for (TaskListBean bean : conditionActionBeans) {
-                                Log.d(TAG, "bean.name" + bean.getName() + " " + bean.getDpId() +
-                                        "," + bean.getTasks().toString());
-                                if (bean.getDpId() == 1 || bean.getDpId() == 2 || bean.getDpId()
-                                        == 3 || bean.getDpId() == 4) {
-                                    list.add(bean);
-                                }
-                            }
-                            bindListView(conditionActionBeans);
+        TuyaHomeSdk.getSceneManagerInstance().getDeviceTaskOperationList(mDevId, new ITuyaResultCallback<List<TaskListBean>>() {
+            @Override
+            public void onSuccess(List<TaskListBean> conditionActionBeans) {
+                if (conditionActionBeans != null) {
+                    List<TaskListBean> list = new ArrayList<>();
+                    //DpId 1-开关 bool 3-亮度 value 4-冷暖 value 2-模式 enum
+                    for (TaskListBean bean : conditionActionBeans) {
+                        Log.d(TAG, "bean.name" + bean.getName() + " " + bean.getDpId() +
+                                "," + bean.getTasks().toString());
+                        if (bean.getDpId() == 1 || bean.getDpId() == 2 || bean.getDpId()
+                                == 3 || bean.getDpId() == 4) {
+                            list.add(bean);
                         }
                     }
+                    bindListView(conditionActionBeans);
+                }
+            }
 
-                    @Override
-                    public void onError(String errorCode, String errorMessage) {
-                    }
-                });
+            @Override
+            public void onError(String s, String s1) {
+
+            }
+        });
     }
 }
 

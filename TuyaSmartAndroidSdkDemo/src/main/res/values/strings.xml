@@ -64,6 +64,7 @@
     <string name="device_type_1">lighting</string>
     <string name="device_type_2">switch</string>
     <string name="device_type_3">Socket</string>
+    <string name="device_type_4">lighting(bluetooth)</string>
     <string name="home_scene">Intelligent scene</string>
     <string name="ty_smart_scene_start">execute</string>
     <string name="scene_item1">Home</string>

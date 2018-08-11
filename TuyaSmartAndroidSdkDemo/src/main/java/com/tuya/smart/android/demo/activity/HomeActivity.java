@@ -23,7 +23,6 @@ import com.tuya.smart.android.demo.presenter.HomePresenter;
 import com.tuya.smart.android.demo.test.utils.DialogUtil;
 import com.tuya.smart.android.demo.utils.CheckPermissionUtils;
 import com.tuya.smart.android.demo.view.IHomeView;
-import com.tuya.smart.sdk.TuyaScene;
 import com.tuya.smart.sdk.TuyaSdk;
 import com.tuya.smart.sdk.TuyaUser;
 import com.tuya.smart.sdk.api.ITuyaSearchDeviceListener;

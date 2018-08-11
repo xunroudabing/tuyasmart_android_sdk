@@ -29,6 +29,7 @@ import com.tuya.smart.sdk.TuyaDevice;
 import com.tuya.smart.sdk.TuyaGroup;
 import com.tuya.smart.sdk.TuyaTimerManager;
 import com.tuya.smart.sdk.TuyaUser;
+import com.tuya.smart.sdk.api.IResultCallback;
 import com.tuya.smart.sdk.api.IResultStatusCallback;
 import com.tuya.smart.sdk.api.ITuyaGroup;
 
@@ -834,10 +835,9 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
     protected void sendDp(String json) {
         Log.d(TAG, "sendDp:" + json);
         if (!isGroup) {
-            mTuyaDevice.publishDps(json, new IControlCallback() {
+            mTuyaDevice.publishDps(json, new IResultCallback() {
                 @Override
                 public void onError(String s, String s1) {
-                    //mView.showMessage("send command failure");
                     Log.d(TAG, "onError:" + s + "," + s1);
                 }
 
@@ -847,7 +847,7 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
                 }
             });
         } else {
-            mTuyaGroup.publishDps(json, new IControlCallback() {
+            mTuyaGroup.publishDps(json, new IResultCallback() {
                 @Override
                 public void onError(String s, String s1) {
                     Log.d(TAG, "onError:" + s + "," + s1);
