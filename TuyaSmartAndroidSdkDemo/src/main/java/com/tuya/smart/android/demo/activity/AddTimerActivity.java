@@ -51,7 +51,6 @@ public class AddTimerActivity extends BaseActivity {
     private String mDpId;
     private String mProductId;
     private TuyaDevice mTuyaDevice;
-    private ITuyaGroup mTuyaGroup;
     private String mDevId;
 
     @Override
@@ -102,9 +101,7 @@ public class AddTimerActivity extends BaseActivity {
         mDevId = getIntent().getStringExtra(DeviceColorPickActivity.INTENT_DEVID);
         mDpId = getIntent().getStringExtra(DeviceColorPickActivity.INTENT_DPID);
         mProductId = getIntent().getStringExtra(DeviceColorPickActivity.INTENT_PRODUCTID);
-        if (isGroup && mGroupId != 0L) {
-            mTuyaGroup = TuyaGroup.newGroupInstance(mGroupId);
-        }
+
         mTuyaDevice = new TuyaDevice(mDevId);
         txtRepeat = (TextView) findViewById(R.id.timer_txtRepeat);
         txtSwitch = (TextView) findViewById(R.id.timer_txtSwitch);
@@ -209,25 +206,23 @@ public class AddTimerActivity extends BaseActivity {
                 JSONArray array = new JSONArray();
                 array.add(instruct);
                 Log.d(TAG, "instruct=" + array.toJSONString());
-                timerManager.updateTimerStatus("timer", devid, mTimer.getTimerId(), loop, array
-                                .toJSONString(),
-                        new IResultStatusCallback() {
-                            @Override
-                            public void onSuccess() {
-                                Log.d(TAG, "updateTimerStatus success");
-                                Toast.makeText(AddTimerActivity.this, "设置定时成功", Toast
-                                        .LENGTH_SHORT)
-                                        .show();
-                                finish();
-                            }
+                timerManager.updateTimerWithTask("timer", loop, devid, mTimer.getTimerId(), array.toJSONString(), new IResultStatusCallback() {
+                    @Override
+                    public void onSuccess() {
+                        Log.d(TAG, "updateTimerStatus success");
+                        Toast.makeText(AddTimerActivity.this, "设置定时成功", Toast
+                                .LENGTH_SHORT)
+                                .show();
+                        finish();
+                    }
 
-                            @Override
-                            public void onError(String s, String s1) {
-                                Log.d(TAG, "updateTimerStatus error," + s + "," + s1);
-                                Toast.makeText(AddTimerActivity.this, s1, Toast.LENGTH_SHORT)
-                                        .show();
-                            }
-                        });
+                    @Override
+                    public void onError(String s, String s1) {
+                        Log.d(TAG, "updateTimerStatus error," + s + "," + s1);
+                        Toast.makeText(AddTimerActivity.this, s1, Toast.LENGTH_SHORT)
+                                .show();
+                    }
+                });
             }
             //新建
             else {

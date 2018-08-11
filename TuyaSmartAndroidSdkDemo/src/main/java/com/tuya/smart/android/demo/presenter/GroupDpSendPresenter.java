@@ -18,6 +18,7 @@ import com.tuya.smart.android.device.bean.ValueSchemaBean;
 import com.tuya.smart.android.device.enums.DataTypeEnum;
 import com.tuya.smart.android.hardware.model.IControlCallback;
 import com.tuya.smart.android.mvp.presenter.BasePresenter;
+import com.tuya.smart.home.sdk.TuyaHomeSdk;
 import com.tuya.smart.sdk.TuyaGroup;
 import com.tuya.smart.sdk.TuyaUser;
 import com.tuya.smart.sdk.api.IGroupListener;
@@ -58,7 +59,7 @@ public class GroupDpSendPresenter extends BasePresenter implements IGroupListene
     private void initData() {
         mGroupId = ((Activity) mContext).getIntent().getLongExtra(INTENT_GROUPID, -1);
         mDpId = ((Activity) mContext).getIntent().getStringExtra(INTENT_DPID);
-        mTuyaGroup = TuyaGroup.newGroupInstance(mGroupId);
+        mTuyaGroup = TuyaHomeSdk.newGroupInstance(mGroupId);
         GroupBean groupBean = TuyaUser.getDeviceInstance().getGroupBean(mGroupId);
         List<String> devIds = groupBean.getDevIds();
         if (devIds == null || devIds.size() == 0) return;

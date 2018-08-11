@@ -15,7 +15,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.kyleduo.switchbutton.SwitchButton;
 import com.tuya.smart.android.demo.R;
@@ -79,9 +78,9 @@ public class TimerListActivity extends BaseActivity {
         mDevId = getIntent().getStringExtra(DeviceColorPickActivity.INTENT_DEVID);
         mDpId = getIntent().getStringExtra(DeviceColorPickActivity.INTENT_DPID);
         mProductId = getIntent().getStringExtra(DeviceColorPickActivity.INTENT_PRODUCTID);
-        if (isGroup && mGroupId != 0L) {
-            mTuyaGroup = TuyaGroup.newGroupInstance(mGroupId);
-        }
+//        if (isGroup && mGroupId != 0L) {
+//            mTuyaGroup = TuyaGroup.newGroupInstance(mGroupId);
+//        }
         mTuyaDevice = new TuyaDevice(mDevId);
         mEmptyLayout = (LinearLayout) findViewById(R.id.timer_list_emptyLayout);
         mListview = (ListView) findViewById(R.id.timer_listview);
@@ -117,7 +116,7 @@ public class TimerListActivity extends BaseActivity {
     //请求定时列表
     protected void getTimerTaskStatusList() {
         String devId = mDevId;
-        if(isGroup){
+        if (isGroup) {
             devId = String.valueOf(mGroupId);
         }
         final TuyaTimerManager timerManager = new TuyaTimerManager();
@@ -166,7 +165,7 @@ public class TimerListActivity extends BaseActivity {
                         devid = String.valueOf(mGroupId);
                     }
                     final TuyaTimerManager timerManager = new TuyaTimerManager();
-                    timerManager.removeTimer("timer", devid, timer.getTimerId(), new
+                    timerManager.removeTimerWithTask("timer", devid, timer.getTimerId(), new
                             IResultStatusCallback() {
                                 @Override
                                 public void onSuccess() {
@@ -254,18 +253,18 @@ public class TimerListActivity extends BaseActivity {
                         devid = String.valueOf(mGroupId);
                     }
                     final TuyaTimerManager timerManager = new TuyaTimerManager();
-                    timerManager.operateTimer("timer", devid, timer.getTimerId(), isChecked, new
-                            IResultStatusCallback() {
-                                @Override
-                                public void onSuccess() {
-                                    Log.d(TAG, "operateTimer success");
-                                }
+                    timerManager.updateTimerStatusWithTask("timer", devid, timer.getTimerId(),
+                            isChecked, new IResultStatusCallback() {
+                        @Override
+                        public void onSuccess() {
+                            Log.d(TAG, "operateTimer success");
+                        }
 
-                                @Override
-                                public void onError(String s, String s1) {
-                                    Log.d(TAG, "operateTimer error," + s + "," + s1);
-                                }
-                            });
+                        @Override
+                        public void onError(String s, String s1) {
+                            Log.d(TAG, "operateTimer error," + s + "," + s1);
+                        }
+                    });
                 }
             });
             return rootView;

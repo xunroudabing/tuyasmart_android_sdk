@@ -25,6 +25,7 @@ import com.tuya.smart.android.demo.utils.CheckPermissionUtils;
 import com.tuya.smart.android.demo.widget.mode.PanContainer;
 import com.tuya.smart.android.demo.widget.mode.RotatePan;
 import com.tuya.smart.android.hardware.model.IControlCallback;
+import com.tuya.smart.home.sdk.TuyaHomeSdk;
 import com.tuya.smart.sdk.TuyaDevice;
 import com.tuya.smart.sdk.TuyaGroup;
 import com.tuya.smart.sdk.TuyaTimerManager;
@@ -173,7 +174,7 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
         mDpId = getIntent().getStringExtra(INTENT_DPID);
         mTuyaDevice = new TuyaDevice(mDevId);
         if (isGroup && mGroupId != 0L) {
-            mTuyaGroup = TuyaGroup.newGroupInstance(mGroupId);
+            mTuyaGroup = TuyaHomeSdk.newGroupInstance(mGroupId);
         }
         btnSpeedMin = (ImageButton) findViewById(R.id.device_mode_btnSpeedDown);
         btnSpeedPlus = (ImageButton) findViewById(R.id.device_mode_btnSpeedUp);

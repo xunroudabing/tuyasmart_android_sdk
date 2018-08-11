@@ -18,11 +18,15 @@ import com.tuya.smart.android.device.bean.SchemaBean;
 import com.tuya.smart.android.device.enums.ModeEnum;
 import com.tuya.smart.android.hardware.model.IControlCallback;
 import com.tuya.smart.android.mvp.presenter.BasePresenter;
+import com.tuya.smart.home.sdk.TuyaHomeSdk;
+import com.tuya.smart.home.sdk.api.ITuyaHomeDataManager;
 import com.tuya.smart.sdk.TuyaGroup;
 import com.tuya.smart.sdk.TuyaUser;
+import com.tuya.smart.sdk.api.IResultCallback;
 import com.tuya.smart.sdk.api.ITuyaGroup;
 import com.tuya.smart.sdk.bean.DeviceBean;
 import com.tuya.smart.sdk.bean.GroupBean;
+import com.tuya.smart.security.device.bean.TuyaData;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -54,12 +58,14 @@ public class GroupCommonPresenter extends BasePresenter {
     private void initData() {
         mGroupId = ((Activity) mContext).getIntent().getLongExtra(INTENT_GROUP_ID, -1);
 
-        mTuyaGroup = TuyaGroup.newGroupInstance(mGroupId);
+        mTuyaGroup = TuyaHomeSdk.newGroupInstance(mGroupId);
+
     }
 
 
     public List<SchemaBean> getSchemaList() {
-        GroupBean groupBean = TuyaUser.getDeviceInstance().getGroupBean(mGroupId);
+        GroupBean groupBean = TuyaHomeSdk.getDataInstance().getGroupBean(mGroupId);
+        //GroupBean groupBean = TuyaUser.getDeviceInstance().getGroupBean(mGroupId);
         List<String> devIds = groupBean.getDevIds();
         if (devIds == null || devIds.size() == 0) return new ArrayList<>();
         DeviceBean dev = TuyaUser.getDeviceInstance().getDev(devIds.get(0));
@@ -80,7 +86,8 @@ public class GroupCommonPresenter extends BasePresenter {
     }
 
     public String getDevName() {
-        GroupBean groupBean = TuyaUser.getDeviceInstance().getGroupBean(mGroupId);
+        GroupBean groupBean = TuyaHomeSdk.getDataInstance().getGroupBean(mGroupId);
+        //GroupBean groupBean = TuyaUser.getDeviceInstance().getGroupBean(mGroupId);
         if (groupBean == null) return "";
         return groupBean.getName();
     }
@@ -120,9 +127,9 @@ public class GroupCommonPresenter extends BasePresenter {
 
     private void renameTitleToServer(final String titleName) {
         ProgressUtil.showLoading(mContext, R.string.loading);
-        mTuyaGroup.updateGroupName(titleName, new IControlCallback() {
+        mTuyaGroup.renameGroup(titleName, new IResultCallback() {
             @Override
-            public void onError(String code, String error) {
+            public void onError(String s, String error) {
                 ProgressUtil.hideLoading();
                 ToastUtil.showToast(mContext, error);
             }
@@ -137,9 +144,9 @@ public class GroupCommonPresenter extends BasePresenter {
 
     public void removeDevice() {
         ProgressUtil.showLoading(mContext, R.string.loading);
-        mTuyaGroup.dismissGroup(new IControlCallback() {
+        mTuyaGroup.dismissGroup(new IResultCallback() {
             @Override
-            public void onError(String code, String error) {
+            public void onError(String s, String error) {
                 ProgressUtil.hideLoading();
                 ToastUtil.showToast(mContext, error);
             }

@@ -16,11 +16,11 @@ import com.tuya.smart.android.device.bean.SchemaBean;
 import com.tuya.smart.android.device.bean.StringSchemaBean;
 import com.tuya.smart.android.device.bean.ValueSchemaBean;
 import com.tuya.smart.android.device.enums.DataTypeEnum;
-import com.tuya.smart.android.hardware.model.IControlCallback;
 import com.tuya.smart.android.mvp.presenter.BasePresenter;
 import com.tuya.smart.sdk.TuyaDevice;
 import com.tuya.smart.sdk.TuyaUser;
 import com.tuya.smart.sdk.api.IDevListener;
+import com.tuya.smart.sdk.api.IResultCallback;
 import com.tuya.smart.sdk.bean.DeviceBean;
 
 import java.util.HashMap;
@@ -80,8 +80,10 @@ public class DpSendPresenter extends BasePresenter implements IDevListener {
             if (TextUtils.equals(schemaType, BoolSchemaBean.type)) {
                 mView.showBooleanView((Boolean) mDev.getDps().get(mSchemaBean.getId()));
             } else if (TextUtils.equals(schemaType, EnumSchemaBean.type)) {
-                EnumSchemaBean enumSchemaBean = SchemaMapper.toEnumSchema(mSchemaBean.getProperty());
-                mView.showEnumView((String) mDev.getDps().get(mSchemaBean.getId()), enumSchemaBean.getRange());
+                EnumSchemaBean enumSchemaBean = SchemaMapper.toEnumSchema(mSchemaBean.getProperty
+                        ());
+                mView.showEnumView((String) mDev.getDps().get(mSchemaBean.getId()),
+                        enumSchemaBean.getRange());
             } else if (TextUtils.equals(schemaType, StringSchemaBean.type)) {
                 mView.showStringView((String) mDev.getDps().get(mSchemaBean.getId()));
             } else if (TextUtils.equals(schemaType, ValueSchemaBean.type)) {
@@ -101,15 +103,15 @@ public class DpSendPresenter extends BasePresenter implements IDevListener {
         final String value = JSONObject.toJSONString(map);
         mView.showMessage("\n");
         mView.showMessage("send command: " + value);
-        mTuyaDevice.publishDps(value, new IControlCallback() {
+        mTuyaDevice.publishDps(value, new IResultCallback() {
             @Override
             public void onError(String s, String s1) {
                 mView.showMessage("send command failure");
-
             }
 
             @Override
             public void onSuccess() {
+
             }
         });
     }

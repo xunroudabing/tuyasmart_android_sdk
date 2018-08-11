@@ -22,6 +22,7 @@ import com.tuya.smart.android.hardware.model.IControlCallback;
 import com.tuya.smart.android.mvp.presenter.BasePresenter;
 import com.tuya.smart.sdk.TuyaDevice;
 import com.tuya.smart.sdk.TuyaUser;
+import com.tuya.smart.sdk.api.IResultCallback;
 import com.tuya.smart.sdk.bean.DeviceBean;
 
 import java.util.ArrayList;
@@ -124,9 +125,9 @@ public class DeviceCommonPresenter extends BasePresenter {
 
     private void renameTitleToServer(final String titleName) {
         ProgressUtil.showLoading(mContext, R.string.loading);
-        mTuyaDevice.renameDevice(titleName, new IControlCallback() {
+        mTuyaDevice.renameDevice(titleName, new IResultCallback() {
             @Override
-            public void onError(String code, String error) {
+            public void onError(String s, String error) {
                 ProgressUtil.hideLoading();
                 ToastUtil.showToast(mContext, error);
             }
@@ -150,9 +151,9 @@ public class DeviceCommonPresenter extends BasePresenter {
                     public void onClick(DialogInterface dialog, int which) {
                         if (which == DialogInterface.BUTTON_POSITIVE) {
                             ProgressUtil.showLoading(mContext, R.string.ty_control_panel_factory_reseting);
-                            mTuyaDevice.resetFactory(new IControlCallback() {
+                            mTuyaDevice.resetFactory(new IResultCallback() {
                                 @Override
-                                public void onError(String code, String error) {
+                                public void onError(String s, String s1) {
                                     ProgressUtil.hideLoading();
                                     ToastUtil.shortToast(mContext, R.string.ty_control_panel_factory_reset_fail);
                                 }
@@ -172,9 +173,9 @@ public class DeviceCommonPresenter extends BasePresenter {
 
     public void removeDevice() {
         ProgressUtil.showLoading(mContext, R.string.loading);
-        mTuyaDevice.removeDevice(new IControlCallback() {
+        mTuyaDevice.removeDevice(new IResultCallback() {
             @Override
-            public void onError(String code, String error) {
+            public void onError(String s, String error) {
                 ProgressUtil.hideLoading();
                 ToastUtil.showToast(mContext, error);
             }

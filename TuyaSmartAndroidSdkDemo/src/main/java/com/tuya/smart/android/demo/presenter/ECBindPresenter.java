@@ -67,7 +67,7 @@ public class ECBindPresenter extends BasePresenter {
 
     private void getTokenForConfigDevice() {
         ProgressUtil.showLoading(mContext, R.string.loading);
-        TuyaActivator.getInstance().getActivatorToken(new ITuyaActivatorGetToken() {
+        TuyaActivator.getInstance().getActivatorToken(1L, new ITuyaActivatorGetToken() {
             @Override
             public void onSuccess(String token) {
                 ProgressUtil.hideLoading();

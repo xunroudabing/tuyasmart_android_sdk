@@ -15,15 +15,12 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.tuya.smart.android.demo.R;
 import com.tuya.smart.android.demo.bean.DpLogBean;
-import com.tuya.smart.android.demo.model.firmware.FirmwareUpgradeModel;
 import com.tuya.smart.android.demo.presenter.firmware.FirmwareUpgradePresenter;
 import com.tuya.smart.android.demo.test.activity.DeviceTestActivity;
 import com.tuya.smart.android.demo.test.bean.AlertPickBean;
 import com.tuya.smart.android.demo.test.presenter.DeviceTestPresenter;
-import com.tuya.smart.android.demo.test.presenter.DpCountDownLatch;
 import com.tuya.smart.android.demo.test.utils.DialogUtil;
 import com.tuya.smart.android.demo.test.utils.SchemaMapper;
-import com.tuya.smart.android.demo.test.widget.AlertPickDialog;
 import com.tuya.smart.android.demo.utils.ActivityUtils;
 import com.tuya.smart.android.demo.utils.ProgressUtil;
 import com.tuya.smart.android.demo.utils.ToastUtil;
@@ -37,6 +34,7 @@ import com.tuya.smart.android.mvp.presenter.BasePresenter;
 import com.tuya.smart.sdk.TuyaDevice;
 import com.tuya.smart.sdk.TuyaUser;
 import com.tuya.smart.sdk.api.IDevListener;
+import com.tuya.smart.sdk.api.IResultCallback;
 import com.tuya.smart.sdk.bean.DeviceBean;
 
 import java.util.ArrayList;
@@ -55,10 +53,10 @@ import java.util.concurrent.TimeUnit;
 
 public class CommonDeviceDebugPresenter extends BasePresenter implements IDevListener {
 
+    public static final String INTENT_DEVID = "intent_devId";
     private static final String TAG = "CommonDeviceDebugPresenter";
     private Context mContext;
     private ICommonDeviceDebugView mView;
-    public static final String INTENT_DEVID = "intent_devId";
     private String mDevId;
     private DeviceBean mDevBean;
     private TuyaDevice mTuyaDevice;
@@ -161,7 +159,7 @@ public class CommonDeviceDebugPresenter extends BasePresenter implements IDevLis
     private void sendCommand(String dpId, Object value) {
         HashMap<String, Object> stringObjectHashMap = new HashMap<>();
         stringObjectHashMap.put(dpId, value);
-        if (!DevUtil.checkSendCommond(mDevId, mDevId, stringObjectHashMap)) {
+        if (!DevUtil.checkSendCommond(mDevId, stringObjectHashMap)) {
             ToastUtil.showToast(mContext, "数据格式非法");
             return;
         }
@@ -171,9 +169,9 @@ public class CommonDeviceDebugPresenter extends BasePresenter implements IDevLis
         mDownLatch.setDpSend(commandStr);
         mDownLatch.setTimeStart(System.currentTimeMillis());
         mDownLatch.setDpId(dpId);
-        mTuyaDevice.publishDps(commandStr, new IControlCallback() {
+        mTuyaDevice.publishDps(commandStr, new IResultCallback() {
             @Override
-            public void onError(String code, String error) {
+            public void onError(String s, String error) {
                 mDownLatch.setStatus(LogCountDownLatch.STATUS_FAILURE);
                 mDownLatch.setErrorMsg(mContext.getString(R.string.send_failure) + " " + error);
                 mDownLatch.countDown();
@@ -224,8 +222,10 @@ public class CommonDeviceDebugPresenter extends BasePresenter implements IDevLis
         alertPickBean.setConfirmText(mContext.getString(R.string.confirm));
         alertPickBean.setRangeKeys(rangesKey);
         alertPickBean.setRangeValues(rangesValue);
-        alertPickBean.setTitle(String.format(mContext.getString(R.string.choose_dp_value), schemaBean.getId()));
-//        AlertPickDialog.showAlertPickDialog((Activity) mContext, alertPickBean, new AlertPickDialog.AlertPickCallBack() {
+        alertPickBean.setTitle(String.format(mContext.getString(R.string.choose_dp_value),
+                schemaBean.getId()));
+//        AlertPickDialog.showAlertPickDialog((Activity) mContext, alertPickBean, new
+// AlertPickDialog.AlertPickCallBack() {
 //            @Override
 //            public void confirm(String value) {
 //                String dpId = schemaBean.getId();
@@ -268,7 +268,8 @@ public class CommonDeviceDebugPresenter extends BasePresenter implements IDevLis
             Map<String, SchemaBean> schema = TuyaUser.getDeviceInstance().getSchema(devId);
             if (schema != null) {
                 SchemaBean schemaBean = schema.get(dpId);
-                if (schemaBean != null && TextUtils.equals(schemaBean.getMode(), ModeEnum.RO.getType())) {
+                if (schemaBean != null && TextUtils.equals(schemaBean.getMode(), ModeEnum.RO
+                        .getType())) {
                     list.add(dpId);
                 }
             }
@@ -279,12 +280,142 @@ public class CommonDeviceDebugPresenter extends BasePresenter implements IDevLis
         return jsonObject;
     }
 
+    @Override
+    public void onRemoved(String devId) {
+        mView.deviceRemoved();
+    }
+
+    @Override
+    public void onStatusChanged(String devId, boolean online) {
+        mView.deviceOnlineStatusChanged(online);
+    }
+
+    @Override
+    public void onNetworkStatusChanged(String devId, boolean status) {
+        mView.onNetworkStatusChanged(status);
+    }
+
+    @Override
+    public void onDevInfoUpdate(String devId) {
+        mView.devInfoUpdate();
+    }
+
+    public void renameDevice() {
+        DialogUtil.simpleInputDialog(mContext, mContext.getString(R.string.rename), getTitle(),
+                false, new DialogUtil.SimpleInputDialogInterface() {
+                    @Override
+                    public void onPositive(DialogInterface dialog, String inputText) {
+                        int limit = mContext.getResources().getInteger(R.integer
+                                .change_device_name_limit);
+                        if (inputText.length() > limit) {
+                            ToastUtil.showToast(mContext, R.string
+                                    .ty_modify_device_name_length_limit);
+                        } else {
+                            renameTitleToServer(inputText);
+                        }
+                    }
+
+                    @Override
+                    public void onNegative(DialogInterface dialog) {
+
+                    }
+                });
+    }
+
+    private void renameTitleToServer(final String titleName) {
+        ProgressUtil.showLoading(mContext, R.string.loading);
+        mTuyaDevice.renameDevice(titleName, new IResultCallback() {
+            @Override
+            public void onError(String s, String error) {
+                ProgressUtil.hideLoading();
+                ToastUtil.showToast(mContext, error);
+            }
+
+            @Override
+            public void onSuccess() {
+                ProgressUtil.hideLoading();
+                mView.updateTitle(titleName);
+            }
+        });
+    }
+
+    public void checkUpdate() {
+        mFirmwareUpgradePresenter.upgradeCheck();
+    }
+
+    public void resetFactory() {
+        DialogUtil.simpleConfirmDialog(mContext, mContext.getString(R.string
+                        .ty_control_panel_factory_reset_info),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (which == DialogInterface.BUTTON_POSITIVE) {
+                            ProgressUtil.showLoading(mContext, R.string
+                                    .ty_control_panel_factory_reseting);
+                            mTuyaDevice.resetFactory(new IResultCallback() {
+                                @Override
+                                public void onError(String s, String s1) {
+                                    ProgressUtil.hideLoading();
+                                    ToastUtil.shortToast(mContext, R.string
+                                            .ty_control_panel_factory_reset_fail);
+                                }
+
+                                @Override
+                                public void onSuccess() {
+                                    ProgressUtil.hideLoading();
+                                    ToastUtil.shortToast(mContext, R.string
+                                            .ty_control_panel_factory_reset_succ);
+                                    ((Activity) mContext).finish();
+                                }
+                            });
+                        }
+                    }
+                });
+    }
+
+    public void removeDevice() {
+        ProgressUtil.showLoading(mContext, R.string.loading);
+        mTuyaDevice.removeDevice(new IResultCallback() {
+            @Override
+            public void onError(String s, String error) {
+                ProgressUtil.hideLoading();
+                ToastUtil.showToast(mContext, error);
+            }
+
+            @Override
+            public void onSuccess() {
+                ProgressUtil.hideLoading();
+                ((Activity) mContext).finish();
+            }
+        });
+    }
+
+    public void testMode() {
+        Intent intent = new Intent(mContext, DeviceTestActivity.class);
+        intent.putExtra(DeviceTestPresenter.INTENT_DEVICE_ID, mDevId);
+        ActivityUtils.startActivity((Activity) mContext, intent, ActivityUtils.ANIMATE_FORWARD,
+                true);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mContext = null;
+        mView = null;
+        if (mDownLatch != null) {
+            mDownLatch.countDown();
+        }
+        mDownLatch = null;
+        if (mTuyaDevice != null) mTuyaDevice.onDestroy();
+        mFirmwareUpgradePresenter.onDestroy();
+
+    }
 
     public static class LogCountDownLatch extends CountDownLatch {
-        private int status = STATUS_TIME_OUT;
         public static final int STATUS_SUCCESS = 1;
         public static final int STATUS_FAILURE = 2;
         public static final int STATUS_TIME_OUT = 3;
+        private int status = STATUS_TIME_OUT;
         private long timeStart;
         private long timeEnd;
         private String dpSend;
@@ -336,149 +467,24 @@ public class CommonDeviceDebugPresenter extends BasePresenter implements IDevLis
             this.dpReturn = dpReturn;
         }
 
-        public void setDpId(String dpId) {
-            mDpId = dpId;
-        }
-
         public String getDpId() {
             return mDpId;
+        }
+
+        public void setDpId(String dpId) {
+            mDpId = dpId;
         }
 
         public DpLogBean getLogBean() {
             return new DpLogBean(timeStart, timeEnd, dpSend, dpReturn, mErrorMsg);
         }
 
-        public void setErrorMsg(String errorMsg) {
-            mErrorMsg = errorMsg;
-        }
-
         public String getErrorMsg() {
             return mErrorMsg;
         }
-    }
 
-    @Override
-    public void onRemoved(String devId) {
-        mView.deviceRemoved();
-    }
-
-    @Override
-    public void onStatusChanged(String devId, boolean online) {
-        mView.deviceOnlineStatusChanged(online);
-    }
-
-    @Override
-    public void onNetworkStatusChanged(String devId, boolean status) {
-        mView.onNetworkStatusChanged(status);
-    }
-
-    @Override
-    public void onDevInfoUpdate(String devId) {
-        mView.devInfoUpdate();
-    }
-
-
-    public void renameDevice() {
-        DialogUtil.simpleInputDialog(mContext, mContext.getString(R.string.rename), getTitle(), false, new DialogUtil.SimpleInputDialogInterface() {
-            @Override
-            public void onPositive(DialogInterface dialog, String inputText) {
-                int limit = mContext.getResources().getInteger(R.integer.change_device_name_limit);
-                if (inputText.length() > limit) {
-                    ToastUtil.showToast(mContext, R.string.ty_modify_device_name_length_limit);
-                } else {
-                    renameTitleToServer(inputText);
-                }
-            }
-
-            @Override
-            public void onNegative(DialogInterface dialog) {
-
-            }
-        });
-    }
-
-    private void renameTitleToServer(final String titleName) {
-        ProgressUtil.showLoading(mContext, R.string.loading);
-        mTuyaDevice.renameDevice(titleName, new IControlCallback() {
-            @Override
-            public void onError(String code, String error) {
-                ProgressUtil.hideLoading();
-                ToastUtil.showToast(mContext, error);
-            }
-
-            @Override
-            public void onSuccess() {
-                ProgressUtil.hideLoading();
-                mView.updateTitle(titleName);
-            }
-        });
-    }
-
-    public void checkUpdate() {
-        mFirmwareUpgradePresenter.upgradeCheck();
-    }
-
-    public void resetFactory() {
-        DialogUtil.simpleConfirmDialog(mContext, mContext.getString(R.string.ty_control_panel_factory_reset_info),
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (which == DialogInterface.BUTTON_POSITIVE) {
-                            ProgressUtil.showLoading(mContext, R.string.ty_control_panel_factory_reseting);
-                            mTuyaDevice.resetFactory(new IControlCallback() {
-                                @Override
-                                public void onError(String code, String error) {
-                                    ProgressUtil.hideLoading();
-                                    ToastUtil.shortToast(mContext, R.string.ty_control_panel_factory_reset_fail);
-                                }
-
-                                @Override
-                                public void onSuccess() {
-                                    ProgressUtil.hideLoading();
-                                    ToastUtil.shortToast(mContext, R.string.ty_control_panel_factory_reset_succ);
-                                    ((Activity) mContext).finish();
-                                }
-                            });
-                        }
-                    }
-                });
-    }
-
-
-    public void removeDevice() {
-        ProgressUtil.showLoading(mContext, R.string.loading);
-        mTuyaDevice.removeDevice(new IControlCallback() {
-            @Override
-            public void onError(String code, String error) {
-                ProgressUtil.hideLoading();
-                ToastUtil.showToast(mContext, error);
-            }
-
-            @Override
-            public void onSuccess() {
-                ProgressUtil.hideLoading();
-                ((Activity) mContext).finish();
-            }
-        });
-    }
-
-    public void testMode() {
-        Intent intent = new Intent(mContext, DeviceTestActivity.class);
-        intent.putExtra(DeviceTestPresenter.INTENT_DEVICE_ID, mDevId);
-        ActivityUtils.startActivity((Activity) mContext, intent, ActivityUtils.ANIMATE_FORWARD, true);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mContext = null;
-        mView = null;
-        if (mDownLatch != null) {
-            mDownLatch.countDown();
+        public void setErrorMsg(String errorMsg) {
+            mErrorMsg = errorMsg;
         }
-        mDownLatch = null;
-        if (mTuyaDevice != null) mTuyaDevice.onDestroy();
-        mFirmwareUpgradePresenter.onDestroy();
-
     }
 }
