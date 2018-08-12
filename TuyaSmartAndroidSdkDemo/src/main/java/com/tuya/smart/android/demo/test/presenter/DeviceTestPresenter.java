@@ -23,6 +23,7 @@ import com.tuya.smart.android.mvp.presenter.BasePresenter;
 import com.tuya.smart.sdk.TuyaDevice;
 import com.tuya.smart.sdk.TuyaSdk;
 import com.tuya.smart.sdk.api.IDevListener;
+import com.tuya.smart.sdk.api.IResultCallback;
 import com.tuya.smart.sdk.api.ITuyaDevice;
 
 import java.util.ArrayList;
@@ -193,7 +194,7 @@ public class DeviceTestPresenter extends BasePresenter implements DpSendDataEven
 
     private void sendCommand(HashMap<String, Object> command) {
         String commandStr = JSONObject.toJSONString(command);
-        mDevice.publishDps(commandStr, new IControlCallback() {
+        mDevice.publishDps(commandStr, new IResultCallback() {
             @Override
             public void onError(String code, String error) {
                 mLatch.setStatus(DpCountDownLatch.STATUS_ERROR);

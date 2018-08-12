@@ -34,6 +34,7 @@ import com.tuya.smart.android.demo.test.widget.AlertPickDialog;
 import com.tuya.smart.android.demo.utils.ViewUtils;
 import com.tuya.smart.android.demo.view.ICommonDeviceDebugView;
 import com.tuya.smart.android.hardware.model.IControlCallback;
+import com.tuya.smart.home.sdk.TuyaHomeSdk;
 import com.tuya.smart.sdk.TuyaDevice;
 import com.tuya.smart.sdk.TuyaGroup;
 import com.tuya.smart.sdk.TuyaTimerManager;
@@ -178,7 +179,7 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
         mProductId = getIntent().getStringExtra(INTENT_PRODUCTID);
         mTuyaDevice = new TuyaDevice(mDevId);
         if (isGroup && mGroupId != 0L) {
-            mTuyaGroup = TuyaGroup.newGroupInstance(mGroupId);
+            mTuyaGroup = TuyaHomeSdk.newGroupInstance(mGroupId);
         }
         layoutLight = (LinearLayout) findViewById(R.id.device_color_layoutLight);
         layoutTemp = (LinearLayout) findViewById(R.id.device_color_layoutTemp);

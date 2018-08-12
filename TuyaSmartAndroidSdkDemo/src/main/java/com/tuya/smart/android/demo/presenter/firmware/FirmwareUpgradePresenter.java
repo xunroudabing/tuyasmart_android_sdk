@@ -19,11 +19,12 @@ public class FirmwareUpgradePresenter extends BasePresenter implements IFirmware
     public FirmwareUpgradePresenter(Context context, String devId) {
         DeviceBean deviceBean = TuyaSmartDevice.getInstance().getDev(devId);
         if (deviceBean == null) return;
-        if (TuyaUtil.checkBvVersion(deviceBean.getBv(), GWConfig.BV)) {
-            mIFirmwareUpgrade = new FirmwareUpgradeNewPresenter(context, devId);
-        } else {
-            mIFirmwareUpgrade = new FirmwareUpgradeOldPresenter(context, devId);
-        }
+        //hanzheng to do GWConfig.BV
+//        if (TuyaUtil.checkBvVersion(deviceBean.getBv(), GWConfig.BV)) {
+//            mIFirmwareUpgrade = new FirmwareUpgradeNewPresenter(context, devId);
+//        } else {
+//            mIFirmwareUpgrade = new FirmwareUpgradeOldPresenter(context, devId);
+//        }
     }
 
     @Override

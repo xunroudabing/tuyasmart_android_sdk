@@ -17,10 +17,12 @@ import com.tuya.smart.android.demo.R;
 import com.tuya.smart.android.demo.bean.DeviceAndGroupBean;
 import com.tuya.smart.android.demo.test.widget.AlertPickDialog;
 import com.tuya.smart.android.hardware.model.IControlCallback;
+import com.tuya.smart.home.sdk.TuyaHomeSdk;
 import com.tuya.smart.sdk.TuyaDevice;
 import com.tuya.smart.sdk.TuyaGroup;
 import com.tuya.smart.sdk.TuyaSdk;
 import com.tuya.smart.sdk.TuyaUser;
+import com.tuya.smart.sdk.api.IResultCallback;
 import com.tuya.smart.sdk.api.ITuyaGroup;
 import com.tuya.smart.sdk.bean.DeviceBean;
 import com.tuya.smart.sdk.bean.GroupBean;
@@ -127,7 +129,7 @@ public class CommonGroupAndDeviceAdapter extends BaseAdapter {
 
         }
 
-        public void publishDps(final DeviceAndGroupBean bean, String json, IControlCallback
+        public void publishDps(final DeviceAndGroupBean bean, String json, IResultCallback
                 callback) {
             if (bean.type == 1) {
                 DeviceBean deviceBean = bean.device;
@@ -136,7 +138,7 @@ public class CommonGroupAndDeviceAdapter extends BaseAdapter {
                 device.publishDps(json, callback);
             } else {
                 GroupBean groupBean = bean.group;
-                ITuyaGroup mITuyaGroup = TuyaGroup.newGroupInstance(groupBean.getId());
+                ITuyaGroup mITuyaGroup = TuyaHomeSdk.newGroupInstance(groupBean.getId());
                 mITuyaGroup.publishDps(json, callback);
             }
 
@@ -154,7 +156,7 @@ public class CommonGroupAndDeviceAdapter extends BaseAdapter {
                     String json = JSONObject.toJSONString(map);
                     TuyaDevice device = new TuyaDevice(deviceBean
                             .getDevId());
-                    device.publishDps(json, new IControlCallback() {
+                    device.publishDps(json, new IResultCallback() {
                         @Override
                         public void onError(String s, String s1) {
 
@@ -176,7 +178,7 @@ public class CommonGroupAndDeviceAdapter extends BaseAdapter {
             } else {
                 try {
                     GroupBean groupBean = bean.group;
-                    ITuyaGroup mITuyaGroup = TuyaGroup.newGroupInstance(groupBean.getId());
+                    ITuyaGroup mITuyaGroup = TuyaHomeSdk.newGroupInstance(groupBean.getId());
                     List<String> devIds = groupBean.getDevIds();
                     if (devIds.size() <= 0) {
                         return;
@@ -187,7 +189,7 @@ public class CommonGroupAndDeviceAdapter extends BaseAdapter {
                     Map<String, Object> map = new HashMap<>();
                     map.put("1", !b);
                     String json = JSONObject.toJSONString(map);
-                    mITuyaGroup.publishDps(json, new IControlCallback() {
+                    mITuyaGroup.publishDps(json, new IResultCallback() {
                         @Override
                         public void onError(String s, String s1) {
                             Log.d(TAG, "mITuyaGroup.publishDps,onError");
@@ -290,7 +292,7 @@ public class CommonGroupAndDeviceAdapter extends BaseAdapter {
                                             Map<String, Object> map = new HashMap<>();
                                             map.put("3", v);
                                             String json = JSONObject.toJSONString(map);
-                                            publishDps(deviceBean, json, new IControlCallback() {
+                                            publishDps(deviceBean, json, new IResultCallback() {
                                                 @Override
                                                 public void onError(String s, String s1) {
 
@@ -334,7 +336,7 @@ public class CommonGroupAndDeviceAdapter extends BaseAdapter {
                                             Map<String, Object> map = new HashMap<>();
                                             map.put("4", p);
                                             String json = JSONObject.toJSONString(map);
-                                            publishDps(deviceBean, json, new IControlCallback() {
+                                            publishDps(deviceBean, json, new IResultCallback() {
                                                 @Override
                                                 public void onError(String s, String s1) {
 

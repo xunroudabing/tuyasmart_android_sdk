@@ -24,10 +24,13 @@ import com.tuya.smart.android.demo.utils.ToastUtil;
 import com.tuya.smart.android.demo.view.IDeviceListFragmentView;
 import com.tuya.smart.android.hardware.model.IControlCallback;
 import com.tuya.smart.android.mvp.presenter.BasePresenter;
+import com.tuya.smart.home.sdk.TuyaHomeSdk;
 import com.tuya.smart.sdk.TuyaDevice;
+import com.tuya.smart.sdk.TuyaGroup;
 import com.tuya.smart.sdk.TuyaSmartRequest;
 import com.tuya.smart.sdk.TuyaUser;
 import com.tuya.smart.sdk.api.IRequestCallback;
+import com.tuya.smart.sdk.api.IResultCallback;
 import com.tuya.smart.sdk.api.ITuyaListChangedListener;
 import com.tuya.smart.sdk.bean.DeviceBean;
 import com.tuya.smart.sdk.bean.GroupBean;
@@ -50,7 +53,8 @@ public class DeviceListFragmentPresenter extends BasePresenter implements NetWor
     public DeviceListFragmentPresenter(DeviceListFragment fragment, IDeviceListFragmentView view) {
         mActivity = fragment.getActivity();
         mView = view;
-        TuyaUser.getDeviceInstance().registerTuyaListChangedListener(this);
+        //hanzheng to do  registerTuyaListChangedListener
+        //TuyaUser.getDeviceInstance().registerTuyaListChangedListener(this);
         initEventBus();
     }
 
@@ -153,7 +157,8 @@ public class DeviceListFragmentPresenter extends BasePresenter implements NetWor
     }
 
     public void getDataFromServer() {
-        TuyaUser.getDeviceInstance().queryDevList();
+        //hanzheng to do queryDevList
+        //TuyaUser.getDeviceInstance().queryDevList();
     }
 
     public void gotoAddDevice() {
@@ -219,7 +224,7 @@ public class DeviceListFragmentPresenter extends BasePresenter implements NetWor
      */
     private void unBindDevice(final DeviceAndGroupBean deviceBean) {
         ProgressUtil.showLoading(mActivity, R.string.loading);
-        new TuyaDevice(deviceBean.getDevId()).removeDevice(new IControlCallback() {
+        new TuyaDevice(deviceBean.getDevId()).removeDevice(new IResultCallback() {
             @Override
             public void onError(String s, String s1) {
                 ProgressUtil.hideLoading();
@@ -248,7 +253,10 @@ public class DeviceListFragmentPresenter extends BasePresenter implements NetWor
     private void updateLocalData() {
         //updateDeviceData(TuyaUser.getDeviceInstance().getDevList());
         //调试信息
-        List<GroupBean> grouplist = TuyaUser.getDeviceInstance().getGroupList();
+
+        //List<GroupBean> grouplist = TuyaUser.getDeviceInstance().getGroupList();
+        //hanzheng to do homeId
+        List<GroupBean> grouplist = TuyaHomeSdk.getDataInstance().getHomeGroupList(1L);
         List<DeviceBean> devicelist = TuyaUser.getDeviceInstance().getDevList();
         List<DeviceAndGroupBean> mixlist = new ArrayList<>();
         if (devicelist != null) {
@@ -291,7 +299,8 @@ public class DeviceListFragmentPresenter extends BasePresenter implements NetWor
 
     public void onDestroy() {
         super.onDestroy();
-        TuyaUser.getDeviceInstance().unRegisterTuyaListChangedListener(this);
+        //hanzheng to do unRegisterTuyaListChangedListener
+        //TuyaUser.getDeviceInstance().unRegisterTuyaListChangedListener(this);
     }
 
     public void addDemoDevice() {

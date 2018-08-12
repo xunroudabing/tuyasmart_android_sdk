@@ -22,6 +22,7 @@ import com.tuya.smart.home.sdk.TuyaHomeSdk;
 import com.tuya.smart.sdk.TuyaGroup;
 import com.tuya.smart.sdk.TuyaUser;
 import com.tuya.smart.sdk.api.IGroupListener;
+import com.tuya.smart.sdk.api.IResultCallback;
 import com.tuya.smart.sdk.api.ITuyaGroup;
 import com.tuya.smart.sdk.bean.DeviceBean;
 import com.tuya.smart.sdk.bean.GroupBean;
@@ -60,7 +61,7 @@ public class GroupDpSendPresenter extends BasePresenter implements IGroupListene
         mGroupId = ((Activity) mContext).getIntent().getLongExtra(INTENT_GROUPID, -1);
         mDpId = ((Activity) mContext).getIntent().getStringExtra(INTENT_DPID);
         mTuyaGroup = TuyaHomeSdk.newGroupInstance(mGroupId);
-        GroupBean groupBean = TuyaUser.getDeviceInstance().getGroupBean(mGroupId);
+        GroupBean groupBean = TuyaHomeSdk.getDataInstance().getGroupBean(mGroupId);
         List<String> devIds = groupBean.getDevIds();
         if (devIds == null || devIds.size() == 0) return;
         mDev = TuyaUser.getDeviceInstance().getDev(devIds.get(0));
@@ -104,15 +105,15 @@ public class GroupDpSendPresenter extends BasePresenter implements IGroupListene
         final String value = JSONObject.toJSONString(map);
         mView.showMessage("\n");
         mView.showMessage("send command: " + value);
-        mTuyaGroup.publishDps(value, new IControlCallback() {
+        mTuyaGroup.publishDps(value, new IResultCallback() {
             @Override
             public void onError(String s, String s1) {
                 mView.showMessage("send command failure");
-
             }
 
             @Override
             public void onSuccess() {
+
             }
         });
     }

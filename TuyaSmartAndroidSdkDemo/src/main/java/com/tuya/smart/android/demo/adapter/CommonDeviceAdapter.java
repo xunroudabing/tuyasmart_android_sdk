@@ -2,7 +2,6 @@ package com.tuya.smart.android.demo.adapter;
 
 import android.app.Activity;
 import android.content.Context;
-import android.nfc.Tag;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,10 +15,10 @@ import com.alibaba.fastjson.JSONObject;
 import com.squareup.picasso.Picasso;
 import com.tuya.smart.android.demo.R;
 import com.tuya.smart.android.demo.test.widget.AlertPickDialog;
-import com.tuya.smart.android.hardware.model.IControlCallback;
 import com.tuya.smart.sdk.TuyaDevice;
 import com.tuya.smart.sdk.TuyaSdk;
 import com.tuya.smart.sdk.TuyaUser;
+import com.tuya.smart.sdk.api.IResultCallback;
 import com.tuya.smart.sdk.bean.DeviceBean;
 
 import java.util.ArrayList;
@@ -88,7 +87,8 @@ public class CommonDeviceAdapter extends BaseAdapter {
         ImageView btnOff;
         TextView txtLight, txtTemp;
         TextView txtFunction;
-        LinearLayout functionLayout, lightLayout, tempLayout,btnOffLayout;
+        LinearLayout functionLayout, lightLayout, tempLayout, btnOffLayout;
+
         DeviceViewHolder(final View contentView) {
             super(contentView);
             connect = (ImageView) contentView.findViewById(R.id.iv_device_list_dot);
@@ -145,8 +145,8 @@ public class CommonDeviceAdapter extends BaseAdapter {
                 final int value_temp = (int) dps.get("4");
                 final boolean on = (boolean) dps.get("1");
                 int switch_resid = R.drawable.ty_device_power_on;
-                if(!on){
-                    switch_resid =R.drawable.ty_device_power_off;
+                if (!on) {
+                    switch_resid = R.drawable.ty_device_power_off;
                 }
                 int per_light = value_light * 100 / 255;
                 int per_temp = value_temp * 100 / 255;
@@ -159,14 +159,15 @@ public class CommonDeviceAdapter extends BaseAdapter {
                     @Override
                     public void onClick(View v) {
                         try {
-                            Map<String, Object> map_dp = TuyaUser.getDeviceInstance().getDev(deviceBean.getDevId()).getDps();
+                            Map<String, Object> map_dp = TuyaUser.getDeviceInstance().getDev
+                                    (deviceBean.getDevId()).getDps();
                             final boolean b = (boolean) map_dp.get("1");
                             Map<String, Object> map = new HashMap<>();
                             map.put("1", !b);
                             String json = JSONObject.toJSONString(map);
                             TuyaDevice device = new TuyaDevice(deviceBean
                                     .getDevId());
-                            device.publishDps(json, new IControlCallback() {
+                            device.publishDps(json, new IResultCallback() {
                                 @Override
                                 public void onError(String s, String s1) {
 
@@ -175,14 +176,14 @@ public class CommonDeviceAdapter extends BaseAdapter {
                                 @Override
                                 public void onSuccess() {
                                     int switch_resid = R.drawable.ty_device_power_on;
-                                    if(!b){
+                                    if (!b) {
                                         switch_resid = R.drawable.ty_device_power_off;
                                     }
                                     btnOff.setImageResource(switch_resid);
                                 }
                             });
-                        }catch (Exception ex){
-                            Log.e(TAG,ex.toString());
+                        } catch (Exception ex) {
+                            Log.e(TAG, ex.toString());
                         }
                     }
                 });
@@ -193,7 +194,7 @@ public class CommonDeviceAdapter extends BaseAdapter {
                                 , value_light,
                                 new AlertPickDialog.AlertPickCallBack2() {
                                     @Override
-                                    public void confirm(String value,boolean sw) {
+                                    public void confirm(String value, boolean sw) {
                                         Log.d("CommonDevice", "confirm:" + value);
                                         if (!deviceBean.getIsOnline()) {
                                             return;
@@ -210,7 +211,7 @@ public class CommonDeviceAdapter extends BaseAdapter {
                                             String json = JSONObject.toJSONString(map);
                                             TuyaDevice device = new TuyaDevice(deviceBean
                                                     .getDevId());
-                                            device.publishDps(json, new IControlCallback() {
+                                            device.publishDps(json, new IResultCallback() {
                                                 @Override
                                                 public void onError(String s, String s1) {
 
@@ -238,10 +239,11 @@ public class CommonDeviceAdapter extends BaseAdapter {
                 tempLayout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        AlertPickDialog.showSeekBarPickDialog((Activity) contentView.getContext(),value_temp,
+                        AlertPickDialog.showSeekBarPickDialog((Activity) contentView.getContext()
+                                , value_temp,
                                 new AlertPickDialog.AlertPickCallBack2() {
                                     @Override
-                                    public void confirm(String value,boolean sw) {
+                                    public void confirm(String value, boolean sw) {
                                         try {
                                             Log.d("CommonDeviceAdapter", "confirm:" + value);
                                             if (!deviceBean.getIsOnline()) {
@@ -255,7 +257,7 @@ public class CommonDeviceAdapter extends BaseAdapter {
                                             String json = JSONObject.toJSONString(map);
                                             TuyaDevice device = new TuyaDevice(deviceBean
                                                     .getDevId());
-                                            device.publishDps(json, new IControlCallback() {
+                                            device.publishDps(json, new IResultCallback() {
                                                 @Override
                                                 public void onError(String s, String s1) {
 
