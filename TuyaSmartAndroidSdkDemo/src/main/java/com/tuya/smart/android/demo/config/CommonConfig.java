@@ -21,6 +21,20 @@ public class CommonConfig {
     public static final String TY_ROUTER = "TY_ROUTER";
     public static final String DEFAULT_KEY_AP_SSID = "-TLinkAP-";
 
+    public static void setHomeId(Context context,long homeId){
+        SharedPreferences preferences = context.getSharedPreferences(PACKAGE_NAME,
+                Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putLong("homeId",homeId);
+        editor.commit();
+    }
+    public static long getHomeId(Context context){
+        SharedPreferences preferences = context.getSharedPreferences(PACKAGE_NAME,
+                Context.MODE_PRIVATE);
+        long ret = preferences.getLong("homeId", 0);
+        return ret;
+
+    }
     public static void setBindColorList(Context context, String json) {
         SharedPreferences preferences = context.getSharedPreferences(PACKAGE_NAME,
                 Context.MODE_PRIVATE);

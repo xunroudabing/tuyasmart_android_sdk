@@ -25,6 +25,8 @@ import com.tuya.smart.android.demo.view.IDeviceListFragmentView;
 import com.tuya.smart.android.hardware.model.IControlCallback;
 import com.tuya.smart.android.mvp.presenter.BasePresenter;
 import com.tuya.smart.home.sdk.TuyaHomeSdk;
+import com.tuya.smart.home.sdk.bean.HomeBean;
+import com.tuya.smart.home.sdk.callback.ITuyaHomeResultCallback;
 import com.tuya.smart.sdk.TuyaDevice;
 import com.tuya.smart.sdk.TuyaGroup;
 import com.tuya.smart.sdk.TuyaSmartRequest;
@@ -159,6 +161,17 @@ public class DeviceListFragmentPresenter extends BasePresenter implements NetWor
     public void getDataFromServer() {
         //hanzheng to do queryDevList
         //TuyaUser.getDeviceInstance().queryDevList();
+        TuyaHomeSdk.newHomeInstance(CommonConfig.getHomeId(mActivity)).getHomeDetail(new ITuyaHomeResultCallback() {
+            @Override
+            public void onSuccess(HomeBean homeBean) {
+                updateLocalData();
+            }
+
+            @Override
+            public void onError(String s, String s1) {
+
+            }
+        });
     }
 
     public void gotoAddDevice() {
@@ -255,8 +268,7 @@ public class DeviceListFragmentPresenter extends BasePresenter implements NetWor
         //调试信息
 
         //List<GroupBean> grouplist = TuyaUser.getDeviceInstance().getGroupList();
-        //hanzheng to do homeId
-        List<GroupBean> grouplist = TuyaHomeSdk.getDataInstance().getHomeGroupList(1L);
+        List<GroupBean> grouplist = TuyaHomeSdk.getDataInstance().getHomeGroupList(CommonConfig.getHomeId(mActivity));
         List<DeviceBean> devicelist = TuyaUser.getDeviceInstance().getDevList();
         List<DeviceAndGroupBean> mixlist = new ArrayList<>();
         if (devicelist != null) {

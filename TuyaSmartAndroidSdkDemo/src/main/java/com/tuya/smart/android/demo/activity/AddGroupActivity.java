@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.tuya.smart.android.demo.R;
 import com.tuya.smart.android.demo.adapter.GroupDeviceCheckedAdapter;
+import com.tuya.smart.android.demo.config.CommonConfig;
 import com.tuya.smart.home.sdk.TuyaHomeSdk;
 import com.tuya.smart.home.sdk.callback.ITuyaResultCallback;
 import com.tuya.smart.sdk.bean.GroupDeviceBean;
@@ -91,8 +92,7 @@ public class AddGroupActivity extends BaseActivity {
                 }
             }
         }
-        //hanzheng to do homeId
-        long homeId = 1L;
+        long homeId = CommonConfig.getHomeId(getApplicationContext());
         TuyaHomeSdk.newHomeInstance(homeId).createGroup(mProductId, groupName, devid_list, new
                 ITuyaResultCallback<Long>() {
             @Override
@@ -112,8 +112,7 @@ public class AddGroupActivity extends BaseActivity {
 
     protected void getGroupDevList() {
         mProductId = getIntent().getStringExtra(DeviceColorPickActivity.INTENT_PRODUCTID);
-        //hanzheng to do homeId
-        TuyaHomeSdk.newHomeInstance(1L).queryDeviceListToAddGroup(mProductId, new
+        TuyaHomeSdk.newHomeInstance(CommonConfig.getHomeId(getApplicationContext())).queryDeviceListToAddGroup(mProductId, new
                 ITuyaResultCallback<List<GroupDeviceBean>>() {
 
             @Override

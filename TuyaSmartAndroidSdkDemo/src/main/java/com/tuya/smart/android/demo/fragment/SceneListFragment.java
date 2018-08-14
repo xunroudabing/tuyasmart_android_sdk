@@ -23,6 +23,7 @@ import com.tuya.smart.android.demo.adapter.DividerItemDecoration;
 import com.tuya.smart.android.demo.adapter.ItemClickSupport;
 import com.tuya.smart.android.demo.adapter.SceneListRecyclerAdapter;
 import com.tuya.smart.android.demo.bean.SceneListItemBean;
+import com.tuya.smart.android.demo.config.CommonConfig;
 import com.tuya.smart.home.sdk.TuyaHomeSdk;
 import com.tuya.smart.home.sdk.bean.scene.SceneBean;
 import com.tuya.smart.home.sdk.callback.ITuyaResultCallback;
@@ -143,8 +144,7 @@ public class SceneListFragment extends BaseFragment {
     }
 
     protected void getScnenList() {
-        //hanzheng to do homeId
-        long homeId = 1L;
+        long homeId = CommonConfig.getHomeId(getActivity().getApplication());
         TuyaHomeSdk.getSceneManagerInstance().getSceneList(homeId, new
                 ITuyaResultCallback<List<SceneBean>>() {
             @Override
