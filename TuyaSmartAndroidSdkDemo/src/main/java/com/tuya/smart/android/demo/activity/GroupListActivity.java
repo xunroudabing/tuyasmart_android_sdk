@@ -9,6 +9,7 @@ import android.widget.ListView;
 
 import com.tuya.smart.android.demo.*;
 import com.tuya.smart.android.demo.adapter.GroupDeviceAdapter;
+import com.tuya.smart.android.demo.config.CommonConfig;
 import com.tuya.smart.android.demo.presenter.GroupCommonPresenter;
 import com.tuya.smart.home.sdk.TuyaHomeSdk;
 import com.tuya.smart.sdk.TuyaSdk;
@@ -56,6 +57,7 @@ public class GroupListActivity extends BaseActivity
             public void onRefresh() {
                 //hanzheng to do queryDevList
                 //TuyaUser.getDeviceInstance().queryDevList();
+                getDataFromServer();
 
             }
         });
@@ -65,6 +67,7 @@ public class GroupListActivity extends BaseActivity
         loadStart();
         //hanzheng to do queryDevList
         //TuyaUser.getDeviceInstance().queryDevList();
+        getDataFromServer();
 
     }
 
@@ -117,6 +120,11 @@ public class GroupListActivity extends BaseActivity
             mGroupDeviceAdapter.setData(groupBeen);
         }
         loadFinish();
+    }
+
+    public void getDataFromServer(){
+        List<GroupBean> groupBeen = TuyaHomeSdk.getDataInstance().getHomeGroupList(CommonConfig.getHomeId(getApplicationContext()));
+        updateData(groupBeen);
     }
 
 //    @Override

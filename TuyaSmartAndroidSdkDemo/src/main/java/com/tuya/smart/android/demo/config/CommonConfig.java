@@ -21,6 +21,20 @@ public class CommonConfig {
     public static final String TY_ROUTER = "TY_ROUTER";
     public static final String DEFAULT_KEY_AP_SSID = "-TLinkAP-";
 
+    public static void setMeshId(Context context,String meshId){
+        SharedPreferences preferences = context.getSharedPreferences(PACKAGE_NAME,
+                Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("meshId",meshId);
+        editor.commit();
+    }
+    public static String getMeshId(Context context){
+        SharedPreferences preferences = context.getSharedPreferences(PACKAGE_NAME,
+                Context.MODE_PRIVATE);
+        String ret = preferences.getString("meshId", null);
+        return ret;
+
+    }
     public static void setHomeId(Context context,long homeId){
         SharedPreferences preferences = context.getSharedPreferences(PACKAGE_NAME,
                 Context.MODE_PRIVATE);

@@ -31,17 +31,18 @@ import com.tuya.smart.android.demo.presenter.CommonDeviceDebugPresenter;
 import com.tuya.smart.android.demo.test.bean.AlertPickBean;
 import com.tuya.smart.android.demo.test.utils.DialogUtil;
 import com.tuya.smart.android.demo.test.widget.AlertPickDialog;
+import com.tuya.smart.android.demo.utils.TuyaUtils;
 import com.tuya.smart.android.demo.utils.ViewUtils;
 import com.tuya.smart.android.demo.view.ICommonDeviceDebugView;
-import com.tuya.smart.android.hardware.model.IControlCallback;
+import com.tuya.smart.bluemesh.mesh.device.ITuyaBlueMeshDevice;
 import com.tuya.smart.home.sdk.TuyaHomeSdk;
 import com.tuya.smart.sdk.TuyaDevice;
-import com.tuya.smart.sdk.TuyaGroup;
 import com.tuya.smart.sdk.TuyaTimerManager;
 import com.tuya.smart.sdk.TuyaUser;
 import com.tuya.smart.sdk.api.IResultCallback;
 import com.tuya.smart.sdk.api.IResultStatusCallback;
 import com.tuya.smart.sdk.api.ITuyaGroup;
+import com.tuya.smart.sdk.bean.DeviceBean;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -67,6 +68,9 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
     public static final String INTENT_DPID = "intent_dpid";
     public static final String INTNET_TITLE = "intent_title";
     public static final String INTENT_ISGROUP = "INTENT_ISGROUP";
+    public static final String INTENT_ISMESH = "INTENT_ISMESH";
+    public static final String INTENT_MESH_NODEID = "INTENT_MESH_NODEID";
+    public static final String INTENT_MESH_CATEGORY = "INTENT_MESH_CATEGORY";
     public static final String INTENT_GROUPID = "INTENT_GROUPID";
     static final String TAG = DeviceColorPickActivity.class.getSimpleName();
     int mValue;//明度
@@ -88,12 +92,16 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
     Queue<Integer> mColorQueue = new LinkedBlockingQueue<Integer>(5);
     boolean sw = true;
     private boolean isGroup = false;
+    private boolean isMesh = false;
     private long mGroupId;
     private String mDevId;
     private String mDpId;
     private String mProductId;
+    private String mNodeId;
+    private String mCategory;
     private TuyaDevice mTuyaDevice;
     private ITuyaGroup mTuyaGroup;
+    private ITuyaBlueMeshDevice mMeshDevice;
     private CommonDeviceDebugPresenter mPresenter;
 
     @Override
@@ -177,9 +185,16 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
         mDevId = getIntent().getStringExtra(INTENT_DEVID);
         mDpId = getIntent().getStringExtra(INTENT_DPID);
         mProductId = getIntent().getStringExtra(INTENT_PRODUCTID);
+        isMesh = getIntent().getBooleanExtra(INTENT_ISMESH, false);
+        mNodeId = getIntent().getStringExtra(INTENT_MESH_NODEID);
+        mCategory = getIntent().getStringExtra(INTENT_MESH_CATEGORY);
         mTuyaDevice = new TuyaDevice(mDevId);
         if (isGroup && mGroupId != 0L) {
             mTuyaGroup = TuyaHomeSdk.newGroupInstance(mGroupId);
+        }
+        if (isMesh) {
+            mMeshDevice = TuyaHomeSdk.newBlueMeshDeviceInstance(CommonConfig.getMeshId
+                    (getApplicationContext()));
         }
         layoutLight = (LinearLayout) findViewById(R.id.device_color_layoutLight);
         layoutTemp = (LinearLayout) findViewById(R.id.device_color_layoutTemp);
@@ -243,7 +258,7 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
                         "");
                 String value = String.format("%s0000ff%s", color_hex, Integer.toHexString(255));
                 Log.d(TAG, "value= " + value);
-                Map<String, String> map = new HashMap<>();
+                Map<String, Object> map = new HashMap<>();
                 map.put("2", "colour");
                 //map.put("2","scene");
                 map.put("5", value);
@@ -268,14 +283,17 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
                     txtMode.setTextColor(mCurrentColor);
                     String color_hex = Integer.toHexString(mCurrentColor).toLowerCase().substring
                             (2);
-
-                    String value = String.format("%s0000ff%s", color_hex, Integer.toHexString(255));
-                    Log.d(TAG, "value= " + value);
-                    Map<String, String> map = new HashMap<>();
-                    map.put("2", "colour");
-                    //map.put("2","scene");
-                    map.put("5", value);
-                    sendDp(map);
+                    if(isMesh){
+                        sendDp(TuyaUtils.getMeshLightColor(mCurrentColor));
+                    }else {
+                        String value = String.format("%s0000ff%s", color_hex, Integer.toHexString(255));
+                        Log.d(TAG, "value= " + value);
+                        Map<String, Object> map = new HashMap<>();
+                        map.put("2", "colour");
+                        //map.put("2","scene");
+                        map.put("5", value);
+                        sendDp(map);
+                    }
 //                    layoutSu.setVisibility(View.VISIBLE);
 //                    layoutTemp.setVisibility(View.GONE);
                 }
@@ -499,12 +517,15 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
         String color_hex = Integer.toHexString(color).toLowerCase().substring(2);
         String value = String.format("%s0000ff%s", color_hex, Integer.toHexString(255));
         Log.d(TAG, "value= " + value);
-        Map<String, String> map = new HashMap<>();
-        map.put("2", "colour");
-        //map.put("2","scene");
-        map.put("5", value);
-        sendDp(map);
-
+        if(isMesh){
+            sendDp(TuyaUtils.getMeshLightColor(color));
+        }else {
+            Map<String, Object> map = new HashMap<>();
+            map.put("2", "colour");
+            //map.put("2","scene");
+            map.put("5", value);
+            sendDp(map);
+        }
         txtMode.setTextColor(getResources().getColor(R.color.red));
         layoutSu.setVisibility(View.VISIBLE);
         layoutTemp.setVisibility(View.GONE);
@@ -561,10 +582,17 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
 
     //白光
     protected void setWhiteLight() {
-        Map<String, Object> map = new HashMap<>();
-        map.put("2", "white");
-        final String json = JSONObject.toJSONString(map);
-        sendDp(json);
+        if(isMesh){
+            Map<String, Object> map = new HashMap<>();
+            map.put("109", "white");
+            final String json = JSONObject.toJSONString(map);
+            sendDp(json);
+        }else {
+            Map<String, Object> map = new HashMap<>();
+            map.put("2", "white");
+            final String json = JSONObject.toJSONString(map);
+            sendDp(json);
+        }
         layoutTemp.setVisibility(View.VISIBLE);
         layoutSu.setVisibility(View.GONE);
     }
@@ -588,7 +616,7 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
             String color_hex = Integer.toHexString(convertColor).toLowerCase().substring(2);
             Log.d(TAG, "setSu.color_hex=" + color_hex);
             String dp5_convert = String.format("%s0000ff%s", color_hex, Integer.toHexString(255));
-            Map<String, String> map = new HashMap<>();
+            Map<String, Object> map = new HashMap<>();
             map.put("2", "colour");
             map.put("5", dp5_convert);
             sendDp(map);
@@ -653,11 +681,14 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
             String color_hex = Integer.toHexString(convertColor).toLowerCase().substring(2);
             Log.d(TAG, "setSu.color_hex=" + color_hex);
             String dp5_convert = String.format("%s0000ff%s", color_hex, Integer.toHexString(255));
-            Map<String, String> map = new HashMap<>();
-            map.put("2", "colour");
-            map.put("5", dp5_convert);
-            sendDp(map);
-
+            if(isMesh){
+                sendDp(TuyaUtils.getMeshLightColor(convertColor));
+            }else {
+                Map<String, Object> map = new HashMap<>();
+                map.put("2", "colour");
+                map.put("5", dp5_convert);
+                sendDp(map);
+            }
             int per = value * 100 / 100;
             txtSuPer.setText(String.valueOf(per) + "%");
         } catch (Exception ex) {
@@ -678,10 +709,16 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
 
     //色温
     protected void setTemp(int value) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("4", value);
-        final String json = JSONObject.toJSONString(map);
-        sendDp(json);
+        if(isMesh) {
+            final String json = JSONObject.toJSONString(TuyaUtils.getMeshTemp(value));
+            sendDp(json);
+        }else{
+            Map<String, Object> map = new HashMap<>();
+            map.put("4", value);
+            final String json = JSONObject.toJSONString(map);
+            sendDp(json);
+        }
+
 
         int per = value * 100 / 255;
         txtTempPer.setText(String.valueOf(per) + "%");
@@ -863,6 +900,21 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
     protected void sendDp(String json) {
         Log.d(TAG, "sendDp:" + json);
         if (!isGroup) {
+            if (isMesh) {
+                mMeshDevice.publishDps(mNodeId, mCategory, json, new IResultCallback() {
+                    @Override
+                    public void onError(String s, String s1) {
+                        Log.e(TAG, "onError:" + s + "," + s1);
+                    }
+
+                    @Override
+                    public void onSuccess() {
+                        Log.d(TAG, "onSuccess");
+                    }
+                });
+
+                return;
+            }
             mTuyaDevice.publishDps(json, new IResultCallback() {
                 @Override
                 public void onError(String s, String s1) {
@@ -889,7 +941,7 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
         }
     }
 
-    protected void sendDp(Map<String, String> dp) {
+    protected void sendDp(Map<String, Object> dp) {
         final String value = JSONObject.toJSONString(dp);
         Log.d(TAG, "sendDp:" + value);
         sendDp(value);

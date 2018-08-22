@@ -5,6 +5,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.wifi.WifiManager;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
 
 import com.tuya.smart.android.base.event.NetWorkStatusEvent;
 import com.tuya.smart.android.base.event.NetWorkStatusEventModel;
@@ -22,18 +25,20 @@ import com.tuya.smart.android.demo.utils.ActivityUtils;
 import com.tuya.smart.android.demo.utils.ProgressUtil;
 import com.tuya.smart.android.demo.utils.ToastUtil;
 import com.tuya.smart.android.demo.view.IDeviceListFragmentView;
-import com.tuya.smart.android.hardware.model.IControlCallback;
 import com.tuya.smart.android.mvp.presenter.BasePresenter;
+import com.tuya.smart.bluemesh.mesh.device.ITuyaBlueMeshDevice;
 import com.tuya.smart.home.sdk.TuyaHomeSdk;
+import com.tuya.smart.home.sdk.api.ITuyaHome;
 import com.tuya.smart.home.sdk.bean.HomeBean;
 import com.tuya.smart.home.sdk.callback.ITuyaHomeResultCallback;
+import com.tuya.smart.sdk.TuyaBlueMesh;
 import com.tuya.smart.sdk.TuyaDevice;
-import com.tuya.smart.sdk.TuyaGroup;
 import com.tuya.smart.sdk.TuyaSmartRequest;
-import com.tuya.smart.sdk.TuyaUser;
 import com.tuya.smart.sdk.api.IRequestCallback;
 import com.tuya.smart.sdk.api.IResultCallback;
 import com.tuya.smart.sdk.api.ITuyaListChangedListener;
+import com.tuya.smart.sdk.api.bluemesh.IMeshDevListener;
+import com.tuya.smart.sdk.bean.BlueMeshBean;
 import com.tuya.smart.sdk.bean.DeviceBean;
 import com.tuya.smart.sdk.bean.GroupBean;
 import com.tuya.smart.sdk.bean.TuyaListBean;
@@ -45,19 +50,45 @@ import java.util.List;
  * Created by letian on 15/6/1.
  */
 public class DeviceListFragmentPresenter extends BasePresenter implements NetWorkStatusEvent,
-        ITuyaListChangedListener {
+        ITuyaListChangedListener, IMeshDevListener {
 
-    private static final String TAG = "DeviceListFragmentPresenter";
+    static final String TAG = DeviceListFragmentPresenter.class.getSimpleName();
     private static final int WHAT_JUMP_GROUP_PAGE = 10212;
     protected Activity mActivity;
     protected IDeviceListFragmentView mView;
+    private ITuyaBlueMeshDevice mTuyaBlueMeshDevice;
+    private ITuyaHome mTuyaHome;
+    Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            registerMeshDevListener();
+        }
+    };
 
     public DeviceListFragmentPresenter(DeviceListFragment fragment, IDeviceListFragmentView view) {
         mActivity = fragment.getActivity();
         mView = view;
         //hanzheng to do  registerTuyaListChangedListener
         //TuyaUser.getDeviceInstance().registerTuyaListChangedListener(this);
+        getDataFromServer();
         initEventBus();
+        mHandler.sendEmptyMessageDelayed(0, 5000);
+    }
+
+    public void registerMeshDevListener() {
+        try {
+            mTuyaHome = TuyaHomeSdk.newHomeInstance(CommonConfig.getHomeId(mActivity));
+            Log.d(TAG, "DeviceListFragmentPresenter,meshid=" + CommonConfig.getMeshId
+                    (mActivity));
+            BlueMeshBean meshBean = TuyaBlueMesh.getMeshInstance().getBlueMeshBean(CommonConfig
+                    .getMeshId(mActivity));
+            mTuyaBlueMeshDevice = TuyaHomeSdk.newBlueMeshDeviceInstance(CommonConfig.getMeshId
+                    (mActivity));
+            mTuyaBlueMeshDevice.registerMeshDevListener(this);
+        } catch (Exception ex) {
+            Log.e(TAG, ex.toString());
+        }
+
     }
 
     public void getData() {
@@ -134,19 +165,30 @@ public class DeviceListFragmentPresenter extends BasePresenter implements NetWor
 
     private void gotoDeviceCommonActivity(DeviceAndGroupBean devBean) {
         boolean isGroup = false;
+        boolean isMesh = false;
         if (devBean.type == 1) {
             isGroup = false;
+            if (devBean.device.isBleMesh()) {
+                isMesh = true;
+            }
         } else if (devBean.type == 2) {
             isGroup = true;
         }
+
         //跳转至控制界面
         Intent intent = new Intent(mActivity, DeviceColorPickActivity.class);
         intent.putExtra(DeviceColorPickActivity.INTNET_TITLE, devBean.getName());
         intent.putExtra(DeviceColorPickActivity.INTENT_DEVID, devBean.getDevId());
         intent.putExtra(DeviceColorPickActivity.INTENT_PRODUCTID, devBean.getProductId());
         intent.putExtra(DeviceColorPickActivity.INTENT_ISGROUP, isGroup);
-        if(isGroup){
-            intent.putExtra(DeviceColorPickActivity.INTENT_GROUPID,devBean.group.getId());
+        intent.putExtra(DeviceColorPickActivity.INTENT_ISMESH, isMesh);
+
+        if (isGroup) {
+            intent.putExtra(DeviceColorPickActivity.INTENT_GROUPID, devBean.group.getId());
+        } else {
+            intent.putExtra(DeviceColorPickActivity.INTENT_MESH_NODEID, devBean.device.getNodeId());
+            intent.putExtra(DeviceColorPickActivity.INTENT_MESH_CATEGORY, devBean.device
+                    .getCategory());
         }
         mActivity.startActivity(intent);
 //        Intent intent = new Intent(mActivity, DeviceCommonActivity.class);
@@ -169,7 +211,8 @@ public class DeviceListFragmentPresenter extends BasePresenter implements NetWor
 
             @Override
             public void onError(String s, String s1) {
-
+                Log.e(TAG, "getHomeDetail.onError" + s + "," + s1);
+                mView.loadFinish();
             }
         });
     }
@@ -237,6 +280,23 @@ public class DeviceListFragmentPresenter extends BasePresenter implements NetWor
      */
     private void unBindDevice(final DeviceAndGroupBean deviceBean) {
         ProgressUtil.showLoading(mActivity, R.string.loading);
+        if (deviceBean.device.isBleMesh()) {
+            TuyaHomeSdk.newBlueMeshDeviceInstance(CommonConfig.getMeshId(mActivity))
+                    .removeMeshSubDev(deviceBean.getDevId(), new IResultCallback() {
+                        @Override
+                        public void onError(String s, String s1) {
+                            ProgressUtil.hideLoading();
+                            ToastUtil.showToast(mActivity, s1);
+                        }
+
+                        @Override
+                        public void onSuccess() {
+                            ProgressUtil.hideLoading();
+                            updateLocalData();
+                        }
+                    });
+            return;
+        }
         new TuyaDevice(deviceBean.getDevId()).removeDevice(new IResultCallback() {
             @Override
             public void onError(String s, String s1) {
@@ -247,6 +307,7 @@ public class DeviceListFragmentPresenter extends BasePresenter implements NetWor
             @Override
             public void onSuccess() {
                 ProgressUtil.hideLoading();
+                updateLocalData();
             }
         });
 
@@ -268,8 +329,11 @@ public class DeviceListFragmentPresenter extends BasePresenter implements NetWor
         //调试信息
 
         //List<GroupBean> grouplist = TuyaUser.getDeviceInstance().getGroupList();
-        List<GroupBean> grouplist = TuyaHomeSdk.getDataInstance().getHomeGroupList(CommonConfig.getHomeId(mActivity));
-        List<DeviceBean> devicelist = TuyaUser.getDeviceInstance().getDevList();
+        List<GroupBean> grouplist = TuyaHomeSdk.getDataInstance().getHomeGroupList(CommonConfig
+                .getHomeId(mActivity));
+        //List<DeviceBean> devicelist = TuyaUser.getDeviceInstance().getDevList();
+        List<DeviceBean> devicelist = TuyaHomeSdk.getDataInstance().getHomeDeviceList
+                (CommonConfig.getHomeId(mActivity));
         List<DeviceAndGroupBean> mixlist = new ArrayList<>();
         if (devicelist != null) {
             for (DeviceBean bean : devicelist) {
@@ -311,9 +375,11 @@ public class DeviceListFragmentPresenter extends BasePresenter implements NetWor
 
     public void onDestroy() {
         super.onDestroy();
+
         //hanzheng to do unRegisterTuyaListChangedListener
         //TuyaUser.getDeviceInstance().unRegisterTuyaListChangedListener(this);
     }
+
 
     public void addDemoDevice() {
         ProgressUtil.showLoading(mActivity, null);
@@ -336,5 +402,47 @@ public class DeviceListFragmentPresenter extends BasePresenter implements NetWor
     @Override
     public void onDeviceChanged(TuyaListBean tuyaListBean) {
         updateLocalData();
+    }
+
+    @Override
+    public void onDpUpdate(String s, String s1, boolean b) {
+
+    }
+
+    @Override
+    public void onStatusChanged(List<String> list, List<String> list1, String s) {
+        Log.d(TAG, "onStatusChanged");
+        if (list != null) {
+            for (String s1 : list) {
+                Log.d(TAG, "online:" + s1);
+            }
+        }
+        mActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                updateLocalData();
+            }
+        });
+
+    }
+
+    @Override
+    public void onNetworkStatusChanged(String s, boolean b) {
+        Log.d(TAG, "onNetworkStatusChanged:s=" + s + ",b=" + b);
+    }
+
+    @Override
+    public void onRawDataUpdate(byte[] bytes) {
+
+    }
+
+    @Override
+    public void onDevInfoUpdate(String s) {
+
+    }
+
+    @Override
+    public void onRemoved(String s) {
+
     }
 }

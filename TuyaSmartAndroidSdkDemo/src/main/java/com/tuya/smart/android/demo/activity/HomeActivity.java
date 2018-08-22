@@ -23,6 +23,7 @@ import com.tuya.smart.android.demo.presenter.HomePresenter;
 import com.tuya.smart.android.demo.test.utils.DialogUtil;
 import com.tuya.smart.android.demo.utils.CheckPermissionUtils;
 import com.tuya.smart.android.demo.view.IHomeView;
+import com.tuya.smart.home.sdk.TuyaHomeSdk;
 import com.tuya.smart.sdk.TuyaSdk;
 import com.tuya.smart.sdk.TuyaUser;
 import com.tuya.smart.sdk.api.ITuyaSearchDeviceListener;
@@ -156,12 +157,26 @@ public class HomeActivity extends BaseActivity implements IHomeView {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        stopClient();
         if (mHomePresenter != null) {
             mHomePresenter.onDestroy();
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        startClient();
+    }
 
+    public void startClient() {
+        TuyaHomeSdk.getTuyaBlueMeshClient().startClient(TuyaSmartApp.getInstance()
+                .getBlueMeshBean());
+    }
+
+    public void stopClient() {
+        TuyaHomeSdk.getTuyaBlueMeshClient().stopClient();
+    }
     protected void initTab() {
         mFragmentContainer = (ViewPager) findViewById(R.id.home_fragment_container);
         mHomeFragmentAdapter = new HomeFragmentAdapter(getSupportFragmentManager());

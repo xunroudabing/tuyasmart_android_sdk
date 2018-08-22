@@ -10,6 +10,31 @@
         android:id="@+id/action_bar_layout"
         layout="@layout/toolbar_top_view" />
     <LinearLayout
+        android:background="@color/white"
+        android:gravity="center"
+        android:padding="10dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="80dp">
+        <TextView
+            tools:text="123"
+            android:text="@string/txt_scan_bluetooth"
+            android:textColor="@color/google_blue"
+            android:textSize="@dimen/ts_16"
+            android:drawableLeft="@drawable/bluetooth_1"
+            android:gravity="center_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <Button
+            android:id="@+id/select_device_btnScan"
+            style="@style/Button.Normal"
+            android:text="@string/btn_scan"
+            android:textSize="@dimen/ts_16"
+            android:layout_marginLeft="10dp"
+            android:layout_width="70dp"
+            android:layout_height="30dp" />
+    </LinearLayout>
+    <LinearLayout
         android:orientation="vertical"
         android:padding="10dp"
         android:layout_width="match_parent"
@@ -54,7 +79,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
             <TextView
-                android:text="@string/device_type_1"
+                android:text="@string/device_type_4"
                 android:textColor="@color/textColor"
                 android:textSize="@dimen/ts_16"
                 android:layout_weight="1.0"

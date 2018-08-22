@@ -262,7 +262,6 @@ public class AddSceneActivity extends BaseActivity implements View.OnClickListen
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             if (which == DialogInterface.BUTTON_POSITIVE) {
-                                //hanzheng to do TuyaScene
                                 TuyaHomeSdk.newSceneInstance(mSceneBean.getId()).deleteScene(new IResultCallback() {
 
                                     @Override
@@ -338,12 +337,11 @@ public class AddSceneActivity extends BaseActivity implements View.OnClickListen
 //                        mIsTrue    //触发条件的bool
 //                );
 
-                //hanzheng to do SceneCondition.createDevCondition
-//                mCondition = SceneCondition.createDevCondition(
-//                        mSceneDevBean,    //设备
-//                        mDpId,        //dpId
-//                        mDeviceRule    //规则
-//                );
+                mCondition = SceneCondition.createDevCondition(
+                        mSceneDevBean,    //设备
+                        mDpId,        //dpId
+                        Collections.singletonList(mDeviceRule)    //规则
+                );
             }
         }
 
@@ -415,12 +413,11 @@ public class AddSceneActivity extends BaseActivity implements View.OnClickListen
 //                        mIsTrue    //触发条件的bool
 //                );
 
-                //hanzheng to do SceneCondition.createDevCondition
-//                condition = SceneCondition.createDevCondition(
-//                        mSceneDevBean,    //设备
-//                        mDpId,        //dpId
-//                        mDeviceRule    //规则
-//                );
+                condition = SceneCondition.createDevCondition(
+                        mSceneDevBean,    //设备
+                        mDpId,        //dpId
+                        Collections.singletonList(mDeviceRule)    //规则
+                );
             }
         }
         long homeId = CommonConfig.getHomeId(getApplicationContext());

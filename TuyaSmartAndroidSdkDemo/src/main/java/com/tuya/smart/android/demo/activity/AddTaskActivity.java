@@ -14,6 +14,7 @@ import com.tuya.smart.android.demo.R;
 import com.tuya.smart.android.demo.adapter.SceneDeviceAdapter;
 import com.tuya.smart.android.demo.bean.SceneActionBean;
 import com.tuya.smart.android.demo.bean.SceneConditonBean;
+import com.tuya.smart.android.demo.config.CommonConfig;
 import com.tuya.smart.home.sdk.TuyaHomeSdk;
 import com.tuya.smart.home.sdk.bean.scene.condition.ConditionListBean;
 import com.tuya.smart.home.sdk.callback.ITuyaResultCallback;
@@ -112,7 +113,7 @@ public class AddTaskActivity extends BaseActivity {
 
     protected void getTaskDevList() {
         //hanzheng to do
-        long homeId = 1L;
+        long homeId = CommonConfig.getHomeId(this);
         TuyaHomeSdk.getSceneManagerInstance().getTaskDevList(homeId, new ITuyaResultCallback<List<DeviceBean>>() {
 
             @Override

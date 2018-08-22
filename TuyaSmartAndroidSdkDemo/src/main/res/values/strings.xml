@@ -1,5 +1,18 @@
 <resources>
     <string name="app_name">smartlife</string>
+    <string name="bluetooth_close">蓝牙未开启</string>
+    <string name="open_bluetooth">请先开启蓝牙功能</string>
+    <string name="add_deivce_fail">添加失败</string>
+    <string name="add_device_success">成功添加%d个设备</string>
+    <string name="add_bluetooth">正在添加蓝牙设备...</string>
+    <string name="title_discover_deviceToConnect">发现待连接的设备</string>
+    <string name="alert_discover_device">发现%d个设备</string>
+    <string name="alert_discover_gateway">发现%d个网关设备</string>
+    <string name="newdevice">新设备</string>
+    <string name="tip">Tip</string>
+    <string name="open_gps">请打开 GPS(定位)服务</string>
+    <string name="btn_scan">扫描</string>
+    <string name="txt_scan_bluetooth">通过蓝牙扫描新设备</string>
     <string name="add_group">Create Group</string>
     <string name="swtich_string">swtich</string>
     <string name="swtich_open">open</string>

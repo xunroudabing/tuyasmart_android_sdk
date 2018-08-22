@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:padding="10dp"
+    android:gravity="center_horizontal"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/discover_mesh_imgSuccess"
+        android:src="@drawable/add_mesh_succ"
+        android:layout_marginTop="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/discover_mesh_txtSuccessCount"
+        android:textSize="@dimen/ts_24"
+        android:textColor="@color/text_color"
+        android:text="@string/add_device_success"
+        android:gravity="center"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:id="@+id/discover_mesh_layoutSuccessGroup"
+        android:orientation="vertical"
+        android:layout_weight="1.0"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"></LinearLayout>
+
+    <Button
+        android:id="@+id/discover_mesh_btnStart"
+        style="@style/Button.Normal"
+        android:text="@string/start"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</LinearLayout>

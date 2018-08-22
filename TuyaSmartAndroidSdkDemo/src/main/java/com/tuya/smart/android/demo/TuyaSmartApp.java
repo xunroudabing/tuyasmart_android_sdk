@@ -19,7 +19,9 @@ import com.tuya.smart.home.sdk.TuyaHomeSdk;
 import com.tuya.smart.home.sdk.bean.HomeBean;
 import com.tuya.smart.home.sdk.callback.ITuyaGetHomeListCallback;
 import com.tuya.smart.home.sdk.callback.ITuyaHomeResultCallback;
+import com.tuya.smart.home.sdk.callback.ITuyaResultCallback;
 import com.tuya.smart.sdk.api.INeedLoginListener;
+import com.tuya.smart.sdk.bean.BlueMeshBean;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +33,7 @@ public class TuyaSmartApp extends Application {
     public LocationService locationService;
     BDLocation mLocation;
     private HomeBean mHomeBean;
+    private BlueMeshBean mBlueMeshBean;
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -58,8 +61,19 @@ public class TuyaSmartApp extends Application {
         mHandler.sendEmptyMessageDelayed(ACTION_CREATE_HOME, 300);
     }
 
+    @Override
+    public void onTerminate() {
+        super.onTerminate();
+        TuyaHomeSdk.onDestroy();
+        TuyaHomeSdk.onDestroyMesh();
+    }
+
     public HomeBean getHomeBean() {
         return mHomeBean;
+    }
+
+    public BlueMeshBean getBlueMeshBean() {
+        return mBlueMeshBean;
     }
 
     private void initSdk() {
@@ -123,22 +137,39 @@ public class TuyaSmartApp extends Application {
 
     //自动创建home 兼容meshSDK
     public void queryHomeList() {
-        TuyaHomeSdk.getHomeManagerInstance().queryHomeList(new ITuyaGetHomeListCallback() {
-            @Override
-            public void onSuccess(List<HomeBean> list) {
-                if (list.isEmpty()) {
-                    createHome();
-                } else {
-                    mHomeBean = list.get(0);
-                    CommonConfig.setHomeId(getApplicationContext(), mHomeBean.getHomeId());
+        long homeId = CommonConfig.getHomeId(getApplicationContext());
+        if (homeId > 0) {
+            TuyaHomeSdk.newHomeInstance(homeId).getHomeDetail(new ITuyaHomeResultCallback() {
+                @Override
+                public void onSuccess(HomeBean homeBean) {
+                    mHomeBean = homeBean;
+                    initMesh();
                 }
-            }
 
-            @Override
-            public void onError(String code, String error) {
-                Log.e(TAG, "onError=" + code + "," + error);
-            }
-        });
+                @Override
+                public void onError(String s, String s1) {
+                    Log.e(TAG, "onError:" + s1);
+                }
+            });
+        } else {
+            TuyaHomeSdk.getHomeManagerInstance().queryHomeList(new ITuyaGetHomeListCallback() {
+                @Override
+                public void onSuccess(List<HomeBean> list) {
+                    if (list.isEmpty()) {
+                        createHome();
+                    } else {
+                        mHomeBean = list.get(0);
+                        CommonConfig.setHomeId(getApplicationContext(), mHomeBean.getHomeId());
+                        initMesh();
+                    }
+                }
+
+                @Override
+                public void onError(String code, String error) {
+                    Log.e(TAG, "onError=" + code + "," + error);
+                }
+            });
+        }
     }
 
     protected void createHome() {
@@ -159,6 +190,7 @@ public class TuyaSmartApp extends Application {
                         Log.d(TAG, "createHome onSuccess,homeid=" + homeBean.getHomeId());
                         mHomeBean = homeBean;
                         CommonConfig.setHomeId(getApplicationContext(), mHomeBean.getHomeId());
+                        initMesh();
                     }
 
                     @Override
@@ -166,5 +198,34 @@ public class TuyaSmartApp extends Application {
                         Log.e(TAG, "createHome.onError=" + error);
                     }
                 });
+    }
+
+    protected void initMesh() {
+        if (mHomeBean != null) {
+            List<BlueMeshBean> meshList = mHomeBean.getMeshList();
+            if (meshList.isEmpty()) {
+                TuyaHomeSdk.newHomeInstance(mHomeBean.getHomeId()).createBlueMesh("mesh", new
+                        ITuyaResultCallback<BlueMeshBean>() {
+                            @Override
+                            public void onError(String errorCode, String errorMsg) {
+                                Log.e(TAG, "initMesh.onError:" + errorMsg);
+                            }
+
+                            @Override
+                            public void onSuccess(BlueMeshBean blueMeshBean) {
+                                Log.d(TAG, "initMesh.onSuccess");
+                                mBlueMeshBean = blueMeshBean;
+                                CommonConfig.setMeshId(getApplicationContext(), mBlueMeshBean
+                                        .getMeshId());
+                                TuyaHomeSdk.initMesh(mBlueMeshBean.getMeshId());
+                            }
+                        });
+            } else {
+                mBlueMeshBean = meshList.get(0);
+                CommonConfig.setMeshId(getApplicationContext(), mBlueMeshBean.getMeshId());
+                TuyaHomeSdk.initMesh(mBlueMeshBean.getMeshId());
+            }
+
+        }
     }
 }

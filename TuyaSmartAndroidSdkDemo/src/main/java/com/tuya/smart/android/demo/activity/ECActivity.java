@@ -23,26 +23,43 @@ import com.wnafee.vector.compat.VectorDrawable;
  * Created by letian on 15/6/29.
  */
 public class ECActivity extends BaseActivity implements IECView {
-
+    public static final String INTENT_FOUND_DEVICE = "INTENT_FOUND_DEVICE";
+    public static final String INTENT_ISMESH = "INTENT_ISMESH";
     public static final String CONFIG_MODE = "config_mode";
     public static final String CONFIG_PASSWORD = "config_password";
     public static final String CONFIG_SSID = "config_ssid";
-    private static final String TAG = "ECActivity";
     public static final int AP_MODE = 0;
     public static final int EC_MODE = 1;
-
+    private static final String TAG = "ECActivity";
     public TextView mSSID;
     public EditText mPassword;
     public ImageButton mPasswordSwitch;
     ImageView mIvWifi;
     TextView mTvWifiStatus;
     TextView mTvOtherWifi;
-
+    boolean isMesh = false;
     private ECPresenter mECPresenter;
-
     private boolean passwordOn = true;
     private int mWifiOnColor;
     private View m5gNetworkTip;
+    private View.OnClickListener mOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (v.getId() == R.id.tv_other_wifi) {
+                mECPresenter.userOtherWifi();
+            } else if (v.getId() == R.id.ec_password_switch) {
+                clickPasswordSwitch(v);
+            } else if (v.getId() == R.id.tv_bottom_button) {
+                boolean isMesh = getIntent().getBooleanExtra(INTENT_ISMESH, false);
+                //网关配网
+                if (isMesh) {
+                    mECPresenter.goNextMeshConfig();
+                } else {
+                    mECPresenter.goNextStep();
+                }
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +80,6 @@ public class ECActivity extends BaseActivity implements IECView {
         mECPresenter = new ECPresenter(this, this);
     }
 
-
     public void clickPasswordSwitch(View v) {
         passwordOn = !passwordOn;
         if (passwordOn) {
@@ -71,25 +87,13 @@ public class ECActivity extends BaseActivity implements IECView {
             mPassword.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
         } else {
             mPasswordSwitch.setImageResource(R.drawable.ty_password_off);
-            mPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            mPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType
+                    .TYPE_TEXT_VARIATION_PASSWORD);
         }
         if (mPassword.getText().length() > 0) {
             mPassword.setSelection(mPassword.getText().length());
         }
     }
-
-    private View.OnClickListener mOnClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            if (v.getId() == R.id.tv_other_wifi) {
-                mECPresenter.userOtherWifi();
-            } else if (v.getId() == R.id.ec_password_switch) {
-                clickPasswordSwitch(v);
-            } else if (v.getId() == R.id.tv_bottom_button) {
-                mECPresenter.goNextStep();
-            }
-        }
-    };
 
     private void initView() {
         mSSID = (TextView) findViewById(R.id.tv_network);
@@ -108,7 +112,7 @@ public class ECActivity extends BaseActivity implements IECView {
         findViewById(R.id.tv_bottom_button).setOnClickListener(mOnClickListener);
         m5gNetworkTip = findViewById(R.id.network_tip);
         String password = CommonConfig.getWifiPassword(getApplicationContext());
-        if(!TextUtils.isEmpty(password)){
+        if (!TextUtils.isEmpty(password)) {
             mPassword.setText(password);
         }
     }
@@ -119,7 +123,8 @@ public class ECActivity extends BaseActivity implements IECView {
     }
 
     private void setWifiVectorDrawable(ImageView view) {
-        VectorDrawable drawable = VectorDrawable.getDrawable(TuyaSdk.getApplication(), R.drawable.wifi_status);
+        VectorDrawable drawable = VectorDrawable.getDrawable(TuyaSdk.getApplication(), R.drawable
+                .wifi_status);
         mIvWifi.setBackground(getResources().getDrawable(R.drawable.bg_bt_circle));
         drawable.setAlpha(128);
         view.setImageDrawable(drawable);
@@ -150,13 +155,13 @@ public class ECActivity extends BaseActivity implements IECView {
     }
 
     @Override
-    public void setWifiPass(String pass) {
-        mPassword.setText(pass);
+    public String getWifiPass() {
+        return mPassword.getText().toString();
     }
 
     @Override
-    public String getWifiPass() {
-        return mPassword.getText().toString();
+    public void setWifiPass(String pass) {
+        mPassword.setText(pass);
     }
 
     @Override

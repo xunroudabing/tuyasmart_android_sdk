@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/action_bar_layout"
+        layout="@layout/toolbar_top_view" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <include android:id="@+id/discover_mesh_layoutOpenBlueTooth" layout="@layout/mesh_open_bluetooth"></include>
+            <LinearLayout
+                android:id="@+id/discover_mesh_layoutDiscover"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:padding="10dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:src="@drawable/ty_ble" />
+
+                <TextView
+                    android:id="@+id/discover_mesh_txtCount"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center"
+                    android:text="@string/alert_discover_device"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/ts_22" />
+
+                <LinearLayout
+                    android:id="@+id/discover_mesh_layoutGroup"
+                    android:orientation="vertical"
+                    android:layout_weight="1.0"
+                    android:layout_marginTop="10dp"
+                    android:minHeight="200dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"></LinearLayout>
+
+                <Button
+                    android:id="@+id/discover_mesh_btnNext"
+                    style="@style/Button.Normal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/go_next" />
+            </LinearLayout>
+            <!-- 正在添加-->
+            <LinearLayout
+                android:id="@+id/discover_mesh_layoutProgress"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="10dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:src="@drawable/ty_ble" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center"
+                    android:text="@string/add_bluetooth"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/ts_24" />
+            </LinearLayout>
+
+            <include
+                android:id="@+id/discover_mesh_layoutSuccess"
+                android:visibility="gone"
+                layout="@layout/mesh_add_success"></include>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

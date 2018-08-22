@@ -16,7 +16,7 @@ public class DeviceAndGroupBean {
     public GroupBean group;
     public DeviceBean device;
     /**
-     * 1 - device, 2 - group
+     * 1 - device, 2 - group 3 - mesh
      */
     public int type;
 
@@ -60,16 +60,16 @@ public class DeviceAndGroupBean {
                 (0)).getDps();
     }
 
-    public String getProductId(){
-        if(type == 1){
+    public String getProductId() {
+        if (type == 1) {
             return device.getProductId();
         }
         return group.getProductId();
     }
 
-    public String getDevId(){
-        if(type == 1){
-            return  device.getDevId();
+    public String getDevId() {
+        if (type == 1) {
+            return device.getDevId();
         }
         List<String> devIds = group.getDevIds();
         if (devIds.size() <= 0) {

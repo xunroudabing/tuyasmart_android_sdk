@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="btn_scan">扫描</string>
+    <string name="txt_scan_bluetooth">通过蓝牙扫描新设备</string>
     <string name="swtich_string">开关</string>
     <string name="swtich_open">开</string>
     <string name="swtich_close">关</string>

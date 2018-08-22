@@ -16,6 +16,7 @@ import com.tuya.smart.android.common.utils.NetworkUtil;
 import com.tuya.smart.android.demo.R;
 import com.tuya.smart.android.demo.activity.ECActivity;
 import com.tuya.smart.android.demo.activity.ECBindActivity;
+import com.tuya.smart.android.demo.activity.MeshNewDeviceActivity;
 import com.tuya.smart.android.demo.config.CommonConfig;
 import com.tuya.smart.android.demo.test.utils.DialogUtil;
 import com.tuya.smart.android.demo.utils.ActivityUtils;
@@ -31,7 +32,6 @@ public class ECPresenter extends BasePresenter {
     //    public static final int REQUEST_CODE = 12;
     public static final String TAG = "ECPresenter";
     private final int mMode;
-
     private Activity mActivity;
     private IECView mView;
 
@@ -43,6 +43,22 @@ public class ECPresenter extends BasePresenter {
             }
         }
     };
+
+    public ECPresenter(Activity activity, IECView view) {
+        mActivity = activity;
+        mView = view;
+        mMode = activity.getIntent().getIntExtra(ECActivity.CONFIG_MODE, ECActivity.EC_MODE);
+        initWifi();
+    }
+
+    public static boolean is5GHz(String ssid, Context context) {
+        WifiManager wifiManger = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        WifiInfo wifiInfo = wifiManger.getConnectionInfo();
+        if (wifiInfo != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            int freq = wifiInfo.getFrequency();
+            return freq > 4900 && freq < 5900;
+        } else return ssid.toUpperCase().endsWith("5G");
+    }
 
     public void checkWifiNetworkStatus() {
         if (NetworkUtil.isNetworkAvailable(mActivity)) {
@@ -60,19 +76,25 @@ public class ECPresenter extends BasePresenter {
         mView.showNoWifi();
     }
 
-    public ECPresenter(Activity activity, IECView view) {
-        mActivity = activity;
-        mView = view;
-        mMode = activity.getIntent().getIntExtra(ECActivity.CONFIG_MODE, ECActivity.EC_MODE);
-        initWifi();
-    }
-
     public void closeECModeActivity() {
         mActivity.onBackPressed();
     }
 
     private void initWifi() {
         registerWifiReceiver();
+    }
+
+    /**
+     * 跳转至网关配网
+     */
+    public void goNextMeshConfig() {
+        final String passWord = mView.getWifiPass();
+        final String ssid = WiFiUtil.getCurrentSSID(mActivity);
+        if (!NetworkUtil.isNetworkAvailable(mActivity) || TextUtils.isEmpty(ssid)) {
+            ToastUtil.showToast(mActivity, R.string.connect_phone_to_network);
+        } else {
+            gotoBindMeshActivity(ssid, passWord);
+        }
     }
 
     public void goNextStep() {
@@ -83,12 +105,15 @@ public class ECPresenter extends BasePresenter {
         } else {
             //对密码进行加密处理
             //保存密码
-            CommonConfig.setWifiPassword(mActivity,passWord);
+            CommonConfig.setWifiPassword(mActivity, passWord);
             if (!is5GHz(ssid, mActivity)) {
                 gotoBindDeviceActivity(ssid, passWord);
             } else {
-                DialogUtil.customDialog(mActivity, null, mActivity.getString(R.string.ez_notSupport_5G_tip)
-                        , mActivity.getString(R.string.ez_notSupport_5G_change), mActivity.getString(R.string.ez_notSupport_5G_continue), null, new DialogInterface.OnClickListener() {
+                DialogUtil.customDialog(mActivity, null, mActivity.getString(R.string
+                                .ez_notSupport_5G_tip)
+                        , mActivity.getString(R.string.ez_notSupport_5G_change), mActivity
+                                .getString(R.string.ez_notSupport_5G_continue), null, new
+                                DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 switch (which) {
@@ -105,13 +130,15 @@ public class ECPresenter extends BasePresenter {
         }
     }
 
-    public static boolean is5GHz(String ssid, Context context) {
-        WifiManager wifiManger = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-        WifiInfo wifiInfo = wifiManger.getConnectionInfo();
-        if (wifiInfo != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            int freq = wifiInfo.getFrequency();
-            return freq > 4900 && freq < 5900;
-        } else return ssid.toUpperCase().endsWith("5G");
+    private void gotoBindMeshActivity(String ssid, String password) {
+        Intent intent = new Intent(mActivity, MeshNewDeviceActivity.class);
+        intent.putExtra(MeshNewDeviceActivity.INTENT_WIFI_SSID, ssid);
+        intent.putExtra(MeshNewDeviceActivity.INTENT_WIFI_PASSWORD, password);
+        intent.putExtra(MeshNewDeviceActivity.INTENT_CONFIG_TYPE, 2);
+        intent.putExtra(MeshNewDeviceActivity.INTENT_MESHID, CommonConfig.getMeshId
+                (mActivity.getApplicationContext()));
+        intent.putExtras(mActivity.getIntent());
+        ActivityUtils.startActivity(mActivity, intent, ActivityUtils.ANIMATE_FORWARD, true);
     }
 
     private void gotoBindDeviceActivity(String ssid, String passWord) {

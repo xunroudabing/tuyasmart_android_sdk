@@ -20,8 +20,9 @@ import com.tuya.smart.android.demo.utils.ActivityUtils;
  * Created by ccx on 16/3/29.
  */
 public class AddDeviceTipActivity extends BaseActivity implements View.OnClickListener {
+    public static final String INTENT_ISMESH = "INTENT_ISMESH";
     private static String TAG = "AddDeviceTipActivity";
-
+    boolean isMesh = false;
     private TextView mStatusLightTip;
     private Button mStatusLightOption;
     private Button mStatusLightHelp;
@@ -40,7 +41,7 @@ public class AddDeviceTipActivity extends BaseActivity implements View.OnClickLi
     }
 
     private void initView() {
-
+        isMesh = getIntent().getBooleanExtra(INTENT_ISMESH, false);
         mStatusLightTip = (TextView) findViewById(R.id.status_light_tip);
         mStatusLightTip.setText(R.string.ty_add_device_ez_info);
         initTipImageView();
@@ -54,8 +55,10 @@ public class AddDeviceTipActivity extends BaseActivity implements View.OnClickLi
     private void initTipImageView() {
         mStatusLightImageView = (ImageView) findViewById(R.id.status_light_imageview);
         mStatusLightAnimation = new AnimationDrawable();
-        mStatusLightAnimation.addFrame(ContextCompat.getDrawable(this, R.drawable.ty_adddevice_lighting), 250);
-        mStatusLightAnimation.addFrame(ContextCompat.getDrawable(this, R.drawable.ty_adddevice_light), 250);
+        mStatusLightAnimation.addFrame(ContextCompat.getDrawable(this, R.drawable
+                .ty_adddevice_lighting), 250);
+        mStatusLightAnimation.addFrame(ContextCompat.getDrawable(this, R.drawable
+                .ty_adddevice_light), 250);
         mStatusLightAnimation.setOneShot(false);
         mStatusLightImageView.setImageDrawable(mStatusLightAnimation);
         mStatusLightAnimation.start();
@@ -66,8 +69,10 @@ public class AddDeviceTipActivity extends BaseActivity implements View.OnClickLi
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 if (item.getItemId() == R.id.action_ap_mode_onclick) {
-                    Intent intent = new Intent(AddDeviceTipActivity.this, AddDeviceAPTipActivity.class);
-                    ActivityUtils.startActivity(AddDeviceTipActivity.this, intent, ActivityUtils.ANIMATE_FORWARD, true);
+                    Intent intent = new Intent(AddDeviceTipActivity.this, AddDeviceAPTipActivity
+                            .class);
+                    ActivityUtils.startActivity(AddDeviceTipActivity.this, intent, ActivityUtils
+                            .ANIMATE_FORWARD, true);
                 }
                 return false;
             }
@@ -77,9 +82,16 @@ public class AddDeviceTipActivity extends BaseActivity implements View.OnClickLi
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.status_light_option) {
-            Intent intent = new Intent(AddDeviceTipActivity.this, ECActivity.class);
-            intent.putExtra(ECActivity.CONFIG_MODE, ECActivity.EC_MODE);
-            ActivityUtils.startActivity(AddDeviceTipActivity.this, intent, ActivityUtils.ANIMATE_FORWARD, true);
+            if(isMesh){
+                Intent intent = new Intent(AddDeviceTipActivity.this,MeshNewDeviceActivity.class);
+                ActivityUtils.startActivity(AddDeviceTipActivity.this, intent, ActivityUtils
+                        .ANIMATE_FORWARD, true);
+            }else {
+                Intent intent = new Intent(AddDeviceTipActivity.this, ECActivity.class);
+                intent.putExtra(ECActivity.CONFIG_MODE, ECActivity.EC_MODE);
+                ActivityUtils.startActivity(AddDeviceTipActivity.this, intent, ActivityUtils
+                        .ANIMATE_FORWARD, true);
+            }
 
         } else if (v.getId() == R.id.status_light_help) {
             // 切换至帮助页面
