@@ -15,6 +15,7 @@ import com.tuya.smart.android.demo.view.ISharedEditReceivedMemberView;
 import com.tuya.smart.android.mvp.bean.Result;
 import com.tuya.smart.android.mvp.presenter.BasePresenter;
 import com.tuya.smart.android.user.bean.PersonBean;
+import com.tuya.smart.home.interior.presenter.TuyaSmartDevice;
 import com.tuya.smart.sdk.TuyaUser;
 import com.tuya.smart.sdk.bean.DeviceBean;
 
@@ -41,7 +42,7 @@ public class SharedEditReceivedMemberPresenter extends BasePresenter {
     }
 
     private void updateList() {
-        List<DeviceBean> data = TuyaUser.getDeviceInstance().getDevList();
+        List<DeviceBean> data = TuyaSmartDevice.getInstance().getDevList();
         if (data != null) {
             mView.updateList(data);
         } else {

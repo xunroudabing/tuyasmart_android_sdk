@@ -35,9 +35,10 @@ import com.tuya.smart.android.demo.utils.TuyaUtils;
 import com.tuya.smart.android.demo.utils.ViewUtils;
 import com.tuya.smart.android.demo.view.ICommonDeviceDebugView;
 import com.tuya.smart.bluemesh.mesh.device.ITuyaBlueMeshDevice;
+import com.tuya.smart.home.interior.presenter.TuyaDevice;
+import com.tuya.smart.home.interior.presenter.TuyaSmartDevice;
+import com.tuya.smart.home.interior.presenter.TuyaTimerManager;
 import com.tuya.smart.home.sdk.TuyaHomeSdk;
-import com.tuya.smart.sdk.TuyaDevice;
-import com.tuya.smart.sdk.TuyaTimerManager;
 import com.tuya.smart.sdk.TuyaUser;
 import com.tuya.smart.sdk.api.IResultCallback;
 import com.tuya.smart.sdk.api.IResultStatusCallback;
@@ -304,7 +305,7 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
     protected void initData() {
         try {
             if (!isGroup) {
-                Map<String, Object> map_dp = TuyaUser.getDeviceInstance().getDev(mDevId).getDps();
+                Map<String, Object> map_dp = TuyaSmartDevice.getInstance().getDps(mDevId);;
                 if (map_dp != null) {
                     boolean b = (boolean) map_dp.get("1");
                     String color = (String) map_dp.get("2");
@@ -536,7 +537,7 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
     //开关
     protected void setSwitch() {
         if (!isGroup) {
-            Map<String, Object> map_dp = TuyaUser.getDeviceInstance().getDev(mDevId).getDps();
+            Map<String, Object> map_dp = TuyaSmartDevice.getInstance().getDps(mDevId);
             boolean b = (boolean) map_dp.get("1");
             Map<String, Object> map = new HashMap<>();
             map.put("1", !b);

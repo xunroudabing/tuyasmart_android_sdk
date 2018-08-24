@@ -1,11 +1,12 @@
 package com.tuya.smart.android.demo;
 
 import android.app.Activity;
-import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
+import android.support.multidex.MultiDex;
+import android.support.multidex.MultiDexApplication;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -26,7 +27,7 @@ import com.tuya.smart.sdk.bean.BlueMeshBean;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TuyaSmartApp extends Application {
+public class TuyaSmartApp extends MultiDexApplication {
     static final String TAG = TuyaSmartApp.class.getSimpleName();
     static final int ACTION_CREATE_HOME = 99;
     static TuyaSmartApp instance;
@@ -39,7 +40,11 @@ public class TuyaSmartApp extends Application {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case ACTION_CREATE_HOME:
-                    queryHomeList();
+                    try {
+                        queryHomeList();
+                    } catch (Exception ex) {
+                        Log.e(TAG, ex.toString());
+                    }
                     break;
             }
         }
@@ -52,13 +57,19 @@ public class TuyaSmartApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
         instance = this;
         if (isInitAppkey()) {
             initSdk();
         }
         initBaiduLocation();
         mHandler.sendEmptyMessageDelayed(ACTION_CREATE_HOME, 300);
+    }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
+
     }
 
     @Override
@@ -155,7 +166,7 @@ public class TuyaSmartApp extends Application {
             TuyaHomeSdk.getHomeManagerInstance().queryHomeList(new ITuyaGetHomeListCallback() {
                 @Override
                 public void onSuccess(List<HomeBean> list) {
-                    if (list.isEmpty()) {
+                    if (list == null || list.isEmpty()) {
                         createHome();
                     } else {
                         mHomeBean = list.get(0);

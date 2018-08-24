@@ -4,13 +4,13 @@ import android.content.Context;
 
 import com.tuya.smart.android.common.utils.SafeHandler;
 import com.tuya.smart.android.device.api.response.GwDevResp;
+import com.tuya.smart.home.interior.configwifi.TuyaActivator;
+import com.tuya.smart.home.sdk.builder.ActivatorBuilder;
 import com.tuya.smart.sdk.bean.DeviceBean;
 import com.tuya.smart.sdk.constant.ErrorCode;
 import com.tuya.smart.android.mvp.model.BaseModel;
-import com.tuya.smart.sdk.TuyaActivator;
 import com.tuya.smart.sdk.api.ITuyaActivator;
 import com.tuya.smart.sdk.api.ITuyaSmartActivatorListener;
-import com.tuya.smart.sdk.builder.ActivatorBuilder;
 import com.tuya.smart.sdk.enums.ActivatorAPStepCode;
 import com.tuya.smart.sdk.enums.ActivatorEZStepCode;
 import com.tuya.smart.sdk.enums.ActivatorModelEnum;

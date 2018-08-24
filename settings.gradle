@@ -1,1 +1,1 @@
-include ':TuyaSmartAndroidSdkDemo', ':colorpicker', ':holocolorpicker'
+include ':TuyaSmartAndroidSdkDemo', ':colorpicker',':holocolorpicker'

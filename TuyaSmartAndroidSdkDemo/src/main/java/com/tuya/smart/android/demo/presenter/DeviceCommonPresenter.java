@@ -18,9 +18,9 @@ import com.tuya.smart.android.demo.utils.ToastUtil;
 import com.tuya.smart.android.demo.view.IDeviceCommonView;
 import com.tuya.smart.android.device.bean.SchemaBean;
 import com.tuya.smart.android.device.enums.ModeEnum;
-import com.tuya.smart.android.hardware.model.IControlCallback;
 import com.tuya.smart.android.mvp.presenter.BasePresenter;
-import com.tuya.smart.sdk.TuyaDevice;
+import com.tuya.smart.home.interior.presenter.TuyaDevice;
+import com.tuya.smart.home.interior.presenter.TuyaSmartDevice;
 import com.tuya.smart.sdk.TuyaUser;
 import com.tuya.smart.sdk.api.IResultCallback;
 import com.tuya.smart.sdk.bean.DeviceBean;
@@ -67,7 +67,7 @@ public class DeviceCommonPresenter extends BasePresenter {
 
 
     private List<SchemaBean> getSchemaList() {
-        DeviceBean dev = TuyaUser.getDeviceInstance().getDev(mDevId);
+        DeviceBean dev = TuyaSmartDevice.getInstance().getDev(mDevId);
         if (dev == null) return new ArrayList<>();
         Map<String, SchemaBean> schemaMap = dev.getSchemaMap();
         List<SchemaBean> schemaBeanArrayList = new ArrayList<>();
@@ -85,7 +85,7 @@ public class DeviceCommonPresenter extends BasePresenter {
     }
 
     public String getDevName() {
-        DeviceBean dev = TuyaUser.getDeviceInstance().getDev(mDevId);
+        DeviceBean dev = TuyaSmartDevice.getInstance().getDev(mDevId);
         if (dev == null) return "";
         return dev.getName();
     }
@@ -105,7 +105,8 @@ public class DeviceCommonPresenter extends BasePresenter {
     }
 
     public void renameDevice() {
-        DialogUtil.simpleInputDialog(mContext, mContext.getString(R.string.rename), getDevName(), false, new DialogUtil.SimpleInputDialogInterface() {
+        DialogUtil.simpleInputDialog(mContext, mContext.getString(R.string.rename), getDevName(),
+                false, new DialogUtil.SimpleInputDialogInterface() {
             @Override
             public void onPositive(DialogInterface dialog, String inputText) {
                 int limit = mContext.getResources().getInteger(R.integer.change_device_name_limit);
@@ -145,23 +146,27 @@ public class DeviceCommonPresenter extends BasePresenter {
     }
 
     public void resetFactory() {
-        DialogUtil.simpleConfirmDialog(mContext, mContext.getString(R.string.ty_control_panel_factory_reset_info),
+        DialogUtil.simpleConfirmDialog(mContext, mContext.getString(R.string
+                        .ty_control_panel_factory_reset_info),
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (which == DialogInterface.BUTTON_POSITIVE) {
-                            ProgressUtil.showLoading(mContext, R.string.ty_control_panel_factory_reseting);
+                            ProgressUtil.showLoading(mContext, R.string
+                                    .ty_control_panel_factory_reseting);
                             mTuyaDevice.resetFactory(new IResultCallback() {
                                 @Override
                                 public void onError(String s, String s1) {
                                     ProgressUtil.hideLoading();
-                                    ToastUtil.shortToast(mContext, R.string.ty_control_panel_factory_reset_fail);
+                                    ToastUtil.shortToast(mContext, R.string
+                                            .ty_control_panel_factory_reset_fail);
                                 }
 
                                 @Override
                                 public void onSuccess() {
                                     ProgressUtil.hideLoading();
-                                    ToastUtil.shortToast(mContext, R.string.ty_control_panel_factory_reset_succ);
+                                    ToastUtil.shortToast(mContext, R.string
+                                            .ty_control_panel_factory_reset_succ);
                                     ((Activity) mContext).finish();
                                 }
                             });
@@ -198,6 +203,7 @@ public class DeviceCommonPresenter extends BasePresenter {
     public void testMode() {
         Intent intent = new Intent(mContext, DeviceTestActivity.class);
         intent.putExtra(DeviceTestPresenter.INTENT_DEVICE_ID, mDevId);
-        ActivityUtils.startActivity((Activity) mContext, intent, ActivityUtils.ANIMATE_FORWARD, true);
+        ActivityUtils.startActivity((Activity) mContext, intent, ActivityUtils.ANIMATE_FORWARD,
+                true);
     }
 }

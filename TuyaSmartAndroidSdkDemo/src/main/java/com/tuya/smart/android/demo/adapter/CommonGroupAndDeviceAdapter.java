@@ -17,9 +17,9 @@ import com.tuya.smart.android.demo.R;
 import com.tuya.smart.android.demo.bean.DeviceAndGroupBean;
 import com.tuya.smart.android.demo.test.widget.AlertPickDialog;
 import com.tuya.smart.android.hardware.model.IControlCallback;
+import com.tuya.smart.home.interior.presenter.TuyaDevice;
+import com.tuya.smart.home.interior.presenter.TuyaSmartDevice;
 import com.tuya.smart.home.sdk.TuyaHomeSdk;
-import com.tuya.smart.sdk.TuyaDevice;
-import com.tuya.smart.sdk.TuyaGroup;
 import com.tuya.smart.sdk.TuyaSdk;
 import com.tuya.smart.sdk.TuyaUser;
 import com.tuya.smart.sdk.api.IResultCallback;
@@ -148,7 +148,7 @@ public class CommonGroupAndDeviceAdapter extends BaseAdapter {
             if (bean.type == 1) {
                 DeviceBean deviceBean = bean.device;
                 try {
-                    Map<String, Object> map_dp = TuyaUser.getDeviceInstance().getDev(deviceBean
+                    Map<String, Object> map_dp = TuyaSmartDevice.getInstance().getDev(deviceBean
                             .getDevId()).getDps();
                     final boolean b = (boolean) map_dp.get("1");
                     Map<String, Object> map = new HashMap<>();
@@ -183,7 +183,7 @@ public class CommonGroupAndDeviceAdapter extends BaseAdapter {
                     if (devIds.size() <= 0) {
                         return;
                     }
-                    Map<String, Object> map_dp = TuyaUser.getDeviceInstance().getDev(devIds.get
+                    Map<String, Object> map_dp = TuyaSmartDevice.getInstance().getDev(devIds.get
                             (0)).getDps();
                     final boolean b = (boolean) map_dp.get("1");
                     Map<String, Object> map = new HashMap<>();

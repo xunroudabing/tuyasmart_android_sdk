@@ -12,7 +12,9 @@ import com.tuya.smart.android.demo.event.FriendEventModel;
 import com.tuya.smart.android.demo.test.event.EventSender;
 import com.tuya.smart.android.demo.utils.ToastUtil;
 import com.tuya.smart.android.user.bean.PersonBean;
-import com.tuya.smart.sdk.TuyaMember;
+import com.tuya.smart.home.interior.presenter.TuyaHomeMember;
+import com.tuya.smart.home.sdk.TuyaHomeSdk;
+import com.tuya.smart.sdk.api.IResultCallback;
 import com.tuya.smart.sdk.api.share.IModifyMemberNameCallback;
 
 /**
@@ -89,20 +91,32 @@ public class EditFriendActivity extends BaseActivity {
 
         mPerson.setName(mNameET.getText().toString());
 
-        TuyaMember TuyaMember = new TuyaMember(this);
-        TuyaMember.modifyMemberName(mPerson.getId(), mPerson.getName(), new IModifyMemberNameCallback() {
-            @Override
-            public void onSuccess() {
-//                L.d(TAG, "finishEditName" + mPerson.getName() + "");
-                EventSender.friendUpdate(mPerson, getIntent().getIntExtra(DATA_POSITION, 0), FriendEventModel.OP_EDIT);
-                finish();
-            }
-
+        TuyaHomeMember.getInstance().updateMember(mPerson.getId(), mPerson.getName(), true, new IResultCallback() {
             @Override
             public void onError(String s, String s1) {
                 ToastUtil.showToast(EditFriendActivity.this, s1);
             }
+
+            @Override
+            public void onSuccess() {
+                EventSender.friendUpdate(mPerson, getIntent().getIntExtra(DATA_POSITION, 0), FriendEventModel.OP_EDIT);
+                finish();
+            }
         });
+//        TuyaMember TuyaMember = new TuyaMember(this);
+//        TuyaMember.modifyMemberName(mPerson.getId(), mPerson.getName(), new IModifyMemberNameCallback() {
+//            @Override
+//            public void onSuccess() {
+////                L.d(TAG, "finishEditName" + mPerson.getName() + "");
+//                EventSender.friendUpdate(mPerson, getIntent().getIntExtra(DATA_POSITION, 0), FriendEventModel.OP_EDIT);
+//                finish();
+//            }
+//
+//            @Override
+//            public void onError(String s, String s1) {
+//                ToastUtil.showToast(EditFriendActivity.this, s1);
+//            }
+//        });
     }
 
 }

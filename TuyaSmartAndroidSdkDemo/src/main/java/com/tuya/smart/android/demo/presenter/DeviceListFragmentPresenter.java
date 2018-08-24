@@ -27,21 +27,19 @@ import com.tuya.smart.android.demo.utils.ToastUtil;
 import com.tuya.smart.android.demo.view.IDeviceListFragmentView;
 import com.tuya.smart.android.mvp.presenter.BasePresenter;
 import com.tuya.smart.bluemesh.mesh.device.ITuyaBlueMeshDevice;
+import com.tuya.smart.home.interior.mesh.TuyaBlueMesh;
+import com.tuya.smart.home.interior.presenter.TuyaDevice;
+import com.tuya.smart.home.interior.presenter.TuyaSmartRequest;
 import com.tuya.smart.home.sdk.TuyaHomeSdk;
 import com.tuya.smart.home.sdk.api.ITuyaHome;
 import com.tuya.smart.home.sdk.bean.HomeBean;
 import com.tuya.smart.home.sdk.callback.ITuyaHomeResultCallback;
-import com.tuya.smart.sdk.TuyaBlueMesh;
-import com.tuya.smart.sdk.TuyaDevice;
-import com.tuya.smart.sdk.TuyaSmartRequest;
 import com.tuya.smart.sdk.api.IRequestCallback;
 import com.tuya.smart.sdk.api.IResultCallback;
-import com.tuya.smart.sdk.api.ITuyaListChangedListener;
 import com.tuya.smart.sdk.api.bluemesh.IMeshDevListener;
 import com.tuya.smart.sdk.bean.BlueMeshBean;
 import com.tuya.smart.sdk.bean.DeviceBean;
 import com.tuya.smart.sdk.bean.GroupBean;
-import com.tuya.smart.sdk.bean.TuyaListBean;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +48,7 @@ import java.util.List;
  * Created by letian on 15/6/1.
  */
 public class DeviceListFragmentPresenter extends BasePresenter implements NetWorkStatusEvent,
-        ITuyaListChangedListener, IMeshDevListener {
+        IMeshDevListener {
 
     static final String TAG = DeviceListFragmentPresenter.class.getSimpleName();
     private static final int WHAT_JUMP_GROUP_PAGE = 10212;
@@ -399,10 +397,10 @@ public class DeviceListFragmentPresenter extends BasePresenter implements NetWor
                 });
     }
 
-    @Override
-    public void onDeviceChanged(TuyaListBean tuyaListBean) {
-        updateLocalData();
-    }
+//    @Override
+//    public void onDeviceChanged(TuyaListBean tuyaListBean) {
+//        updateLocalData();
+//    }
 
     @Override
     public void onDpUpdate(String s, String s1, boolean b) {

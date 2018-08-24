@@ -31,6 +31,7 @@ import com.tuya.smart.android.device.bean.ValueSchemaBean;
 import com.tuya.smart.android.device.enums.DataTypeEnum;
 import com.tuya.smart.android.device.utils.PreferencesUtil;
 import com.tuya.smart.android.mvp.presenter.BasePresenter;
+import com.tuya.smart.home.interior.presenter.TuyaSmartDevice;
 import com.tuya.smart.sdk.TuyaUser;
 
 import java.util.ArrayList;
@@ -101,7 +102,7 @@ public class EditDpTestPresenter extends BasePresenter {
     }
 
     private void switchDpDialog(String dpId) {
-        Map<String, SchemaBean> schema = TuyaUser.getDeviceInstance().getSchema(mDevId);
+        Map<String, SchemaBean> schema = TuyaSmartDevice.getInstance().getSchema(mDevId);
         SchemaBean schemaBean = schema.get(dpId);
         if (schemaBean.getType().equals(DataTypeEnum.OBJ.getType())) {
             //obj 类型

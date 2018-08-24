@@ -21,7 +21,7 @@ import com.tuya.smart.android.device.api.response.GwDevResp;
 import com.tuya.smart.android.device.utils.WiFiUtil;
 import com.tuya.smart.android.mvp.bean.Result;
 import com.tuya.smart.android.mvp.presenter.BasePresenter;
-import com.tuya.smart.sdk.TuyaActivator;
+import com.tuya.smart.home.interior.configwifi.TuyaActivator;
 import com.tuya.smart.sdk.api.ITuyaActivatorGetToken;
 
 

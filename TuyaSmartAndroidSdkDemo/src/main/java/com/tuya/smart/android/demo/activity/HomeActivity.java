@@ -23,6 +23,7 @@ import com.tuya.smart.android.demo.presenter.HomePresenter;
 import com.tuya.smart.android.demo.test.utils.DialogUtil;
 import com.tuya.smart.android.demo.utils.CheckPermissionUtils;
 import com.tuya.smart.android.demo.view.IHomeView;
+import com.tuya.smart.home.interior.presenter.TuyaSmartDevice;
 import com.tuya.smart.home.sdk.TuyaHomeSdk;
 import com.tuya.smart.sdk.TuyaSdk;
 import com.tuya.smart.sdk.TuyaUser;
@@ -71,7 +72,7 @@ public class HomeActivity extends BaseActivity implements IHomeView {
         initTab();
         mHomePresenter.showTab(HomePresenter.TAB_MY_DEVICE);
         initViewPager();
-        TuyaUser.getDeviceInstance().discoveredLanDevice(new ITuyaSearchDeviceListener() {
+        TuyaSmartDevice.getInstance().discoveredLanDevice(new ITuyaSearchDeviceListener() {
             @Override
             public void onDeviceFind(String s, DeviceActiveEnum deviceActiveEnum) {
                 Log.d(TAG, "s" + deviceActiveEnum);

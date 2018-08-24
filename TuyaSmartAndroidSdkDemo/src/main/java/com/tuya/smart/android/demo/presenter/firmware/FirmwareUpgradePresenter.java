@@ -3,8 +3,9 @@ package com.tuya.smart.android.demo.presenter.firmware;
 import android.content.Context;
 
 import com.tuya.smart.android.common.utils.TuyaUtil;
-import com.tuya.smart.android.device.TuyaSmartDevice;
 import com.tuya.smart.android.mvp.presenter.BasePresenter;
+import com.tuya.smart.home.interior.config.GWConfig;
+import com.tuya.smart.home.interior.presenter.TuyaSmartDevice;
 import com.tuya.smart.sdk.bean.DeviceBean;
 
 /**
@@ -19,12 +20,11 @@ public class FirmwareUpgradePresenter extends BasePresenter implements IFirmware
     public FirmwareUpgradePresenter(Context context, String devId) {
         DeviceBean deviceBean = TuyaSmartDevice.getInstance().getDev(devId);
         if (deviceBean == null) return;
-        //hanzheng to do GWConfig.BV
-//        if (TuyaUtil.checkBvVersion(deviceBean.getBv(), GWConfig.BV)) {
-//            mIFirmwareUpgrade = new FirmwareUpgradeNewPresenter(context, devId);
-//        } else {
-//            mIFirmwareUpgrade = new FirmwareUpgradeOldPresenter(context, devId);
-//        }
+        if (TuyaUtil.checkBvVersion(deviceBean.getBv(), GWConfig.BV)) {
+            mIFirmwareUpgrade = new FirmwareUpgradeNewPresenter(context, devId);
+        } else {
+            mIFirmwareUpgrade = new FirmwareUpgradeOldPresenter(context, devId);
+        }
     }
 
     @Override

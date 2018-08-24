@@ -7,26 +7,21 @@ import android.content.Intent;
 import android.text.TextUtils;
 
 import com.tuya.smart.android.demo.R;
-import com.tuya.smart.android.demo.activity.DpSendActivity;
 import com.tuya.smart.android.demo.activity.GroupDpSendActivity;
-import com.tuya.smart.android.demo.presenter.firmware.FirmwareUpgradePresenter;
 import com.tuya.smart.android.demo.test.utils.DialogUtil;
 import com.tuya.smart.android.demo.utils.ProgressUtil;
 import com.tuya.smart.android.demo.utils.ToastUtil;
 import com.tuya.smart.android.demo.view.IDeviceCommonView;
 import com.tuya.smart.android.device.bean.SchemaBean;
 import com.tuya.smart.android.device.enums.ModeEnum;
-import com.tuya.smart.android.hardware.model.IControlCallback;
 import com.tuya.smart.android.mvp.presenter.BasePresenter;
+import com.tuya.smart.home.interior.presenter.TuyaSmartDevice;
 import com.tuya.smart.home.sdk.TuyaHomeSdk;
-import com.tuya.smart.home.sdk.api.ITuyaHomeDataManager;
-import com.tuya.smart.sdk.TuyaGroup;
 import com.tuya.smart.sdk.TuyaUser;
 import com.tuya.smart.sdk.api.IResultCallback;
 import com.tuya.smart.sdk.api.ITuyaGroup;
 import com.tuya.smart.sdk.bean.DeviceBean;
 import com.tuya.smart.sdk.bean.GroupBean;
-import com.tuya.smart.security.device.bean.TuyaData;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -68,7 +63,7 @@ public class GroupCommonPresenter extends BasePresenter {
         //GroupBean groupBean = TuyaUser.getDeviceInstance().getGroupBean(mGroupId);
         List<String> devIds = groupBean.getDevIds();
         if (devIds == null || devIds.size() == 0) return new ArrayList<>();
-        DeviceBean dev = TuyaUser.getDeviceInstance().getDev(devIds.get(0));
+        DeviceBean dev = TuyaSmartDevice.getInstance().getDev(devIds.get(0));
         if (dev == null) return new ArrayList<>();
         Map<String, SchemaBean> schemaMap = dev.getSchemaMap();
         List<SchemaBean> schemaBeanArrayList = new ArrayList<>();
@@ -107,7 +102,8 @@ public class GroupCommonPresenter extends BasePresenter {
     }
 
     public void renameDevice() {
-        DialogUtil.simpleInputDialog(mContext, mContext.getString(R.string.rename), getDevName(), false, new DialogUtil.SimpleInputDialogInterface() {
+        DialogUtil.simpleInputDialog(mContext, mContext.getString(R.string.rename), getDevName(),
+                false, new DialogUtil.SimpleInputDialogInterface() {
             @Override
             public void onPositive(DialogInterface dialog, String inputText) {
                 int limit = mContext.getResources().getInteger(R.integer.change_device_name_limit);

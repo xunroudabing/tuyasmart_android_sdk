@@ -5,16 +5,21 @@ import android.content.Context;
 import com.tuya.smart.android.common.utils.SafeHandler;
 import com.tuya.smart.android.demo.bean.UpgradeInfoWrapperBean;
 import com.tuya.smart.android.demo.enums.UpgradeStatusEnum;
+import com.tuya.smart.android.demo.presenter.firmware.FirmwareUpgradePresenter;
 import com.tuya.smart.android.demo.utils.FirmwareUtils;
 import com.tuya.smart.android.device.api.IHardwareUpdateInfo;
 import com.tuya.smart.android.device.bean.HardwareUpgradeBean;
 import com.tuya.smart.android.device.bean.UpgradeInfoBean;
 import com.tuya.smart.android.mvp.model.BaseModel;
-import com.tuya.smart.sdk.TuyaDevice;
+import com.tuya.smart.home.interior.presenter.TuyaDevice;
+import com.tuya.smart.home.interior.presenter.TuyaOtaPresenter;
+import com.tuya.smart.home.interior.presenter.TuyaSmartDevice;
 import com.tuya.smart.sdk.api.IFirmwareUpgradeListener;
+import com.tuya.smart.sdk.api.IOtaListener;
 import com.tuya.smart.sdk.enums.FirmwareUpgradeEnum;
 
 /**
+ * add hanzheng to do 固件升级暂无法实现
  * Created by letian on 16/4/18.
  */
 public class FirmwareUpgradeModel extends BaseModel implements IFirmwareUpgradeModel {
@@ -41,76 +46,77 @@ public class FirmwareUpgradeModel extends BaseModel implements IFirmwareUpgradeM
 
     @Override
     public void upgradeDevice() {
-        mTuyaDevice.upgradeFirmware(FirmwareUpgradeEnum.TY_DEV);
+        //mTuyaDevice.upgradeFirmware(FirmwareUpgradeEnum.TY_DEV);
     }
 
     @Override
     public void upgradeGW() {
-        mTuyaDevice.upgradeFirmware(FirmwareUpgradeEnum.TY_GW);
+
+        //mTuyaDevice.upgradeFirmware(FirmwareUpgradeEnum.TY_GW);
     }
 
     @Override
     public void setUpgradeDeviceUpdateAction(IFirmwareUpgradeListener listener) {
-        mTuyaDevice.setHardwareUpgradeListener(listener);
+        //mTuyaDevice.setHardwareUpgradeListener(listener);
     }
 
     @Override
     public void autoCheck() {
-        mTuyaDevice.getFirmwareUpgradeInfo(new IHardwareUpdateInfo() {
-
-            @Override
-            public void onError(String s, String s1) {
-            }
-
-            @Override
-            public void onSuccess(HardwareUpgradeBean upgradeInfoBean) {
-                UpgradeStatusEnum hardwareUpgradeStatus = FirmwareUtils.getHardwareUpgradeStatus(upgradeInfoBean);
-                switch (hardwareUpgradeStatus) {
-                    case UPGRADING:
-                        //升级中
-                        upgrading(upgradeInfoBean);
-                        break;
-                    case NO_UPGRADE:
-                        break;
-                    case HAS_FORCE_OR_REMIND_UPGRADE:
-                        //有提醒、强制升级进入升级
-                        resultSuccess(WHAT_UPGRADE_GW_OR_DEV, upgradeInfoBean);
-                        break;
-                    case HAS_CHECK_UPGRADE:
-                        break;
-                }
-            }
-        });
+//        mTuyaDevice.getFirmwareUpgradeInfo(new IHardwareUpdateInfo() {
+//
+//            @Override
+//            public void onError(String s, String s1) {
+//            }
+//
+//            @Override
+//            public void onSuccess(HardwareUpgradeBean upgradeInfoBean) {
+//                UpgradeStatusEnum hardwareUpgradeStatus = FirmwareUtils.getHardwareUpgradeStatus(upgradeInfoBean);
+//                switch (hardwareUpgradeStatus) {
+//                    case UPGRADING:
+//                        //升级中
+//                        upgrading(upgradeInfoBean);
+//                        break;
+//                    case NO_UPGRADE:
+//                        break;
+//                    case HAS_FORCE_OR_REMIND_UPGRADE:
+//                        //有提醒、强制升级进入升级
+//                        resultSuccess(WHAT_UPGRADE_GW_OR_DEV, upgradeInfoBean);
+//                        break;
+//                    case HAS_CHECK_UPGRADE:
+//                        break;
+//                }
+//            }
+//        });
     }
 
     @Override
     public void upgradeCheck() {
-        mTuyaDevice.getFirmwareUpgradeInfo(new IHardwareUpdateInfo() {
-            @Override
-            public void onError(String s, String s1) {
-                resultError(WHAT_GET_UPGRADE_INFO_FAILURE, s, s1);
-            }
-
-            @Override
-            public void onSuccess(HardwareUpgradeBean upgradeInfoBean) {
-                UpgradeStatusEnum hardwareUpgradeStatus = FirmwareUtils.getHardwareUpgradeStatus(upgradeInfoBean);
-                switch (hardwareUpgradeStatus) {
-                    case UPGRADING:
-                        //升级中
-                        upgrading(upgradeInfoBean);
-                        break;
-                    case NO_UPGRADE:
-                        resultSuccess(WHAT_UPGRADE_NO_NEW_VERSION, upgradeInfoBean);
-                        break;
-                    case HAS_FORCE_OR_REMIND_UPGRADE:
-                    case HAS_CHECK_UPGRADE:
-                        resultSuccess(WHAT_UPGRADE_GW_OR_DEV, upgradeInfoBean);
-                        break;
-                }
-            }
-
-
-        });
+//        mTuyaDevice.getFirmwareUpgradeInfo(new IHardwareUpdateInfo() {
+//            @Override
+//            public void onError(String s, String s1) {
+//                resultError(WHAT_GET_UPGRADE_INFO_FAILURE, s, s1);
+//            }
+//
+//            @Override
+//            public void onSuccess(HardwareUpgradeBean upgradeInfoBean) {
+//                UpgradeStatusEnum hardwareUpgradeStatus = FirmwareUtils.getHardwareUpgradeStatus(upgradeInfoBean);
+//                switch (hardwareUpgradeStatus) {
+//                    case UPGRADING:
+//                        //升级中
+//                        upgrading(upgradeInfoBean);
+//                        break;
+//                    case NO_UPGRADE:
+//                        resultSuccess(WHAT_UPGRADE_NO_NEW_VERSION, upgradeInfoBean);
+//                        break;
+//                    case HAS_FORCE_OR_REMIND_UPGRADE:
+//                    case HAS_CHECK_UPGRADE:
+//                        resultSuccess(WHAT_UPGRADE_GW_OR_DEV, upgradeInfoBean);
+//                        break;
+//                }
+//            }
+//
+//
+//        });
     }
 
     private void upgrading(HardwareUpgradeBean upgradeInfoBean) {

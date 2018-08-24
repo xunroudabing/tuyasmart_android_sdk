@@ -25,10 +25,10 @@ import com.tuya.smart.android.demo.utils.CheckPermissionUtils;
 import com.tuya.smart.android.demo.widget.mode.PanContainer;
 import com.tuya.smart.android.demo.widget.mode.RotatePan;
 import com.tuya.smart.android.hardware.model.IControlCallback;
+import com.tuya.smart.home.interior.presenter.TuyaDevice;
+import com.tuya.smart.home.interior.presenter.TuyaSmartDevice;
+import com.tuya.smart.home.interior.presenter.TuyaTimerManager;
 import com.tuya.smart.home.sdk.TuyaHomeSdk;
-import com.tuya.smart.sdk.TuyaDevice;
-import com.tuya.smart.sdk.TuyaGroup;
-import com.tuya.smart.sdk.TuyaTimerManager;
 import com.tuya.smart.sdk.TuyaUser;
 import com.tuya.smart.sdk.api.IResultCallback;
 import com.tuya.smart.sdk.api.IResultStatusCallback;
@@ -146,7 +146,7 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
     protected void initData() {
         try {
             if (!isGroup) {
-                Map<String, Object> map_dp = TuyaUser.getDeviceInstance().getDev(mDevId).getDps();
+                Map<String, Object> map_dp = TuyaSmartDevice.getInstance().getDps(mDevId);
                 if (map_dp != null) {
                     boolean b = (boolean) map_dp.get("1");
                     final int value_light = (int) map_dp.get("3");
@@ -374,7 +374,7 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
     protected void setMode1() {
         try {
             if (!isGroup) {
-                Map<String, Object> map_dp = TuyaUser.getDeviceInstance().getDev(mDevId).getDps();
+                Map<String, Object> map_dp = TuyaSmartDevice.getInstance().getDps(mDevId);
                 int v3 = (int) map_dp.get("3");
                 int v4 = (int) map_dp.get("4");
                 String v = String.format("%s%s%d06f30000f200ab0000f31ffab224fb10f4dc05", Integer
@@ -401,7 +401,7 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
     protected void setMode2() {
         try {
             if (!isGroup) {
-                Map<String, Object> map_dp = TuyaUser.getDeviceInstance().getDev(mDevId).getDps();
+                Map<String, Object> map_dp = TuyaSmartDevice.getInstance().getDps(mDevId);
                 int v3 = (int) map_dp.get("3");
                 int v4 = (int) map_dp.get("4");
                 String v = String.format("%s%s%d060000f5f4cb06f100ec25fb10f1000aa699b8", Integer
@@ -427,7 +427,7 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
     protected void setMode3() {
         try {
             if (!isGroup) {
-                Map<String, Object> map_dp = TuyaUser.getDeviceInstance().getDev(mDevId).getDps();
+                Map<String, Object> map_dp = TuyaSmartDevice.getInstance().getDps(mDevId);
                 int v3 = (int) map_dp.get("3");
                 int v4 = (int) map_dp.get("4");
                 String v = String.format("%s%s%d04fb00060200ff240003fedd0a", Integer
@@ -453,7 +453,7 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
     protected void setMode4() {
         try {
             if (!isGroup) {
-                Map<String, Object> map_dp = TuyaUser.getDeviceInstance().getDev(mDevId).getDps();
+                Map<String, Object> map_dp = TuyaSmartDevice.getInstance().getDps(mDevId);
                 int v3 = (int) map_dp.get("3");
                 int v4 = (int) map_dp.get("4");
                 String v = String.format("%s%s%d060000f5f4cb06f1000927fb101be1f4e500f5", Integer
@@ -480,7 +480,7 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
     protected void setMode8() {
         try {
             if (!isGroup) {
-                Map<String, Object> map_dp = TuyaUser.getDeviceInstance().getDev(mDevId).getDps();
+                Map<String, Object> map_dp = TuyaSmartDevice.getInstance().getDps(mDevId);
                 int v3 = (int) map_dp.get("3");
                 int v4 = (int) map_dp.get("4");
                 String v = String.format("%s%s%d01ff0000", Integer
@@ -507,7 +507,7 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
     protected void setMode6() {
         try {
             if (!isGroup) {
-                Map<String, Object> map_dp = TuyaUser.getDeviceInstance().getDev(mDevId).getDps();
+                Map<String, Object> map_dp = TuyaSmartDevice.getInstance().getDps(mDevId);
                 int v3 = (int) map_dp.get("3");
                 int v4 = (int) map_dp.get("4");
                 String v = String.format("%s%s%d010000ff", Integer
@@ -534,7 +534,7 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
     protected void setMode7() {
         try {
             if (!isGroup) {
-                Map<String, Object> map_dp = TuyaUser.getDeviceInstance().getDev(mDevId).getDps();
+                Map<String, Object> map_dp = TuyaSmartDevice.getInstance().getDps(mDevId);
                 int v3 = (int) map_dp.get("3");
                 int v4 = (int) map_dp.get("4");
                 String v = String.format("%s%s%d0100ff00", Integer
@@ -561,7 +561,7 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
     protected void setMode5() {
         try {
             if (!isGroup) {
-                Map<String, Object> map_dp = TuyaUser.getDeviceInstance().getDev(mDevId).getDps();
+                Map<String, Object> map_dp = TuyaSmartDevice.getInstance().getDps(mDevId);
                 int v3 = (int) map_dp.get("3");
                 int v4 = (int) map_dp.get("4");
                 String v = String.format("%s%s%d01ffffff", Integer
@@ -587,7 +587,7 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
     //开关
     protected void setSwitch() {
         if (!isGroup) {
-            Map<String, Object> map_dp = TuyaUser.getDeviceInstance().getDev(mDevId).getDps();
+            Map<String, Object> map_dp = TuyaSmartDevice.getInstance().getDps(mDevId);
             boolean b = (boolean) map_dp.get("1");
             Map<String, Object> map = new HashMap<>();
             map.put("1", !b);
@@ -666,7 +666,7 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
         try {
             int color = Color.WHITE;
             if (!isGroup) {
-                Map<String, Object> map_dp = TuyaUser.getDeviceInstance().getDev(mDevId).getDps();
+                Map<String, Object> map_dp = TuyaSmartDevice.getInstance().getDps(mDevId);
                 String dp5 = map_dp.get("5").toString();
                 String rgb_str = dp5.substring(0, 6);
                 color = Color.parseColor("#" + rgb_str);

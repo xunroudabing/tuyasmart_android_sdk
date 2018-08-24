@@ -15,7 +15,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.squareup.picasso.Picasso;
 import com.tuya.smart.android.demo.R;
 import com.tuya.smart.android.demo.test.widget.AlertPickDialog;
-import com.tuya.smart.sdk.TuyaDevice;
+import com.tuya.smart.home.interior.presenter.TuyaDevice;
+import com.tuya.smart.home.interior.presenter.TuyaSmartDevice;
 import com.tuya.smart.sdk.TuyaSdk;
 import com.tuya.smart.sdk.TuyaUser;
 import com.tuya.smart.sdk.api.IResultCallback;
@@ -159,8 +160,7 @@ public class CommonDeviceAdapter extends BaseAdapter {
                     @Override
                     public void onClick(View v) {
                         try {
-                            Map<String, Object> map_dp = TuyaUser.getDeviceInstance().getDev
-                                    (deviceBean.getDevId()).getDps();
+                            Map<String, Object> map_dp = TuyaSmartDevice.getInstance().getDps(deviceBean.getDevId());
                             final boolean b = (boolean) map_dp.get("1");
                             Map<String, Object> map = new HashMap<>();
                             map.put("1", !b);

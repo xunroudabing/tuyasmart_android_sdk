@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.tuya.smart.android.demo.R;
+import com.tuya.smart.home.interior.presenter.TuyaSmartDevice;
 import com.tuya.smart.sdk.TuyaUser;
 import com.tuya.smart.sdk.bean.DeviceBean;
 import com.tuya.smart.sdk.bean.GroupBean;
@@ -80,7 +81,7 @@ public class GroupDeviceAdapter extends BaseListArrayAdapter<GroupBean> {
         }
 
         for (String devId : devices) {
-            DeviceBean dev = TuyaUser.getDeviceInstance().getDev(devId);
+            DeviceBean dev = TuyaSmartDevice.getInstance().getDev(devId);
             if (dev != null && dev.getIsOnline()) {
                 return true;
             }

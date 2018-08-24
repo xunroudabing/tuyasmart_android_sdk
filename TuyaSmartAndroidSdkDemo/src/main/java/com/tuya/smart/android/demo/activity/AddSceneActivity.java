@@ -40,6 +40,7 @@ import com.tuya.smart.sdk.bean.DeviceBean;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 新建场景
@@ -214,8 +215,7 @@ public class AddSceneActivity extends BaseActivity implements View.OnClickListen
             List<SceneCondition> conditions = mSceneBean.getConditions();
             if (tasks != null && tasks.size() > 0) {
                 mSceneTask = tasks.get(0);
-                //hanzheng to do SceneTask.getActionDisplay
-                //showTask(mSceneTask.getEntityName(), mSceneTask.getActionDisplay());
+                showTask(mSceneTask.getEntityName(), getActionDisplay(mSceneTask));
             }
             if (conditions != null && conditions.size() > 0) {
                 mCondition = conditions.get(0);
@@ -243,14 +243,31 @@ public class AddSceneActivity extends BaseActivity implements View.OnClickListen
                 if (mSceneBean.getActions().size() > 0) {
                     SceneTask task = mSceneBean.getActions().get(0);
                     mActionBean = new SceneActionBean();
-                    //hanzheng to do getActionDisplay
-                    //mActionBean.actionDisplay = task.getActionDisplay();
+                    mActionBean.actionDisplay = getActionDisplay(task);
                     mActionBean.executorProperty = task.getExecutorProperty();
                     mActionBean.id = task.getId();
                     mActionBean.entityId = task.getEntityId();
                 }
             }
         }
+    }
+
+    protected String getActionDisplay(SceneTask task) {
+        Map<String, List<String>> map = task.getActionDisplayNew();
+        StringBuilder sb = new StringBuilder();
+        int i =0;
+        for (String key : map.keySet()) {
+            List<String> list = map.get(key);
+            if (list.size() > 1) {
+                String item = String.format("%s：%s", list.get(0), list.get(1));
+                if(i > 0){
+                    sb.append("/");
+                }
+                sb.append(item);
+            }
+            i++;
+        }
+        return  sb.toString();
     }
 
     //删除场景
@@ -444,18 +461,19 @@ public class AddSceneActivity extends BaseActivity implements View.OnClickListen
     protected void getConditionList() {
         TuyaHomeSdk.getSceneManagerInstance().getConditionList(true, new
                 ITuyaResultCallback<List<ConditionListBean>>() {
-            @Override
-            public void onSuccess(List<ConditionListBean> conditionListBeans) {
-                for (ConditionListBean bean : conditionListBeans) {
-                    Log.d(TAG, "ConditionListBean:" + bean.getName() + "," + bean.getType());
-                }
-            }
+                    @Override
+                    public void onSuccess(List<ConditionListBean> conditionListBeans) {
+                        for (ConditionListBean bean : conditionListBeans) {
+                            Log.d(TAG, "ConditionListBean:" + bean.getName() + "," + bean.getType
+                                    ());
+                        }
+                    }
 
-            @Override
-            public void onError(String s, String s1) {
+                    @Override
+                    public void onError(String s, String s1) {
 
-            }
-        });
+                    }
+                });
     }
 
     /**

@@ -7,7 +7,6 @@ import android.text.TextUtils;
 import com.alibaba.fastjson.JSONObject;
 import com.tuya.smart.android.demo.test.utils.SchemaMapper;
 import com.tuya.smart.android.demo.test.utils.SchemaUtil;
-import com.tuya.smart.android.demo.utils.ToastUtil;
 import com.tuya.smart.android.demo.view.IDpSendView;
 import com.tuya.smart.android.device.bean.BitmapSchemaBean;
 import com.tuya.smart.android.device.bean.BoolSchemaBean;
@@ -16,11 +15,9 @@ import com.tuya.smart.android.device.bean.SchemaBean;
 import com.tuya.smart.android.device.bean.StringSchemaBean;
 import com.tuya.smart.android.device.bean.ValueSchemaBean;
 import com.tuya.smart.android.device.enums.DataTypeEnum;
-import com.tuya.smart.android.hardware.model.IControlCallback;
 import com.tuya.smart.android.mvp.presenter.BasePresenter;
+import com.tuya.smart.home.interior.presenter.TuyaSmartDevice;
 import com.tuya.smart.home.sdk.TuyaHomeSdk;
-import com.tuya.smart.sdk.TuyaGroup;
-import com.tuya.smart.sdk.TuyaUser;
 import com.tuya.smart.sdk.api.IGroupListener;
 import com.tuya.smart.sdk.api.IResultCallback;
 import com.tuya.smart.sdk.api.ITuyaGroup;
@@ -34,7 +31,8 @@ import java.util.Map;
 /**
  * Created by letian on 16/8/27.
  */
-public class GroupDpSendPresenter extends BasePresenter implements IGroupListener {
+public class GroupDpSendPresenter extends BasePresenter
+        implements IGroupListener {
 
     public static final String INTENT_GROUPID = "intent_devid";
     public static final String INTENT_DPID = "intent_dpid";
@@ -64,8 +62,9 @@ public class GroupDpSendPresenter extends BasePresenter implements IGroupListene
         GroupBean groupBean = TuyaHomeSdk.getDataInstance().getGroupBean(mGroupId);
         List<String> devIds = groupBean.getDevIds();
         if (devIds == null || devIds.size() == 0) return;
-        mDev = TuyaUser.getDeviceInstance().getDev(devIds.get(0));
-        Map<String, SchemaBean> schema = TuyaUser.getDeviceInstance().getSchema(devIds.get(0));
+
+        mDev = TuyaSmartDevice.getInstance().getDev(devIds.get(0));
+        Map<String, SchemaBean> schema = TuyaSmartDevice.getInstance().getSchema(devIds.get(0));
         if (schema != null) {
             mSchemaBean = schema.get(mDpId);
         }
@@ -84,8 +83,10 @@ public class GroupDpSendPresenter extends BasePresenter implements IGroupListene
             if (TextUtils.equals(schemaType, BoolSchemaBean.type)) {
                 mView.showBooleanView((Boolean) mDev.getDps().get(mSchemaBean.getId()));
             } else if (TextUtils.equals(schemaType, EnumSchemaBean.type)) {
-                EnumSchemaBean enumSchemaBean = SchemaMapper.toEnumSchema(mSchemaBean.getProperty());
-                mView.showEnumView((String) mDev.getDps().get(mSchemaBean.getId()), enumSchemaBean.getRange());
+                EnumSchemaBean enumSchemaBean = SchemaMapper.toEnumSchema(mSchemaBean.getProperty
+                        ());
+                mView.showEnumView((String) mDev.getDps().get(mSchemaBean.getId()),
+                        enumSchemaBean.getRange());
             } else if (TextUtils.equals(schemaType, StringSchemaBean.type)) {
                 mView.showStringView((String) mDev.getDps().get(mSchemaBean.getId()));
             } else if (TextUtils.equals(schemaType, ValueSchemaBean.type)) {
@@ -165,19 +166,20 @@ public class GroupDpSendPresenter extends BasePresenter implements IGroupListene
             } else mView.showFormatErrorTip();
         }
     }
+    
 
     @Override
-    public void onDpUpdate(String dps) {
-        mView.showMessage("onDpUpdate: " + dps);
+    public void onDpUpdate(long l, String s) {
+        mView.showMessage("onDpUpdate: " + s);
     }
 
     @Override
-    public void onStatusChanged(boolean online) {
+    public void onGroupInfoUpdate(long l) {
 
     }
 
     @Override
-    public void onNetworkStatusChanged(boolean status) {
+    public void onGroupRemoved(long l) {
 
     }
 }

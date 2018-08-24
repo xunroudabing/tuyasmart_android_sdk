@@ -16,7 +16,8 @@ import com.tuya.smart.android.demo.utils.ToastUtil;
 import com.tuya.smart.android.demo.view.ISwitchView;
 import com.tuya.smart.android.hardware.model.IControlCallback;
 import com.tuya.smart.android.mvp.presenter.BasePresenter;
-import com.tuya.smart.sdk.TuyaDevice;
+import com.tuya.smart.home.interior.presenter.TuyaDevice;
+import com.tuya.smart.home.interior.presenter.TuyaSmartDevice;
 import com.tuya.smart.sdk.TuyaUser;
 import com.tuya.smart.sdk.api.IDevListener;
 import com.tuya.smart.sdk.api.IResultCallback;
@@ -61,12 +62,12 @@ public class SwitchPresenter extends BasePresenter implements IDevListener {
 
     private void initData() {
         mDevId = ((Activity) mContext).getIntent().getStringExtra(SwitchActivity.INTENT_DEVID);
-        mDevBean = TuyaUser.getDeviceInstance().getDev(mDevId);
+        mDevBean = TuyaSmartDevice.getInstance().getDev(mDevId);
         if (mDevBean == null) {
             ((Activity) mContext).finish();
         } else {
-            boolean open = (boolean) TuyaUser.getDeviceInstance().getDp(mDevBean.getDevId(),
-                    SwitchBean.SWITCH_DPID);
+
+            boolean open = (boolean) TuyaSmartDevice.getInstance().getDp(mDevBean.getDevId(),SwitchBean.SWITCH_DPID);
             mSwitchBean = new SwitchBean(open);
         }
     }

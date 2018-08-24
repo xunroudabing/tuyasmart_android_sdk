@@ -3,6 +3,7 @@ package com.tuya.smart.android.demo.utils;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -296,5 +297,11 @@ public class CheckPermissionUtils {
         }
 
         return false;
+    }
+
+    public static boolean checkIsRegistPer(Context context, String permission) {
+        PackageManager pm = context.getPackageManager();
+        boolean isRegist = 0 == pm.checkPermission(permission, context.getPackageName());
+        return isRegist;
     }
 }

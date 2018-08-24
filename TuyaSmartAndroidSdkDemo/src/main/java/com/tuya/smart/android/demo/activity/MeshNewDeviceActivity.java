@@ -13,18 +13,18 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.inuker.bluetooth.library.utils.BluetoothUtils;
 import com.tuya.smart.android.demo.R;
 import com.tuya.smart.android.demo.TuyaSmartApp;
 import com.tuya.smart.android.demo.config.CommonConfig;
 import com.tuya.smart.android.demo.utils.ActivityUtils;
+import com.tuya.smart.android.demo.utils.BluetoothUtils;
 import com.tuya.smart.bluemesh.mesh.TuyaBlueMeshSearch;
 import com.tuya.smart.bluemesh.mesh.builder.TuyaBlueMeshActivatorBuilder;
 import com.tuya.smart.bluemesh.mesh.config.ITuyaBlueMeshActivator;
 import com.tuya.smart.bluemesh.mesh.config.ITuyaBlueMeshActivatorListener;
 import com.tuya.smart.bluemesh.mesh.search.ITuyaBlueMeshSearchListener;
+import com.tuya.smart.home.interior.mesh.TuyaBlueMesh;
 import com.tuya.smart.home.sdk.TuyaHomeSdk;
-import com.tuya.smart.sdk.TuyaBlueMesh;
 import com.tuya.smart.sdk.bean.BlueMeshBean;
 import com.tuya.smart.sdk.bean.DeviceBean;
 import com.tuya.smart.tuyamesh.bean.SearchDeviceBean;
@@ -154,7 +154,7 @@ public class MeshNewDeviceActivity extends BaseActivity implements View.OnClickL
     }
 
     public int checkBluetooth() {
-        if (!BluetoothUtils.isBleSupported()) {
+        if (!BluetoothUtils.isBleSupported(getApplicationContext())) {
             return MESH_BLUETOOTH_NULL;
         }
         if (BluetoothUtils.isBluetoothEnabled()) {
@@ -194,15 +194,15 @@ public class MeshNewDeviceActivity extends BaseActivity implements View.OnClickL
                 .setTimeOut(CONFIG_DEV_MAX_TIME)
                 .setTuyaBlueMeshActivatorListener(new ITuyaBlueMeshActivatorListener() {
                     @Override
-                    public void onSuccess(DeviceBean deviceBean) {
+                    public void onSuccess(String s,DeviceBean deviceBean) {
                         Log.d(TAG, "subDevBean onSuccess: " + deviceBean.getName());
                         addedDevice.add(deviceBean);
                         succCount++;
                     }
 
                     @Override
-                    public void onError(String errorCode, String errorMsg) {
-                        Log.d(TAG, "config mesh error" + errorCode + " " + errorMsg);
+                    public void onError(String s, String s1, String s2) {
+                        Log.d(TAG, "config mesh error" + s1 + " " + s2);
                         failCount = 0;
                     }
 
@@ -240,9 +240,8 @@ public class MeshNewDeviceActivity extends BaseActivity implements View.OnClickL
                 .setBlueMeshBean(blueMeshBean)
                 .setHomeId(homeId)
                 .setTuyaBlueMeshActivatorListener(new ITuyaBlueMeshActivatorListener() {
-
                     @Override
-                    public void onSuccess(DeviceBean devBean) {
+                    public void onSuccess(String s, DeviceBean devBean) {
                         //单个设备配网成功回调
                         Log.d(TAG, "startConfig  success");
                         addedDevice.add(devBean);
@@ -250,9 +249,8 @@ public class MeshNewDeviceActivity extends BaseActivity implements View.OnClickL
                     }
 
                     @Override
-                    public void onError(String errorCode, String errorMsg) {
-                        //单个设备配网失败回调
-                        Log.d(TAG, "errorCode: " + errorCode + " errorMsg: " + errorMsg);
+                    public void onError(String s, String s1, String s2) {
+                        Log.d(TAG, "errorCode: " + s1 + " errorMsg: " + s2);
                         failCount = 0;
                     }
 

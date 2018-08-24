@@ -17,7 +17,8 @@ import com.tuya.smart.android.device.bean.StringSchemaBean;
 import com.tuya.smart.android.device.bean.ValueSchemaBean;
 import com.tuya.smart.android.device.enums.DataTypeEnum;
 import com.tuya.smart.android.mvp.presenter.BasePresenter;
-import com.tuya.smart.sdk.TuyaDevice;
+import com.tuya.smart.home.interior.presenter.TuyaDevice;
+import com.tuya.smart.home.interior.presenter.TuyaSmartDevice;
 import com.tuya.smart.sdk.TuyaUser;
 import com.tuya.smart.sdk.api.IDevListener;
 import com.tuya.smart.sdk.api.IResultCallback;
@@ -56,11 +57,11 @@ public class DpSendPresenter extends BasePresenter implements IDevListener {
         mDevId = ((Activity) mContext).getIntent().getStringExtra(INTENT_DEVID);
         mDpId = ((Activity) mContext).getIntent().getStringExtra(INTENT_DPID);
         mTuyaDevice = new TuyaDevice(mDevId);
-        Map<String, SchemaBean> schema = TuyaUser.getDeviceInstance().getSchema(mDevId);
+        Map<String, SchemaBean> schema = TuyaSmartDevice.getInstance().getSchema(mDevId);
         if (schema != null) {
             mSchemaBean = schema.get(mDpId);
         }
-        mDev = TuyaUser.getDeviceInstance().getDev(mDevId);
+        mDev = TuyaSmartDevice.getInstance().getDev(mDevId);
         if (mDev == null) {
             ToastUtil.showToast(mContext, "Device is Removed");
             ((Activity) mContext).finish();

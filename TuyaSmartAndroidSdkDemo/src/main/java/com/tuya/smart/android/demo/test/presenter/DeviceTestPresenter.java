@@ -20,7 +20,7 @@ import com.tuya.smart.android.demo.utils.ActivityUtils;
 import com.tuya.smart.android.device.utils.PreferencesUtil;
 import com.tuya.smart.android.hardware.model.IControlCallback;
 import com.tuya.smart.android.mvp.presenter.BasePresenter;
-import com.tuya.smart.sdk.TuyaDevice;
+import com.tuya.smart.home.interior.presenter.TuyaDevice;
 import com.tuya.smart.sdk.TuyaSdk;
 import com.tuya.smart.sdk.api.IDevListener;
 import com.tuya.smart.sdk.api.IResultCallback;

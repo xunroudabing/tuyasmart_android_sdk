@@ -17,12 +17,12 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.inuker.bluetooth.library.utils.BluetoothUtils;
 import com.tuya.smart.android.demo.R;
 import com.tuya.smart.android.demo.config.CommonConfig;
 import com.tuya.smart.android.demo.test.utils.DialogUtil;
 import com.tuya.smart.android.demo.test.utils.UIFactory;
 import com.tuya.smart.android.demo.utils.ActivityUtils;
+import com.tuya.smart.android.demo.utils.BluetoothUtils;
 import com.tuya.smart.android.demo.utils.CheckPermissionUtils;
 import com.tuya.smart.bluemesh.mesh.TuyaBlueMeshSearch;
 import com.tuya.smart.bluemesh.mesh.search.ITuyaBlueMeshSearchListener;
@@ -195,7 +195,7 @@ public class SelectDeviceTypeActivity extends BaseActivity implements View.OnCli
     }
 
     public int checkBluetooth() {
-        if (!BluetoothUtils.isBleSupported()) {
+        if (!BluetoothUtils.isBleSupported(getApplicationContext())) {
             return MESH_BLUETOOTH_NULL;
         }
         if (BluetoothUtils.isBluetoothEnabled()) {

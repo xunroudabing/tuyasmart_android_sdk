@@ -8,6 +8,7 @@ import com.tuya.smart.android.demo.test.bean.DpTestDataBean;
 import com.tuya.smart.android.device.bean.SchemaBean;
 import com.tuya.smart.android.device.enums.ModeEnum;
 import com.tuya.smart.android.mvp.model.BaseModel;
+import com.tuya.smart.home.interior.presenter.TuyaSmartDevice;
 import com.tuya.smart.sdk.TuyaUser;
 
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ public class EditDpTestModel extends BaseModel implements IEditDpTestModel {
     @Override
     public ArrayList<DpTestDataBean> getDpTestDataBean(String devId) {
         ArrayList<DpTestDataBean> mDpTestDataBeen = new ArrayList<>();
-        Map<String, SchemaBean> schema = TuyaUser.getDeviceInstance().getSchema(devId);
+        Map<String, SchemaBean> schema = TuyaSmartDevice.getInstance().getSchema(devId);
         if (schema != null) {
             for (Map.Entry<String, SchemaBean> entry : schema.entrySet()) {
                 SchemaBean schemaBean = entry.getValue();

@@ -9,6 +9,7 @@ import com.tuya.smart.android.demo.test.presenter.SendAndBackData;
 import com.tuya.smart.android.device.bean.SchemaBean;
 import com.tuya.smart.android.device.enums.ModeEnum;
 import com.tuya.smart.android.mvp.model.BaseModel;
+import com.tuya.smart.home.interior.presenter.TuyaSmartDevice;
 import com.tuya.smart.sdk.TuyaUser;
 
 import java.util.ArrayList;
@@ -52,7 +53,7 @@ public class DeviceTestModel extends BaseModel implements IDeviceTestModel {
         ArrayList<String> list = new ArrayList<>();
         for (Map.Entry<String, Object> entry : jsonObject.entrySet()) {
             String dpId = entry.getKey();
-            Map<String, SchemaBean> schema = TuyaUser.getDeviceInstance().getSchema(devId);
+            Map<String, SchemaBean> schema = TuyaSmartDevice.getInstance().getSchema(devId);
             if (schema != null) {
                 SchemaBean schemaBean = schema.get(dpId);
                 if (schemaBean != null && TextUtils.equals(schemaBean.getMode(), ModeEnum.RO.getType())) {

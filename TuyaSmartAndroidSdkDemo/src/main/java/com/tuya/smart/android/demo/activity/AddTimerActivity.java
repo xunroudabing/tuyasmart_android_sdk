@@ -18,11 +18,9 @@ import com.tuya.smart.android.demo.R;
 import com.tuya.smart.android.demo.config.CommonConfig;
 import com.tuya.smart.android.demo.test.utils.DialogUtil;
 import com.tuya.smart.android.demo.test.widget.NumberPicker;
-import com.tuya.smart.sdk.TuyaDevice;
-import com.tuya.smart.sdk.TuyaGroup;
-import com.tuya.smart.sdk.TuyaTimerManager;
+import com.tuya.smart.home.interior.presenter.TuyaDevice;
+import com.tuya.smart.home.interior.presenter.TuyaTimerManager;
 import com.tuya.smart.sdk.api.IResultStatusCallback;
-import com.tuya.smart.sdk.api.ITuyaGroup;
 import com.tuya.smart.sdk.bean.Timer;
 
 import java.util.ArrayList;
@@ -101,7 +99,6 @@ public class AddTimerActivity extends BaseActivity {
         mDevId = getIntent().getStringExtra(DeviceColorPickActivity.INTENT_DEVID);
         mDpId = getIntent().getStringExtra(DeviceColorPickActivity.INTENT_DPID);
         mProductId = getIntent().getStringExtra(DeviceColorPickActivity.INTENT_PRODUCTID);
-
         mTuyaDevice = new TuyaDevice(mDevId);
         txtRepeat = (TextView) findViewById(R.id.timer_txtRepeat);
         txtSwitch = (TextView) findViewById(R.id.timer_txtSwitch);
@@ -206,7 +203,8 @@ public class AddTimerActivity extends BaseActivity {
                 JSONArray array = new JSONArray();
                 array.add(instruct);
                 Log.d(TAG, "instruct=" + array.toJSONString());
-                timerManager.updateTimerWithTask("timer", loop, devid, mTimer.getTimerId(), array.toJSONString(), new IResultStatusCallback() {
+                timerManager.updateTimerWithTask("timer", loop, devid, mTimer.getTimerId(), array
+                        .toJSONString(), new IResultStatusCallback() {
                     @Override
                     public void onSuccess() {
                         Log.d(TAG, "updateTimerStatus success");

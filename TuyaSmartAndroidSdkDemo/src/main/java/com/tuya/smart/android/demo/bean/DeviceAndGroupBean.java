@@ -1,5 +1,6 @@
 package com.tuya.smart.android.demo.bean;
 
+import com.tuya.smart.home.interior.presenter.TuyaSmartDevice;
 import com.tuya.smart.sdk.TuyaUser;
 import com.tuya.smart.sdk.bean.DeviceBean;
 import com.tuya.smart.sdk.bean.GroupBean;
@@ -56,7 +57,7 @@ public class DeviceAndGroupBean {
         if (devIds.size() <= 0) {
             return null;
         }
-        return TuyaUser.getDeviceInstance().getDev(devIds.get
+        return TuyaSmartDevice.getInstance().getDev(devIds.get
                 (0)).getDps();
     }
 

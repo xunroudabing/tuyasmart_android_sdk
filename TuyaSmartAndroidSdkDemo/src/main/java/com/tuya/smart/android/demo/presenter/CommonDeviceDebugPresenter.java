@@ -28,10 +28,10 @@ import com.tuya.smart.android.demo.view.ICommonDeviceDebugView;
 import com.tuya.smart.android.device.bean.EnumSchemaBean;
 import com.tuya.smart.android.device.bean.SchemaBean;
 import com.tuya.smart.android.device.enums.ModeEnum;
-import com.tuya.smart.android.device.utils.DevUtil;
-import com.tuya.smart.android.hardware.model.IControlCallback;
 import com.tuya.smart.android.mvp.presenter.BasePresenter;
-import com.tuya.smart.sdk.TuyaDevice;
+import com.tuya.smart.home.interior.presenter.TuyaDevice;
+import com.tuya.smart.home.interior.utils.DevUtil;
+import com.tuya.smart.home.sdk.TuyaHomeSdk;
 import com.tuya.smart.sdk.TuyaUser;
 import com.tuya.smart.sdk.api.IDevListener;
 import com.tuya.smart.sdk.api.IResultCallback;
@@ -83,7 +83,7 @@ public class CommonDeviceDebugPresenter extends BasePresenter implements IDevLis
 
     private void initData() {
         mDevId = ((Activity) mContext).getIntent().getStringExtra(INTENT_DEVID);
-        mDevBean = TuyaUser.getDeviceInstance().getDev(mDevId);
+        mDevBean = TuyaHomeSdk.getDataInstance().getDeviceBean(mDevId);
         if (mDevBean == null) {
             ((Activity) mContext).finish();
         }
@@ -265,7 +265,7 @@ public class CommonDeviceDebugPresenter extends BasePresenter implements IDevLis
         ArrayList<String> list = new ArrayList<>();
         for (Map.Entry<String, Object> entry : jsonObject.entrySet()) {
             String dpId = entry.getKey();
-            Map<String, SchemaBean> schema = TuyaUser.getDeviceInstance().getSchema(devId);
+            Map<String, SchemaBean> schema = TuyaHomeSdk.getDataInstance().getSchema(devId);
             if (schema != null) {
                 SchemaBean schemaBean = schema.get(dpId);
                 if (schemaBean != null && TextUtils.equals(schemaBean.getMode(), ModeEnum.RO
