@@ -52,7 +52,7 @@ public class GroupCommonPresenter extends BasePresenter {
 
     private void initData() {
         mGroupId = ((Activity) mContext).getIntent().getLongExtra(INTENT_GROUP_ID, -1);
-
+        //此处不需要修改
         mTuyaGroup = TuyaHomeSdk.newGroupInstance(mGroupId);
 
     }

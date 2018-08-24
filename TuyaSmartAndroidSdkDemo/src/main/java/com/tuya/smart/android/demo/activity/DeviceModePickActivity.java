@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONObject;
 import com.tuya.smart.android.demo.R;
+import com.tuya.smart.android.demo.config.CommonConfig;
 import com.tuya.smart.android.demo.test.bean.AlertPickBean;
 import com.tuya.smart.android.demo.test.widget.AlertPickDialog;
 import com.tuya.smart.android.demo.utils.AudioUtils;
@@ -25,6 +26,7 @@ import com.tuya.smart.android.demo.utils.CheckPermissionUtils;
 import com.tuya.smart.android.demo.widget.mode.PanContainer;
 import com.tuya.smart.android.demo.widget.mode.RotatePan;
 import com.tuya.smart.android.hardware.model.IControlCallback;
+import com.tuya.smart.bluemesh.mesh.device.ITuyaBlueMeshDevice;
 import com.tuya.smart.home.interior.presenter.TuyaDevice;
 import com.tuya.smart.home.interior.presenter.TuyaSmartDevice;
 import com.tuya.smart.home.interior.presenter.TuyaTimerManager;
@@ -52,6 +54,9 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
     public static final String INTENT_ISGROUP = "INTENT_ISGROUP";
     public static final String INTENT_GROUPID = "INTENT_GROUPID";
     public static final int REQUEST_RECODE_AUDIO = 101;
+    public static final String INTENT_ISMESH = "INTENT_ISMESH";
+    public static final String INTENT_MESH_NODEID = "INTENT_MESH_NODEID";
+    public static final String INTENT_MESH_CATEGORY = "INTENT_MESH_CATEGORY";
     static final int ACTION_MODE_POSITION = 100;
     static final int ACTION_MUSIC = 102;
     static final String TAG = DeviceModePickActivity.class.getSimpleName();
@@ -73,11 +78,15 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
     AudioUtils mAudioUtils;
     boolean sw = true;
     private boolean isGroup = false;
+    private boolean isMesh = false;
     private long mGroupId;
     private String mDevId;
     private String mDpId;
+    private String mNodeId;
+    private String mCategory;
     private TuyaDevice mTuyaDevice;
     private ITuyaGroup mTuyaGroup;
+    private ITuyaBlueMeshDevice mMeshDevice;
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -169,12 +178,24 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
     protected void initViews() {
         mAudioUtils = new AudioUtils();
         isGroup = getIntent().getBooleanExtra(INTENT_ISGROUP, false);
+        isMesh = getIntent().getBooleanExtra(INTENT_ISMESH, false);
         mGroupId = getIntent().getLongExtra(INTENT_GROUPID, 0);
         mDevId = getIntent().getStringExtra(INTENT_DEVID);
         mDpId = getIntent().getStringExtra(INTENT_DPID);
+        isMesh = getIntent().getBooleanExtra(INTENT_ISMESH, false);
+        mNodeId = getIntent().getStringExtra(INTENT_MESH_NODEID);
+        mCategory = getIntent().getStringExtra(INTENT_MESH_CATEGORY);
         mTuyaDevice = new TuyaDevice(mDevId);
         if (isGroup && mGroupId != 0L) {
-            mTuyaGroup = TuyaHomeSdk.newGroupInstance(mGroupId);
+            if(isMesh){
+                mTuyaGroup = TuyaHomeSdk.newBlueMeshGroupInstance(mGroupId);
+            }else {
+                mTuyaGroup = TuyaHomeSdk.newGroupInstance(mGroupId);
+            }
+        }
+        if (isMesh) {
+            mMeshDevice = TuyaHomeSdk.newBlueMeshDeviceInstance(CommonConfig.getMeshId
+                    (getApplicationContext()));
         }
         btnSpeedMin = (ImageButton) findViewById(R.id.device_mode_btnSpeedDown);
         btnSpeedPlus = (ImageButton) findViewById(R.id.device_mode_btnSpeedUp);
@@ -836,6 +857,21 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
     protected void sendDp(String json) {
         Log.d(TAG, "sendDp:" + json);
         if (!isGroup) {
+            if (isMesh) {
+                mMeshDevice.publishDps(mNodeId, mCategory, json, new IResultCallback() {
+                    @Override
+                    public void onError(String s, String s1) {
+                        Log.e(TAG, "onError:" + s + "," + s1);
+                    }
+
+                    @Override
+                    public void onSuccess() {
+                        Log.d(TAG, "onSuccess");
+                    }
+                });
+
+                return;
+            }
             mTuyaDevice.publishDps(json, new IResultCallback() {
                 @Override
                 public void onError(String s, String s1) {

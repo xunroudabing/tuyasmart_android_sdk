@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.net.wifi.WifiManager;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.tuya.smart.android.base.event.NetWorkStatusEvent;
@@ -170,6 +171,9 @@ public class DeviceListFragmentPresenter extends BasePresenter implements NetWor
                 isMesh = true;
             }
         } else if (devBean.type == 2) {
+            if(!TextUtils.isEmpty(devBean.group.getMeshId())){
+                isMesh = true;
+            }
             isGroup = true;
         }
 

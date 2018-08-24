@@ -36,6 +36,7 @@ import com.tuya.smart.android.demo.utils.ViewUtils;
 import com.tuya.smart.android.demo.view.ICommonDeviceDebugView;
 import com.tuya.smart.bluemesh.mesh.device.ITuyaBlueMeshDevice;
 import com.tuya.smart.home.interior.presenter.TuyaDevice;
+import com.tuya.smart.home.interior.presenter.TuyaHome;
 import com.tuya.smart.home.interior.presenter.TuyaSmartDevice;
 import com.tuya.smart.home.interior.presenter.TuyaTimerManager;
 import com.tuya.smart.home.sdk.TuyaHomeSdk;
@@ -191,7 +192,11 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
         mCategory = getIntent().getStringExtra(INTENT_MESH_CATEGORY);
         mTuyaDevice = new TuyaDevice(mDevId);
         if (isGroup && mGroupId != 0L) {
-            mTuyaGroup = TuyaHomeSdk.newGroupInstance(mGroupId);
+            if(isMesh){
+                mTuyaGroup = TuyaHomeSdk.newBlueMeshGroupInstance(mGroupId);
+            }else {
+                mTuyaGroup = TuyaHomeSdk.newGroupInstance(mGroupId);
+            }
         }
         if (isMesh) {
             mMeshDevice = TuyaHomeSdk.newBlueMeshDeviceInstance(CommonConfig.getMeshId
@@ -1089,7 +1094,6 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
                             .string.dialog_delcolor), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-
                             dialog.dismiss();
                             if (which == Dialog.BUTTON_POSITIVE) {
                                 Object tag = view.getTag();

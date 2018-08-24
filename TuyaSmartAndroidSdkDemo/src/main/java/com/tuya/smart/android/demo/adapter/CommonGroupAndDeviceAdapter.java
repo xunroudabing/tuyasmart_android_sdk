@@ -2,6 +2,7 @@ package com.tuya.smart.android.demo.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,13 +16,13 @@ import com.alibaba.fastjson.JSONObject;
 import com.squareup.picasso.Picasso;
 import com.tuya.smart.android.demo.R;
 import com.tuya.smart.android.demo.bean.DeviceAndGroupBean;
+import com.tuya.smart.android.demo.config.CommonConfig;
 import com.tuya.smart.android.demo.test.widget.AlertPickDialog;
-import com.tuya.smart.android.hardware.model.IControlCallback;
+import com.tuya.smart.bluemesh.mesh.device.ITuyaBlueMeshDevice;
 import com.tuya.smart.home.interior.presenter.TuyaDevice;
 import com.tuya.smart.home.interior.presenter.TuyaSmartDevice;
 import com.tuya.smart.home.sdk.TuyaHomeSdk;
 import com.tuya.smart.sdk.TuyaSdk;
-import com.tuya.smart.sdk.TuyaUser;
 import com.tuya.smart.sdk.api.IResultCallback;
 import com.tuya.smart.sdk.api.ITuyaGroup;
 import com.tuya.smart.sdk.bean.DeviceBean;
@@ -88,7 +89,7 @@ public class CommonGroupAndDeviceAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
-    private static class DeviceViewHolder extends ViewHolder<DeviceAndGroupBean> {
+    private class DeviceViewHolder extends ViewHolder<DeviceAndGroupBean> {
         ImageView connect;
         ImageView deviceIcon;
         TextView device;
@@ -133,12 +134,34 @@ public class CommonGroupAndDeviceAdapter extends BaseAdapter {
                 callback) {
             if (bean.type == 1) {
                 DeviceBean deviceBean = bean.device;
-                TuyaDevice device = new TuyaDevice(deviceBean
-                        .getDevId());
-                device.publishDps(json, callback);
+                if (deviceBean.isBleMesh()) {
+                    ITuyaBlueMeshDevice mMeshDevice = TuyaHomeSdk.newBlueMeshDeviceInstance
+                            (CommonConfig.getMeshId(mContext.getApplicationContext()));
+                    mMeshDevice.publishDps(deviceBean.getNodeId(), deviceBean.getCategory(),
+                            json, new IResultCallback() {
+                                @Override
+                                public void onError(String s, String s1) {
+                                    Log.e(TAG, "onError:" + s + "," + s1);
+                                }
+
+                                @Override
+                                public void onSuccess() {
+                                    Log.d(TAG, "onSuccess");
+                                }
+                            });
+                } else {
+                    TuyaDevice device = new TuyaDevice(deviceBean
+                            .getDevId());
+                    device.publishDps(json, callback);
+                }
             } else {
                 GroupBean groupBean = bean.group;
-                ITuyaGroup mITuyaGroup = TuyaHomeSdk.newGroupInstance(groupBean.getId());
+                ITuyaGroup mITuyaGroup = null;
+                if (!TextUtils.isEmpty(groupBean.getMeshId())) {
+                    mITuyaGroup = TuyaHomeSdk.newBlueMeshGroupInstance(groupBean.getId());
+                } else {
+                    mITuyaGroup = TuyaHomeSdk.newGroupInstance(groupBean.getId());
+                }
                 mITuyaGroup.publishDps(json, callback);
             }
 
@@ -154,9 +177,7 @@ public class CommonGroupAndDeviceAdapter extends BaseAdapter {
                     Map<String, Object> map = new HashMap<>();
                     map.put("1", !b);
                     String json = JSONObject.toJSONString(map);
-                    TuyaDevice device = new TuyaDevice(deviceBean
-                            .getDevId());
-                    device.publishDps(json, new IResultCallback() {
+                    publishDps(bean, json, new IResultCallback() {
                         @Override
                         public void onError(String s, String s1) {
 
@@ -165,8 +186,8 @@ public class CommonGroupAndDeviceAdapter extends BaseAdapter {
                         @Override
                         public void onSuccess() {
                             int switch_resid = R.drawable.ty_device_power_off;
-                            if(!b){
-                                switch_resid =R.drawable.ty_device_power_on;
+                            if (!b) {
+                                switch_resid = R.drawable.ty_device_power_on;
                             }
                             btnOff.setImageResource(switch_resid);
                         }
@@ -178,7 +199,6 @@ public class CommonGroupAndDeviceAdapter extends BaseAdapter {
             } else {
                 try {
                     GroupBean groupBean = bean.group;
-                    ITuyaGroup mITuyaGroup = TuyaHomeSdk.newGroupInstance(groupBean.getId());
                     List<String> devIds = groupBean.getDevIds();
                     if (devIds.size() <= 0) {
                         return;
@@ -189,18 +209,17 @@ public class CommonGroupAndDeviceAdapter extends BaseAdapter {
                     Map<String, Object> map = new HashMap<>();
                     map.put("1", !b);
                     String json = JSONObject.toJSONString(map);
-                    mITuyaGroup.publishDps(json, new IResultCallback() {
+                    publishDps(bean, json, new IResultCallback() {
                         @Override
                         public void onError(String s, String s1) {
-                            Log.d(TAG, "mITuyaGroup.publishDps,onError");
+                            Log.e(TAG, s1);
                         }
 
                         @Override
                         public void onSuccess() {
-
                             int switch_resid = R.drawable.ty_device_power_off;
-                            if(!b){
-                                switch_resid =R.drawable.ty_device_power_on;
+                            if (!b) {
+                                switch_resid = R.drawable.ty_device_power_on;
                             }
                             btnOff.setImageResource(switch_resid);
                             Log.d(TAG, "mITuyaGroup.publishDps,onSuccess");
@@ -215,10 +234,11 @@ public class CommonGroupAndDeviceAdapter extends BaseAdapter {
 
         @Override
         public void initData(final DeviceAndGroupBean deviceBean) {
-            Log.d(TAG,"deviceBean.getIconUrl()=" + deviceBean.getIconUrl());
-            if(deviceBean.type == 1) {
-                Picasso.with(TuyaSdk.getApplication()).load(deviceBean.getIconUrl()).into(deviceIcon);
-            }else {
+            Log.d(TAG, "deviceBean.getIconUrl()=" + deviceBean.getIconUrl());
+            if (deviceBean.type == 1) {
+                Picasso.with(TuyaSdk.getApplication()).load(deviceBean.getIconUrl()).into
+                        (deviceIcon);
+            } else {
                 deviceIcon.setImageResource(R.drawable.ty_list_icon_default_group);
             }
             final int resId;
@@ -249,15 +269,15 @@ public class CommonGroupAndDeviceAdapter extends BaseAdapter {
                     if (dps.containsKey("4")) {
                         value_temp = (int) dps.get("4");
                     }
-                    if(dps.containsKey("1")){
+                    if (dps.containsKey("1")) {
                         on = (boolean) dps.get("1");
                     }
                 }
                 final int v_light = value_light;
                 final int v_temp = value_temp;
                 int switch_resid = R.drawable.ty_device_power_on;
-                if(!on){
-                    switch_resid =R.drawable.ty_device_power_off;
+                if (!on) {
+                    switch_resid = R.drawable.ty_device_power_off;
                 }
                 btnOff.setImageResource(switch_resid);
                 int per_light = value_light * 100 / 255;
