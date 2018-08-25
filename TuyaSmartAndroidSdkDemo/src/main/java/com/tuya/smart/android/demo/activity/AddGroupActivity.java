@@ -93,6 +93,7 @@ public class AddGroupActivity extends BaseActivity {
             }
         }
         long homeId = CommonConfig.getHomeId(getApplicationContext());
+
         TuyaHomeSdk.newHomeInstance(homeId).createGroup(mProductId, groupName, devid_list, new
                 ITuyaResultCallback<Long>() {
             @Override
@@ -112,6 +113,7 @@ public class AddGroupActivity extends BaseActivity {
 
     protected void getGroupDevList() {
         mProductId = getIntent().getStringExtra(DeviceColorPickActivity.INTENT_PRODUCTID);
+
         TuyaHomeSdk.newHomeInstance(CommonConfig.getHomeId(getApplicationContext())).queryDeviceListToAddGroup(mProductId, new
                 ITuyaResultCallback<List<GroupDeviceBean>>() {
 

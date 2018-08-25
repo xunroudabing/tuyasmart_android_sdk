@@ -36,15 +36,12 @@ import com.tuya.smart.android.demo.utils.ViewUtils;
 import com.tuya.smart.android.demo.view.ICommonDeviceDebugView;
 import com.tuya.smart.bluemesh.mesh.device.ITuyaBlueMeshDevice;
 import com.tuya.smart.home.interior.presenter.TuyaDevice;
-import com.tuya.smart.home.interior.presenter.TuyaHome;
 import com.tuya.smart.home.interior.presenter.TuyaSmartDevice;
 import com.tuya.smart.home.interior.presenter.TuyaTimerManager;
 import com.tuya.smart.home.sdk.TuyaHomeSdk;
-import com.tuya.smart.sdk.TuyaUser;
 import com.tuya.smart.sdk.api.IResultCallback;
 import com.tuya.smart.sdk.api.IResultStatusCallback;
 import com.tuya.smart.sdk.api.ITuyaGroup;
-import com.tuya.smart.sdk.bean.DeviceBean;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -192,9 +189,9 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
         mCategory = getIntent().getStringExtra(INTENT_MESH_CATEGORY);
         mTuyaDevice = new TuyaDevice(mDevId);
         if (isGroup && mGroupId != 0L) {
-            if(isMesh){
+            if (isMesh) {
                 mTuyaGroup = TuyaHomeSdk.newBlueMeshGroupInstance(mGroupId);
-            }else {
+            } else {
                 mTuyaGroup = TuyaHomeSdk.newGroupInstance(mGroupId);
             }
         }
@@ -289,10 +286,11 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
                     txtMode.setTextColor(mCurrentColor);
                     String color_hex = Integer.toHexString(mCurrentColor).toLowerCase().substring
                             (2);
-                    if(isMesh){
+                    if (isMesh) {
                         sendDp(TuyaUtils.getMeshLightColor(mCurrentColor));
-                    }else {
-                        String value = String.format("%s0000ff%s", color_hex, Integer.toHexString(255));
+                    } else {
+                        String value = String.format("%s0000ff%s", color_hex, Integer.toHexString
+                                (255));
                         Log.d(TAG, "value= " + value);
                         Map<String, Object> map = new HashMap<>();
                         map.put("2", "colour");
@@ -310,15 +308,33 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
     protected void initData() {
         try {
             if (!isGroup) {
-                Map<String, Object> map_dp = TuyaSmartDevice.getInstance().getDps(mDevId);;
+                Map<String, Object> map_dp = TuyaSmartDevice.getInstance().getDps(mDevId);
+                ;
                 if (map_dp != null) {
+                    String color = "";
+                    int value_light = 0;
+                    int value_temp = 0;
                     boolean b = (boolean) map_dp.get("1");
-                    String color = (String) map_dp.get("2");
-                    final int value_light = (int) map_dp.get("3");
-                    final int value_temp = (int) map_dp.get("4");
-                    String dp5 = map_dp.get("5").toString();
-                    String rgb_str = dp5.substring(0, 6);
-                    mCurrentColor = Color.parseColor("#" + rgb_str);
+                    if (isMesh) {
+                        color = (String) map_dp.get("109");
+                        int i3 = (int) map_dp.get("3");
+                        value_light = 255 * i3 / 100;
+                        value_temp = (int) map_dp.get("104");
+                        int i101 = (int) map_dp.get("101");
+                        int i102 = (int) map_dp.get("102");
+                        int i103 = (int) map_dp.get("103");
+                        mCurrentColor = Color.rgb(i101, i102, i103);
+                        Log.d(TAG,"[mesh]mCurrentColor=" + mCurrentColor);
+                    } else {
+                        color = (String) map_dp.get("2");
+                        value_light = (int) map_dp.get("3");
+                        value_temp = (int) map_dp.get("4");
+                    }
+                    if (map_dp.containsKey("5")) {
+                        String dp5 = map_dp.get("5").toString();
+                        String rgb_str = dp5.substring(0, 6);
+                        mCurrentColor = Color.parseColor("#" + rgb_str);
+                    }
                     if (b) {
                         btnSwitch.setImageResource(R.drawable.btn_switch_off);
                     } else {
@@ -338,6 +354,8 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
                         layoutSu.setVisibility(View.GONE);
                     } else {
                         mWhiteMode = false;
+                        txtMode.setTextColor(mCurrentColor);
+                        mColorPicker.setColor(mCurrentColor);
                         layoutSu.setVisibility(View.VISIBLE);
                         layoutTemp.setVisibility(View.GONE);
                     }
@@ -523,9 +541,9 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
         String color_hex = Integer.toHexString(color).toLowerCase().substring(2);
         String value = String.format("%s0000ff%s", color_hex, Integer.toHexString(255));
         Log.d(TAG, "value= " + value);
-        if(isMesh){
+        if (isMesh) {
             sendDp(TuyaUtils.getMeshLightColor(color));
-        }else {
+        } else {
             Map<String, Object> map = new HashMap<>();
             map.put("2", "colour");
             //map.put("2","scene");
@@ -588,12 +606,12 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
 
     //白光
     protected void setWhiteLight() {
-        if(isMesh){
+        if (isMesh) {
             Map<String, Object> map = new HashMap<>();
             map.put("109", "white");
             final String json = JSONObject.toJSONString(map);
             sendDp(json);
-        }else {
+        } else {
             Map<String, Object> map = new HashMap<>();
             map.put("2", "white");
             final String json = JSONObject.toJSONString(map);
@@ -622,10 +640,14 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
             String color_hex = Integer.toHexString(convertColor).toLowerCase().substring(2);
             Log.d(TAG, "setSu.color_hex=" + color_hex);
             String dp5_convert = String.format("%s0000ff%s", color_hex, Integer.toHexString(255));
-            Map<String, Object> map = new HashMap<>();
-            map.put("2", "colour");
-            map.put("5", dp5_convert);
-            sendDp(map);
+            if(isMesh){
+                sendDp(TuyaUtils.getMeshLightColor(convertColor));
+            }else {
+                Map<String, Object> map = new HashMap<>();
+                map.put("2", "colour");
+                map.put("5", dp5_convert);
+                sendDp(map);
+            }
         }
         int per = value * 100 / 255;
         txtLightPer.setText(String.valueOf(per) + "%");
@@ -687,9 +709,9 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
             String color_hex = Integer.toHexString(convertColor).toLowerCase().substring(2);
             Log.d(TAG, "setSu.color_hex=" + color_hex);
             String dp5_convert = String.format("%s0000ff%s", color_hex, Integer.toHexString(255));
-            if(isMesh){
+            if (isMesh) {
                 sendDp(TuyaUtils.getMeshLightColor(convertColor));
-            }else {
+            } else {
                 Map<String, Object> map = new HashMap<>();
                 map.put("2", "colour");
                 map.put("5", dp5_convert);
@@ -715,10 +737,10 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
 
     //色温
     protected void setTemp(int value) {
-        if(isMesh) {
+        if (isMesh) {
             final String json = JSONObject.toJSONString(TuyaUtils.getMeshTemp(value));
             sendDp(json);
-        }else{
+        } else {
             Map<String, Object> map = new HashMap<>();
             map.put("4", value);
             final String json = JSONObject.toJSONString(map);
@@ -871,9 +893,17 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
         if (!mNightOn) {
             // 亮度5% 色温50%
             Map<String, Object> map = new HashMap<>();
-            map.put("2", "white");
-            map.put("3", 25);
-            map.put("4", temp);
+            if (isMesh) {
+                map.put("109", "white");
+                map.put("3", 5);
+                map.put("104", temp);
+                map.put("105", 255 - temp);
+            } else {
+                map.put("2", "white");
+                map.put("3", 25);
+                map.put("4", temp);
+            }
+
             final String json = JSONObject.toJSONString(map);
             sendDp(json);
             mNightOn = true;
@@ -881,9 +911,16 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
             light = 255;
             temp = 255;
             Map<String, Object> map = new HashMap<>();
-            map.put("2", "white");
-            map.put("3", 255);
-            map.put("4", 255);
+            if (isMesh) {
+                map.put("109", "white");
+                map.put("3", 100);
+                map.put("104", 255);
+                map.put("105", 0);
+            } else {
+                map.put("2", "white");
+                map.put("3", 255);
+                map.put("4", 255);
+            }
             final String json = JSONObject.toJSONString(map);
             sendDp(json);
             mNightOn = false;

@@ -8,6 +8,7 @@
     <string name="title_discover_deviceToConnect">发现待连接的设备</string>
     <string name="alert_discover_device">发现%d个设备</string>
     <string name="alert_discover_gateway">发现%d个网关设备</string>
+    <string name="newgateway">新网关</string>
     <string name="newdevice">新设备</string>
     <string name="tip">Tip</string>
     <string name="open_gps">请打开 GPS(定位)服务</string>

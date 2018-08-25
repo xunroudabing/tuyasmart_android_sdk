@@ -3,6 +3,7 @@ package com.tuya.smart.android.demo.activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -52,7 +53,7 @@ public class MeshNewDeviceActivity extends BaseActivity implements View.OnClickL
     static final String TAG = MeshNewDeviceActivity.class.getSimpleName();
     int configType = 1;
     String meshId;
-    List<SearchDeviceBean> foundDevice;
+    List<SearchDeviceBean> foundDevice = new ArrayList<>();
     List<DeviceBean> addedDevice = new ArrayList<>();
     TextView txtCount;
     LinearLayout layoutDiscover, layoutFoundDevice, layoutProgress, layoutSuccess,
@@ -110,12 +111,15 @@ public class MeshNewDeviceActivity extends BaseActivity implements View.OnClickL
     }
 
     protected void initData() {
-        configType = getIntent().getIntExtra(INTENT_CONFIG_TYPE, 0);
+        configType = getIntent().getIntExtra(INTENT_CONFIG_TYPE, 1);
         meshId = getIntent().getStringExtra(INTENT_MESHID);
         foundDevice = getIntent().getParcelableArrayListExtra(INTENT_FOUND_DEVICE);
 
         mSSID = getIntent().getStringExtra(INTENT_WIFI_SSID);
         mPassword = getIntent().getStringExtra(INTENT_WIFI_PASSWORD);
+        if(TextUtils.isEmpty(meshId)){
+            meshId = CommonConfig.getMeshId(getApplicationContext());
+        }
         showFoundDevice();
     }
 
@@ -148,9 +152,9 @@ public class MeshNewDeviceActivity extends BaseActivity implements View.OnClickL
             layoutFoundDevice.addView(txtView);
             i++;
         }
+
         layoutDiscover.setVisibility(View.VISIBLE);
         layoutProgress.setVisibility(View.GONE);
-
     }
 
     public int checkBluetooth() {
@@ -174,6 +178,7 @@ public class MeshNewDeviceActivity extends BaseActivity implements View.OnClickL
             //网关设备配网
             configWifiMesh(foundDevice, meshId);
         }
+
     }
 
     private void configMesh(List<SearchDeviceBean> foundDevice, String meshId) {
@@ -333,11 +338,23 @@ public class MeshNewDeviceActivity extends BaseActivity implements View.OnClickL
                     public void onSearched(final SearchDeviceBean searchDeviceBean) {
                         Log.d(TAG, "onSearched:mac=" + searchDeviceBean.getMacAdress() + "," +
                                 "meshname=" + searchDeviceBean.getMeshName());
+                        String venderId = Integer.toHexString(searchDeviceBean.getVendorId()).toUpperCase();
                         if (foundDevice == null) {
                             foundDevice = new ArrayList<>();
                         }
-                        foundDevice.add(searchDeviceBean);
-                        showFoundDevice();
+                        //网关设备
+                        if(venderId.endsWith("08")){
+
+                        }else {
+                            foundDevice.add(searchDeviceBean);
+                        }
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                showFoundDevice();
+                            }
+                        });
+
                     }
 
                     @Override

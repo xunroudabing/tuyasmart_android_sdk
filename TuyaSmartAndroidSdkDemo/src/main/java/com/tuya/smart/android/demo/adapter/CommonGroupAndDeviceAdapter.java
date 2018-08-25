@@ -18,6 +18,7 @@ import com.tuya.smart.android.demo.R;
 import com.tuya.smart.android.demo.bean.DeviceAndGroupBean;
 import com.tuya.smart.android.demo.config.CommonConfig;
 import com.tuya.smart.android.demo.test.widget.AlertPickDialog;
+import com.tuya.smart.android.demo.utils.TuyaUtils;
 import com.tuya.smart.bluemesh.mesh.device.ITuyaBlueMeshDevice;
 import com.tuya.smart.home.interior.presenter.TuyaDevice;
 import com.tuya.smart.home.interior.presenter.TuyaSmartDevice;
@@ -235,10 +236,17 @@ public class CommonGroupAndDeviceAdapter extends BaseAdapter {
         @Override
         public void initData(final DeviceAndGroupBean deviceBean) {
             Log.d(TAG, "deviceBean.getIconUrl()=" + deviceBean.getIconUrl());
+            boolean isMesh = false;
             if (deviceBean.type == 1) {
+                if(deviceBean.device.isBleMesh()){
+                    isMesh = true;
+                }
                 Picasso.with(TuyaSdk.getApplication()).load(deviceBean.getIconUrl()).into
                         (deviceIcon);
             } else {
+                if(!TextUtils.isEmpty(deviceBean.group.getMeshId())){
+                    isMesh = true;
+                }
                 deviceIcon.setImageResource(R.drawable.ty_list_icon_default_group);
             }
             final int resId;
@@ -290,6 +298,7 @@ public class CommonGroupAndDeviceAdapter extends BaseAdapter {
                         setSwitch(deviceBean);
                     }
                 });
+                final boolean tMesh = isMesh;
                 lightLayout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -310,7 +319,11 @@ public class CommonGroupAndDeviceAdapter extends BaseAdapter {
                                                 v = 25;
                                             }
                                             Map<String, Object> map = new HashMap<>();
-                                            map.put("3", v);
+                                            if(tMesh){
+                                                map.put("3", percent);
+                                            }else {
+                                                map.put("3", v);
+                                            }
                                             String json = JSONObject.toJSONString(map);
                                             publishDps(deviceBean, json, new IResultCallback() {
                                                 @Override
@@ -354,7 +367,11 @@ public class CommonGroupAndDeviceAdapter extends BaseAdapter {
                                             int percent = p * 100 / 255;
                                             txtTemp.setText(String.valueOf(percent) + "%");
                                             Map<String, Object> map = new HashMap<>();
-                                            map.put("4", p);
+                                            if(tMesh){
+                                                map = TuyaUtils.getMeshTemp(p);
+                                            }else {
+                                                map.put("4", p);
+                                            }
                                             String json = JSONObject.toJSONString(map);
                                             publishDps(deviceBean, json, new IResultCallback() {
                                                 @Override

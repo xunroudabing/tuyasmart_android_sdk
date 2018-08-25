@@ -167,16 +167,20 @@ public class HomeActivity extends BaseActivity implements IHomeView {
     @Override
     protected void onResume() {
         super.onResume();
-        startClient();
+        //startClient();
     }
 
     public void startClient() {
+        TuyaHomeSdk.getTuyaBlueMeshClient().stopClient();
         TuyaHomeSdk.getTuyaBlueMeshClient().startClient(TuyaSmartApp.getInstance()
                 .getBlueMeshBean());
+        TuyaHomeSdk.getTuyaBlueMeshClient().startSearch();
     }
 
     public void stopClient() {
+        TuyaHomeSdk.getTuyaBlueMeshClient().stopSearch();
         TuyaHomeSdk.getTuyaBlueMeshClient().stopClient();
+
     }
     protected void initTab() {
         mFragmentContainer = (ViewPager) findViewById(R.id.home_fragment_container);
