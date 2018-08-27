@@ -14,6 +14,9 @@ import com.tuya.smart.android.demo.adapter.GroupDeviceCheckedAdapter;
 import com.tuya.smart.android.demo.config.CommonConfig;
 import com.tuya.smart.home.sdk.TuyaHomeSdk;
 import com.tuya.smart.home.sdk.callback.ITuyaResultCallback;
+import com.tuya.smart.sdk.api.IResultCallback;
+import com.tuya.smart.sdk.api.bluemesh.IAddGroupCallback;
+import com.tuya.smart.sdk.bean.DeviceBean;
 import com.tuya.smart.sdk.bean.GroupDeviceBean;
 
 import java.util.ArrayList;
@@ -83,54 +86,131 @@ public class AddGroupActivity extends BaseActivity {
                     .LENGTH_SHORT).show();
             return;
         }
-        List<String> devid_list = new ArrayList<>();
+        final List<String> devid_list = new ArrayList<>();
+        boolean isMesh = false;
+        int meshSize = 0;
+        String pcc = "0501";
         if (mGroupDeviceBeans != null) {
             for (GroupDeviceBean bean : mGroupDeviceBeans) {
                 if (bean.isChecked()) {
                     String devid = bean.getDeviceBean().getDevId();
                     devid_list.add(devid);
+                    if (bean.getDeviceBean().isBleMesh()) {
+                        pcc = bean.getDeviceBean().getProductBean().getMeshCategory();
+                        meshSize++;
+                    }
                 }
+
             }
         }
-        long homeId = CommonConfig.getHomeId(getApplicationContext());
+        if (devid_list.isEmpty()) {
+            Toast.makeText(AddGroupActivity.this, R.string.alert_check_device, Toast
+                    .LENGTH_SHORT).show();
+            return;
+        }
+        if (meshSize == devid_list.size() && !devid_list.isEmpty()) {
+            isMesh = true;
+        }
+        if (isMesh) {
+            int localId = CommonConfig.getLocalId(getApplicationContext()) + 1;
+            localId = Math.max(8008, localId);
+            final int lid = localId;
+            TuyaHomeSdk.newBlueMeshInstance(CommonConfig.getMeshId(getApplicationContext()))
+                    .addGroup
+                            (groupName, pcc, String.valueOf(localId), new IAddGroupCallback() {
+                                @Override
+                                public void onSuccess(long l) {
+                                    Log.d(TAG, "createNewGroup.onSuccess:groupid=" + l);
+                                    CommonConfig.setLocalId(getApplicationContext(), lid);
+                                    for (int i = 0; i < devid_list.size(); i++) {
+                                        final String devid = devid_list.get(i);
+                                        final int j = i;
+                                        TuyaHomeSdk.newBlueMeshGroupInstance(l).addDevice(devid,
+                                                new IResultCallback() {
+                                                    @Override
+                                                    public void onError(String s, String s1) {
+                                                        Log.e(TAG, "createNewGroup.onError:" + s
+                                                                + "," + s1);
+                                                    }
 
-        TuyaHomeSdk.newHomeInstance(homeId).createGroup(mProductId, groupName, devid_list, new
-                ITuyaResultCallback<Long>() {
-            @Override
-            public void onSuccess(Long l) {
-                Log.d(TAG, "createNewGroup.onSuccess:" + l);
-                Toast.makeText(AddGroupActivity.this, R.string.alert_group_add_sucess,
-                        Toast.LENGTH_SHORT).show();
-                finish();
-            }
+                                                    @Override
+                                                    public void onSuccess() {
+                                                        Log.d(TAG, "group add device onSuccess," +
+                                                                "devid=" + devid);
+                                                        if (j == devid_list.size() - 1) {
+                                                            Toast.makeText(AddGroupActivity.this, R
+                                                                            .string
+                                                                            .alert_group_add_sucess,
+                                                                    Toast.LENGTH_SHORT).show();
+                                                            finish();
+                                                        }
+                                                    }
+                                                });
+                                    }
 
-            @Override
-            public void onError(String s, String s1) {
-                Log.e(TAG, "createNewGroup.onError:" + s + "," + s1);
-            }
-        });
+                                }
+
+                                @Override
+                                public void onError(String s, String s1) {
+                                    Log.e(TAG, "createNewGroup.onError:" + s + "," + s1);
+                                    Toast.makeText(AddGroupActivity.this, s1, Toast.LENGTH_SHORT)
+                                            .show();
+                                }
+                            });
+        } else {
+            long homeId = CommonConfig.getHomeId(getApplicationContext());
+            TuyaHomeSdk.newHomeInstance(homeId).createGroup(mProductId, groupName, devid_list, new
+                    ITuyaResultCallback<Long>() {
+                        @Override
+                        public void onSuccess(Long l) {
+                            Log.d(TAG, "createNewGroup.onSuccess:" + l);
+                            Toast.makeText(AddGroupActivity.this, R.string.alert_group_add_sucess,
+                                    Toast.LENGTH_SHORT).show();
+                            finish();
+                        }
+
+                        @Override
+                        public void onError(String s, String s1) {
+                            Log.e(TAG, "createNewGroup.onError:" + s + "," + s1);
+                        }
+                    });
+        }
     }
 
     protected void getGroupDevList() {
         mProductId = getIntent().getStringExtra(DeviceColorPickActivity.INTENT_PRODUCTID);
 
-        TuyaHomeSdk.newHomeInstance(CommonConfig.getHomeId(getApplicationContext())).queryDeviceListToAddGroup(mProductId, new
-                ITuyaResultCallback<List<GroupDeviceBean>>() {
+        TuyaHomeSdk.newHomeInstance(CommonConfig.getHomeId(getApplicationContext()))
+                .queryDeviceListToAddGroup(mProductId, new
+                        ITuyaResultCallback<List<GroupDeviceBean>>() {
 
-            @Override
-            public void onSuccess(List<GroupDeviceBean> bizResult) {
-                for (GroupDeviceBean bean : bizResult) {
-                    bean.setChecked(false);
-                }
-                bindUncheckListView(bizResult);
-                bindCheckedListView(bizResult);
-                mGroupDeviceBeans = bizResult;
-            }
+                            @Override
+                            public void onSuccess(List<GroupDeviceBean> bizResult) {
+                                for (GroupDeviceBean bean : bizResult) {
+                                    bean.setChecked(false);
+                                }
+                                //增加mesh设备支持
+                                List<DeviceBean> meshList = TuyaHomeSdk.getDataInstance()
+                                        .getMeshDeviceList(CommonConfig.getMeshId
+                                                (getApplicationContext()));
+                                if (meshList != null) {
+                                    for (DeviceBean bean : meshList) {
+                                        GroupDeviceBean groupBean = new GroupDeviceBean();
+                                        groupBean.setChecked(false);
+                                        groupBean.setDeviceBean(bean);
+                                        groupBean.setProductId(mProductId);
+                                        bizResult.add(groupBean);
+                                    }
+                                }
+                                bindUncheckListView(bizResult);
+                                bindCheckedListView(bizResult);
+                                mGroupDeviceBeans = bizResult;
+                            }
 
-            @Override
-            public void onError(String s, String s1) {
+                            @Override
+                            public void onError(String s, String s1) {
 
-            }
-        });
+                            }
+                        });
     }
 }

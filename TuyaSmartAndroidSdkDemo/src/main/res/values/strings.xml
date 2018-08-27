@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">smartlife</string>
+    <string name="alert_check_device">请至少选择一个设备</string>
     <string name="bluetooth_close">蓝牙未开启</string>
     <string name="open_bluetooth">请先开启蓝牙功能</string>
     <string name="add_deivce_fail">添加失败</string>

@@ -120,7 +120,9 @@ public class MeshNewDeviceActivity extends BaseActivity implements View.OnClickL
         if(TextUtils.isEmpty(meshId)){
             meshId = CommonConfig.getMeshId(getApplicationContext());
         }
-        showFoundDevice();
+        if(foundDevice != null) {
+            showFoundDevice();
+        }
     }
 
     protected void detectBlueTooth() {
@@ -131,7 +133,9 @@ public class MeshNewDeviceActivity extends BaseActivity implements View.OnClickL
         } else {
             //蓝牙已打开 扫描
             layoutOpenBlueTooth.setVisibility(View.GONE);
-            scan();
+            if(foundDevice == null) {
+                scan();
+            }
         }
     }
 

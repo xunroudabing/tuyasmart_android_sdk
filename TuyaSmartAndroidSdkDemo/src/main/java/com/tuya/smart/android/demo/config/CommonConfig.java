@@ -138,4 +138,26 @@ public class CommonConfig {
         editor.putString("wifipass",pass);
         editor.commit();
     }
+
+    public static void setLocalId(Context context,int localId){
+        SharedPreferences preferences = context.getSharedPreferences(PACKAGE_NAME,
+                Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putInt("localId",localId);
+        editor.commit();
+    }
+
+    /**
+     *
+     * 取值范围8001 - 8008
+     * @param context
+     * @return
+     */
+    public static int getLocalId(Context context){
+        SharedPreferences preferences = context.getSharedPreferences(PACKAGE_NAME,
+                Context.MODE_PRIVATE);
+        int ret = preferences.getInt("localId", 8000);
+        return ret;
+
+    }
 }

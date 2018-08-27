@@ -625,7 +625,12 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
     protected void setLight(int value) {
         if (mWhiteMode) {
             Map<String, Object> map = new HashMap<>();
-            map.put("3", value);
+            if(isMesh){
+                int v = value * 100 / 255;
+                map.put("3", v);
+            }else {
+                map.put("3", value);
+            }
             final String json = JSONObject.toJSONString(map);
             sendDp(json);
 

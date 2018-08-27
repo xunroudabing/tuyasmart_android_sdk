@@ -20,6 +20,7 @@ import com.tuya.smart.android.demo.bean.SceneActionBean;
 import com.tuya.smart.android.demo.bean.SceneConditonBean;
 import com.tuya.smart.android.demo.config.CommonConfig;
 import com.tuya.smart.android.demo.test.utils.DialogUtil;
+import com.tuya.smart.home.interior.presenter.TuyaHomeScene;
 import com.tuya.smart.home.sdk.TuyaHomeSdk;
 import com.tuya.smart.home.sdk.bean.scene.PlaceFacadeBean;
 import com.tuya.smart.home.sdk.bean.scene.SceneBean;
@@ -116,7 +117,8 @@ public class AddSceneActivity extends BaseActivity implements View.OnClickListen
 //                            .INTENT_SCENE_BEAN);
                     String devbean_json = data.getStringExtra(TaskDetailActivity.INTENT_SCENE_BEAN);
                     Log.d(TAG, "mSceneDevBean=" + devbean_json);
-                    mSceneDevBean = JSONObject.parseObject(devbean_json, DeviceBean.class);
+                    //mSceneDevBean = JSONObject.parseObject(devbean_json, DeviceBean.class);
+                    mSceneDevBean = TuyaHomeSdk.getDataInstance().getDeviceBean(mConditionDevId);
                     showCondition(taskdes, devicename);
                     if (!TextUtils.isEmpty(json)) {
                         HashMap<String, Object> map = JSONObject.parseObject(json, HashMap.class);
@@ -366,22 +368,20 @@ public class AddSceneActivity extends BaseActivity implements View.OnClickListen
         mSceneBean.setConditions(Collections.singletonList(mCondition)); //更改场景条件
         mSceneBean.setActions(Collections.singletonList(mSceneTask)); //更改场景任务
         String sceneId = mSceneBean.getId();  //获取场景id以初始化TuyaSmartScene类
-        //hanzheng to do Scene
-//        TuyaScene.getTuyaSmartScene(sceneId).modifyScene(
-//                mSceneBean,  //修改后的场景数据类
-//                new ITuyaDataCallback<SceneBean>() {
-//                    @Override
-//                    public void onSuccess(SceneBean sceneBean) {
-//                        Log.d(TAG, "Modify Scene Success");
-//                        setResult(RESULT_OK);
-//                        finish();
-//                    }
-//
-//                    @Override
-//                    public void onError(String errorCode, String errorMessage) {
-//                        Log.e(TAG, errorMessage);
-//                    }
-//                });
+
+        TuyaHomeScene.getHomeSceneInstance(sceneId).modifyScene(mSceneBean, new ITuyaResultCallback<SceneBean>() {
+            @Override
+            public void onSuccess(SceneBean sceneBean) {
+                Log.d(TAG, "Modify Scene Success");
+                setResult(RESULT_OK);
+                finish();
+            }
+
+            @Override
+            public void onError(String s, String s1) {
+                Log.e(TAG, s1);
+            }
+        });
     }
 
     protected void createScene() {

@@ -74,6 +74,7 @@ public class SelectDeviceTypeActivity extends BaseActivity implements View.OnCli
                 intent.putExtra(MeshNewDeviceActivity.INTENT_MESHID, CommonConfig.getMeshId
                         (getApplicationContext()));
                 startActivity(intent);
+                finish();
             } else if (which == DialogInterface.BUTTON_NEGATIVE) {
                 dialog.dismiss();
             }

@@ -112,7 +112,6 @@ public class AddTaskActivity extends BaseActivity {
     }
 
     protected void getTaskDevList() {
-        //hanzheng to do
         long homeId = CommonConfig.getHomeId(this);
         TuyaHomeSdk.getSceneManagerInstance().getTaskDevList(homeId, new ITuyaResultCallback<List<DeviceBean>>() {
 

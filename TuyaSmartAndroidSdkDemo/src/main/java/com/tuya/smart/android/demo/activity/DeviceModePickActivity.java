@@ -25,13 +25,11 @@ import com.tuya.smart.android.demo.utils.AudioUtils;
 import com.tuya.smart.android.demo.utils.CheckPermissionUtils;
 import com.tuya.smart.android.demo.widget.mode.PanContainer;
 import com.tuya.smart.android.demo.widget.mode.RotatePan;
-import com.tuya.smart.android.hardware.model.IControlCallback;
 import com.tuya.smart.bluemesh.mesh.device.ITuyaBlueMeshDevice;
 import com.tuya.smart.home.interior.presenter.TuyaDevice;
 import com.tuya.smart.home.interior.presenter.TuyaSmartDevice;
 import com.tuya.smart.home.interior.presenter.TuyaTimerManager;
 import com.tuya.smart.home.sdk.TuyaHomeSdk;
-import com.tuya.smart.sdk.TuyaUser;
 import com.tuya.smart.sdk.api.IResultCallback;
 import com.tuya.smart.sdk.api.IResultStatusCallback;
 import com.tuya.smart.sdk.api.ITuyaGroup;
@@ -187,9 +185,9 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
         mCategory = getIntent().getStringExtra(INTENT_MESH_CATEGORY);
         mTuyaDevice = new TuyaDevice(mDevId);
         if (isGroup && mGroupId != 0L) {
-            if(isMesh){
+            if (isMesh) {
                 mTuyaGroup = TuyaHomeSdk.newBlueMeshGroupInstance(mGroupId);
-            }else {
+            } else {
                 mTuyaGroup = TuyaHomeSdk.newGroupInstance(mGroupId);
             }
         }
@@ -502,13 +500,25 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
         try {
             if (!isGroup) {
                 Map<String, Object> map_dp = TuyaSmartDevice.getInstance().getDps(mDevId);
-                int v3 = (int) map_dp.get("3");
-                int v4 = (int) map_dp.get("4");
-                String v = String.format("%s%s%d01ff0000", Integer
-                        .toHexString(v3), Integer.toHexString(v4), mSpeed);
                 Map<String, Object> map = new HashMap<>();
-                map.put("2", "scene_3");
-                map.put("9", v);
+                if(isMesh){
+                    int i3 = (int) map_dp.get("3");
+                    int value_light = 255 * i3 / 100;
+                    int value_temp = (int) map_dp.get("104");
+                    String w = Integer.toHexString(value_temp);
+                    String c = Integer.toHexString(255 - value_temp);
+                    String l = Integer.toHexString(value_light);
+                    map.put("109", "scene_3");
+                    //00000ffff005900E0
+                    map.put("113", String.format("0ff0000%02x%02x%02x00E0", value_temp, 255 - value_temp, value_light));
+                }else {
+                    int v3 = (int) map_dp.get("3");
+                    int v4 = (int) map_dp.get("4");
+                    String v = String.format("%s%s%d01ff0000", Integer
+                            .toHexString(v3), Integer.toHexString(v4), mSpeed);
+                    map.put("2", "scene_3");
+                    map.put("9", v);
+                }
                 final String value = JSONObject.toJSONString(map);
                 sendDp(value);
             } else {
@@ -529,13 +539,25 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
         try {
             if (!isGroup) {
                 Map<String, Object> map_dp = TuyaSmartDevice.getInstance().getDps(mDevId);
-                int v3 = (int) map_dp.get("3");
-                int v4 = (int) map_dp.get("4");
-                String v = String.format("%s%s%d010000ff", Integer
-                        .toHexString(v3), Integer.toHexString(v4), mSpeed);
                 Map<String, Object> map = new HashMap<>();
-                map.put("2", "scene_3");
-                map.put("9", v);
+                if (isMesh) {
+                    int i3 = (int) map_dp.get("3");
+                    int value_light = 255 * i3 / 100;
+                    int value_temp = (int) map_dp.get("104");
+                    String w = Integer.toHexString(value_temp);
+                    String c = Integer.toHexString(255 - value_temp);
+                    String l = Integer.toHexString(value_light);
+                    map.put("109", "scene_3");
+                    //00000ffff005900E0
+                    map.put("113", String.format("00000ff%02x%02x%02x00E0", value_temp, 255 - value_temp, value_light));
+                } else {
+                    int v3 = (int) map_dp.get("3");
+                    int v4 = (int) map_dp.get("4");
+                    String v = String.format("%s%s%d010000ff", Integer
+                            .toHexString(v3), Integer.toHexString(v4), mSpeed);
+                    map.put("2", "scene_3");
+                    map.put("9", v);
+                }
                 final String value = JSONObject.toJSONString(map);
                 sendDp(value);
             } else {
@@ -556,13 +578,26 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
         try {
             if (!isGroup) {
                 Map<String, Object> map_dp = TuyaSmartDevice.getInstance().getDps(mDevId);
-                int v3 = (int) map_dp.get("3");
-                int v4 = (int) map_dp.get("4");
-                String v = String.format("%s%s%d0100ff00", Integer
-                        .toHexString(v3), Integer.toHexString(v4), mSpeed);
                 Map<String, Object> map = new HashMap<>();
-                map.put("2", "scene_3");
-                map.put("9", v);
+                if(isMesh){
+                    int i3 = (int) map_dp.get("3");
+                    int value_light = 255 * i3 / 100;
+                    int value_temp = (int) map_dp.get("104");
+                    String w = Integer.toHexString(value_temp);
+                    String c = Integer.toHexString(255 - value_temp);
+                    String l = Integer.toHexString(value_light);
+                    map.put("109", "scene_3");
+                    //00000ffff005900E0
+                    map.put("113", String.format("000ff00%02x%02x%02x00E0", value_temp, 255 - value_temp, value_light));
+                }else {
+                    int v3 = (int) map_dp.get("3");
+                    int v4 = (int) map_dp.get("4");
+                    String v = String.format("%s%s%d0100ff00", Integer
+                            .toHexString(v3), Integer.toHexString(v4), mSpeed);
+                    map.put("2", "scene_3");
+                    map.put("9", v);
+                }
+
                 final String value = JSONObject.toJSONString(map);
                 sendDp(value);
             } else {
@@ -583,13 +618,25 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
         try {
             if (!isGroup) {
                 Map<String, Object> map_dp = TuyaSmartDevice.getInstance().getDps(mDevId);
-                int v3 = (int) map_dp.get("3");
-                int v4 = (int) map_dp.get("4");
-                String v = String.format("%s%s%d01ffffff", Integer
-                        .toHexString(v3), Integer.toHexString(v4), mSpeed);
                 Map<String, Object> map = new HashMap<>();
-                map.put("2", "scene_1");
-                map.put("7", v);
+                if(isMesh){
+                    int i3 = (int) map_dp.get("3");
+                    int value_light = 255 * i3 / 100;
+                    int value_temp = (int) map_dp.get("104");
+                    String w = Integer.toHexString(value_temp);
+                    String c = Integer.toHexString(255 - value_temp);
+                    String l = Integer.toHexString(value_light);
+                    map.put("109", "scene_1");
+                    //00000ffff005900E0
+                    map.put("111", String.format("0ffffff%02x%02x%02x00E0", value_temp, 255 - value_temp, value_light));
+                }else {
+                    int v3 = (int) map_dp.get("3");
+                    int v4 = (int) map_dp.get("4");
+                    String v = String.format("%s%s%d01ffffff", Integer
+                            .toHexString(v3), Integer.toHexString(v4), mSpeed);
+                    map.put("2", "scene_1");
+                    map.put("7", v);
+                }
                 final String value = JSONObject.toJSONString(map);
                 sendDp(value);
             } else {
