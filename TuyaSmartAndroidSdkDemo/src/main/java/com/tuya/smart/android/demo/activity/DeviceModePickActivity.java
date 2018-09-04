@@ -23,6 +23,7 @@ import com.tuya.smart.android.demo.test.bean.AlertPickBean;
 import com.tuya.smart.android.demo.test.widget.AlertPickDialog;
 import com.tuya.smart.android.demo.utils.AudioUtils;
 import com.tuya.smart.android.demo.utils.CheckPermissionUtils;
+import com.tuya.smart.android.demo.utils.TuyaUtils;
 import com.tuya.smart.android.demo.widget.mode.PanContainer;
 import com.tuya.smart.android.demo.widget.mode.RotatePan;
 import com.tuya.smart.bluemesh.mesh.device.ITuyaBlueMeshDevice;
@@ -715,11 +716,15 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
                 "");
         String value = String.format("%s0000ff%s", color_hex, Integer.toHexString(255));
         Log.d(TAG, "value= " + value);
-        Map<String, String> map = new HashMap<>();
-        map.put("2", "colour");
-        //map.put("2","scene");
-        map.put("5", value);
-        sendDp(map);
+        if (isMesh) {
+            sendDp(TuyaUtils.getMeshLightColor(color));
+        }else {
+            Map<String, Object> map = new HashMap<>();
+            map.put("2", "colour");
+            //map.put("2","scene");
+            map.put("5", value);
+            sendDp(map);
+        }
     }
 
     //调光 改变亮度
@@ -755,7 +760,7 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
             String color_hex = Integer.toHexString(convertColor).toLowerCase().replace("ff",
                     "");
             String dp5_convert = String.format("%s0000ff%s", color_hex, Integer.toHexString(255));
-            Map<String, String> map = new HashMap<>();
+            Map<String, Object> map = new HashMap<>();
             map.put("2", "colour");
             map.put("5", dp5_convert);
             sendDp(map);
@@ -945,7 +950,7 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
         }
     }
 
-    protected void sendDp(Map<String, String> dp) {
+    protected void sendDp(Map<String, Object> dp) {
         final String value = JSONObject.toJSONString(dp);
         Log.d(TAG, "sendDp:" + value);
         sendDp(value);
