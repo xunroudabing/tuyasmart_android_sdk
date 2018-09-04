@@ -14,6 +14,7 @@ import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
 import com.tuya.smart.android.demo.activity.LoginActivity;
 import com.tuya.smart.android.demo.config.CommonConfig;
+import com.tuya.smart.android.demo.model.HomeBeanEvent;
 import com.tuya.smart.android.demo.service.LocationService;
 import com.tuya.smart.android.demo.utils.ApplicationInfoUtil;
 import com.tuya.smart.home.sdk.TuyaHomeSdk;
@@ -26,6 +27,8 @@ import com.tuya.smart.sdk.bean.BlueMeshBean;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import de.greenrobot.event.EventBus;
 
 public class TuyaSmartApp extends MultiDexApplication {
     static final String TAG = TuyaSmartApp.class.getSimpleName();
@@ -150,6 +153,7 @@ public class TuyaSmartApp extends MultiDexApplication {
     public void queryHomeList() {
         long homeId = CommonConfig.getHomeId(getApplicationContext());
         if (homeId > 0) {
+            Log.d(TAG,"getHomeDetail");
             TuyaHomeSdk.newHomeInstance(homeId).getHomeDetail(new ITuyaHomeResultCallback() {
                 @Override
                 public void onSuccess(HomeBean homeBean) {
@@ -163,6 +167,7 @@ public class TuyaSmartApp extends MultiDexApplication {
                 }
             });
         } else {
+            Log.d(TAG,"queryHomeList");
             TuyaHomeSdk.getHomeManagerInstance().queryHomeList(new ITuyaGetHomeListCallback() {
                 @Override
                 public void onSuccess(List<HomeBean> list) {

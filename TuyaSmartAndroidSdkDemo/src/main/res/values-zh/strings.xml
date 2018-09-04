@@ -17,7 +17,7 @@
     <string name="remove_device">移除设备</string>
     <string name="ap_start">开始AP配置</string>
 
-    <string name="offline">离线</string>
+    <string name="offline">设备离线</string>
     <string name="IntranetControl">局域网在线</string>
     <string name="OnlineControl">在线</string>
     <string name="device_state">设备状态：</string>

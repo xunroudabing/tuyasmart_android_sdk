@@ -19,6 +19,7 @@ import com.tuya.smart.android.demo.bean.DeviceAndGroupBean;
 import com.tuya.smart.android.demo.config.CommonConfig;
 import com.tuya.smart.android.demo.test.widget.AlertPickDialog;
 import com.tuya.smart.android.demo.utils.TuyaUtils;
+import com.tuya.smart.android.demo.utils.ViewUtils;
 import com.tuya.smart.bluemesh.mesh.device.ITuyaBlueMeshDevice;
 import com.tuya.smart.home.interior.presenter.TuyaDevice;
 import com.tuya.smart.home.interior.presenter.TuyaSmartDevice;
@@ -97,10 +98,12 @@ public class CommonGroupAndDeviceAdapter extends BaseAdapter {
         ImageView btnOff;
         TextView txtLight, txtTemp;
         TextView txtFunction;
+        TextView txtOnline;
         LinearLayout functionLayout, lightLayout, tempLayout, btnOffLayout;
 
         DeviceViewHolder(final View contentView) {
             super(contentView);
+            txtOnline = (TextView) contentView.findViewById(R.id.common_device_item_txtOnline);
             connect = (ImageView) contentView.findViewById(R.id.iv_device_list_dot);
             deviceIcon = (ImageView) contentView.findViewById(R.id.iv_device_icon);
             device = (TextView) contentView.findViewById(R.id.tv_device);
@@ -243,6 +246,11 @@ public class CommonGroupAndDeviceAdapter extends BaseAdapter {
                 }
                 Picasso.with(TuyaSdk.getApplication()).load(deviceBean.getIconUrl()).into
                         (deviceIcon);
+                String category = deviceBean.device.getProductBean().getMeshCategory();
+                Log.d(TAG,"category=" + category);
+                if(category.endsWith("08")){
+                    txtFunction.setVisibility(View.GONE);
+                }
             } else {
                 if(!TextUtils.isEmpty(deviceBean.group.getMeshId())){
                     isMesh = true;
@@ -256,12 +264,16 @@ public class CommonGroupAndDeviceAdapter extends BaseAdapter {
                 } else {
                     resId = R.drawable.ty_devicelist_dot_green;
                 }
+                txtOnline.setText(R.string.online);
+                txtOnline.setTextColor(ViewUtils.getColor(mContext,R.color.google_green));
             } else {
                 if (deviceBean.getIsShare() != null && deviceBean.getIsShare()) {
                     resId = R.drawable.ty_devicelist_share_gray;
                 } else {
                     resId = R.drawable.ty_devicelist_dot_gray;
                 }
+                txtOnline.setText(R.string.offline);
+                txtOnline.setTextColor(ViewUtils.getColor(mContext,R.color.google_red));
             }
             connect.setImageResource(resId);
             device.setText(deviceBean.getName());

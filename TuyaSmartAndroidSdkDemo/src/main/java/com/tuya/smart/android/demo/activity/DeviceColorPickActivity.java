@@ -323,7 +323,9 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
                         int i101 = (int) map_dp.get("101");
                         int i102 = (int) map_dp.get("102");
                         int i103 = (int) map_dp.get("103");
-                        mCurrentColor = Color.rgb(i101, i102, i103);
+                        if(color.equals("colour")) {
+                            mCurrentColor = Color.rgb(i101, i102, i103);
+                        }
                         Log.d(TAG,"[mesh]mCurrentColor=" + mCurrentColor);
                     } else {
                         color = (String) map_dp.get("2");

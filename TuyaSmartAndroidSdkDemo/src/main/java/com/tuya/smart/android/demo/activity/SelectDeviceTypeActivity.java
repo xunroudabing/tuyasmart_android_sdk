@@ -52,6 +52,8 @@ public class SelectDeviceTypeActivity extends BaseActivity implements View.OnCli
         public void onClick(DialogInterface dialog, int which) {
             if (which == DialogInterface.BUTTON_POSITIVE) {
                 Intent intent = new Intent(getApplicationContext(), ECActivity.class);
+                //修复提示wifi非2.4G问题
+                intent.putExtra(ECActivity.INTENT_ISMESH,true);
                 intent.putExtra(ECActivity.CONFIG_MODE, ECActivity.AP_MODE);
                 intent.putParcelableArrayListExtra(ECActivity.INTENT_FOUND_DEVICE,
                         mGateWayList);

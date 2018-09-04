@@ -12,6 +12,7 @@ import android.widget.Toast;
 import com.tuya.smart.android.demo.R;
 import com.tuya.smart.android.demo.adapter.GroupDeviceCheckedAdapter;
 import com.tuya.smart.android.demo.config.CommonConfig;
+import com.tuya.smart.android.demo.widget.ListViewForScrollView;
 import com.tuya.smart.home.sdk.TuyaHomeSdk;
 import com.tuya.smart.home.sdk.callback.ITuyaResultCallback;
 import com.tuya.smart.sdk.api.IResultCallback;
@@ -31,7 +32,7 @@ public class AddGroupActivity extends BaseActivity {
     public static final String INENT_PRODUCTID = "INENT_PRODUCTID";
     static final String TAG = AddGroupActivity.class.getSimpleName();
     List<GroupDeviceBean> mGroupDeviceBeans;
-    ListView mUnChkListview, mChkListview;
+    ListViewForScrollView mUnChkListview, mChkListview;
     GroupDeviceCheckedAdapter mUnChkAdapter, mChkAdapter;
     Button btnOK;
     String mProductId;
@@ -49,8 +50,8 @@ public class AddGroupActivity extends BaseActivity {
 
     protected void initViews() {
         editGroupName = (EditText) findViewById(R.id.add_group_editGroupName);
-        mUnChkListview = (ListView) findViewById(R.id.add_group_listviewUnchk);
-        mChkListview = (ListView) findViewById(R.id.add_group_listviewchk);
+        mUnChkListview = (ListViewForScrollView) findViewById(R.id.add_group_listviewUnchk);
+        mChkListview = (ListViewForScrollView) findViewById(R.id.add_group_listviewchk);
         btnOK = (Button) findViewById(R.id.add_group_btnOK);
         btnOK.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -129,8 +130,8 @@ public class AddGroupActivity extends BaseActivity {
                                                 new IResultCallback() {
                                                     @Override
                                                     public void onError(String s, String s1) {
-                                                        Log.e(TAG, "createNewGroup.onError:" + s
-                                                                + "," + s1);
+                                                        Log.e(TAG, "group add device.onError:" + s
+                                                                + "," + s1 + ",devid=" + devid);
                                                     }
 
                                                     @Override
@@ -146,6 +147,12 @@ public class AddGroupActivity extends BaseActivity {
                                                         }
                                                     }
                                                 });
+                                        //间隔320ms
+                                        try {
+                                            Thread.sleep(1000);
+                                        } catch (InterruptedException e) {
+                                            Log.e(TAG,e.toString());
+                                        }
                                     }
 
                                 }
@@ -195,6 +202,11 @@ public class AddGroupActivity extends BaseActivity {
                                                 (getApplicationContext()));
                                 if (meshList != null) {
                                     for (DeviceBean bean : meshList) {
+                                        String category = bean.getProductBean().getMeshCategory();
+                                        //过滤网关
+                                        if(category.endsWith("08")){
+                                            continue;
+                                        }
                                         GroupDeviceBean groupBean = new GroupDeviceBean();
                                         groupBean.setChecked(false);
                                         groupBean.setDeviceBean(bean);

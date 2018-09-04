@@ -7,6 +7,10 @@
     <include
         android:id="@+id/action_bar_layout"
         layout="@layout/toolbar_top_view" />
+    <ScrollView
+        android:layout_weight="1.0"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
     <LinearLayout
         android:orientation="vertical"
         android:layout_weight="1.0"
@@ -32,21 +36,22 @@
             android:layout_margin="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
-        <ListView
+        <com.tuya.smart.android.demo.widget.ListViewForScrollView
             android:id="@+id/add_group_listviewchk"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"></ListView>
+            android:layout_height="wrap_content"></com.tuya.smart.android.demo.widget.ListViewForScrollView>
         <TextView
             android:text="@string/txt_add_group_unadd"
             android:textColor="@color/text_color"
             android:layout_margin="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
-        <ListView
+        <com.tuya.smart.android.demo.widget.ListViewForScrollView
             android:id="@+id/add_group_listviewUnchk"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"></ListView>
+            android:layout_height="wrap_content"></com.tuya.smart.android.demo.widget.ListViewForScrollView>
     </LinearLayout>
+    </ScrollView>
     <Button
         android:id="@+id/add_group_btnOK"
         android:text="确定"

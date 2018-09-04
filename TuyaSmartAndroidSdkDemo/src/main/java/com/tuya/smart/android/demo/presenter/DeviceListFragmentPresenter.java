@@ -17,12 +17,14 @@ import com.tuya.smart.android.demo.R;
 import com.tuya.smart.android.demo.TuyaSmartApp;
 import com.tuya.smart.android.demo.activity.BrowserActivity;
 import com.tuya.smart.android.demo.activity.DeviceColorPickActivity;
+import com.tuya.smart.android.demo.activity.MeshGateWayActivity;
 import com.tuya.smart.android.demo.activity.SelectDeviceTypeActivity;
 import com.tuya.smart.android.demo.activity.SharedActivity;
 import com.tuya.smart.android.demo.activity.SwitchActivity;
 import com.tuya.smart.android.demo.bean.DeviceAndGroupBean;
 import com.tuya.smart.android.demo.config.CommonConfig;
 import com.tuya.smart.android.demo.fragment.DeviceListFragment;
+import com.tuya.smart.android.demo.model.HomeBeanEvent;
 import com.tuya.smart.android.demo.test.utils.DialogUtil;
 import com.tuya.smart.android.demo.utils.ActivityUtils;
 import com.tuya.smart.android.demo.utils.ProgressUtil;
@@ -40,7 +42,9 @@ import com.tuya.smart.home.interior.presenter.TuyaSmartRequest;
 import com.tuya.smart.home.sdk.TuyaHomeSdk;
 import com.tuya.smart.home.sdk.api.ITuyaHome;
 import com.tuya.smart.home.sdk.bean.HomeBean;
+import com.tuya.smart.home.sdk.callback.ITuyaGetHomeListCallback;
 import com.tuya.smart.home.sdk.callback.ITuyaHomeResultCallback;
+import com.tuya.smart.home.sdk.callback.ITuyaResultCallback;
 import com.tuya.smart.sdk.api.IRequestCallback;
 import com.tuya.smart.sdk.api.IResultCallback;
 import com.tuya.smart.sdk.api.ITuyaGroup;
@@ -54,6 +58,8 @@ import com.tuya.smart.tuyamesh.bean.SearchDeviceBean;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.greenrobot.event.EventBus;
+
 /**
  * Created by letian on 15/6/1.
  */
@@ -62,6 +68,8 @@ public class DeviceListFragmentPresenter extends BasePresenter implements NetWor
 
     static final String TAG = DeviceListFragmentPresenter.class.getSimpleName();
     private static final int WHAT_JUMP_GROUP_PAGE = 10212;
+    public static final int ACTION_REGISTER = 200;
+    public static final int ACTION_GETDATA = 201;
     protected Activity mActivity;
     protected IDeviceListFragmentView mView;
     private ITuyaBlueMeshDevice mTuyaBlueMeshDevice;
@@ -69,7 +77,15 @@ public class DeviceListFragmentPresenter extends BasePresenter implements NetWor
     Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            registerMeshDevListener();
+            switch (msg.what){
+                case ACTION_REGISTER:
+                    registerMeshDevListener();
+                    break;
+                case ACTION_GETDATA:
+                    getDataFromServer();
+                    break;
+            }
+
         }
     };
 
@@ -80,9 +96,13 @@ public class DeviceListFragmentPresenter extends BasePresenter implements NetWor
         //TuyaUser.getDeviceInstance().registerTuyaListChangedListener(this);
         getDataFromServer();
         initEventBus();
-        mHandler.sendEmptyMessageDelayed(0, 5000);
+        mHandler.sendEmptyMessageDelayed(ACTION_REGISTER, 5000);
     }
-
+    public void onEvent(HomeBeanEvent event){
+        Log.d(TAG,"onEvent homebean");
+        HomeBean homeBean = event.homeBean;
+        Log.d(TAG,"homeid=" + homeBean.getHomeId());
+    }
     public void registerMeshDevListener() {
         try {
             TuyaHomeSdk.getTuyaBlueMeshClient().startClient(TuyaSmartApp.getInstance()
@@ -201,6 +221,15 @@ public class DeviceListFragmentPresenter extends BasePresenter implements NetWor
             if (devBean.device.isBleMesh()) {
                 isMesh = true;
             }
+            String category = devBean.device.getProductBean().getMeshCategory();
+            //网关设备
+            if(category.endsWith("08")){
+                Intent intent = new Intent(mActivity.getApplicationContext(), MeshGateWayActivity.class);
+                intent.putExtra(MeshGateWayActivity.INTNET_TITLE, devBean.getName());
+                intent.putExtra(MeshGateWayActivity.INTENT_DEVID, devBean.getDevId());
+                mActivity.startActivity(intent);
+                return;
+            }
         } else if (devBean.type == 2) {
             if (!TextUtils.isEmpty(devBean.group.getMeshId())) {
                 isMesh = true;
@@ -236,18 +265,24 @@ public class DeviceListFragmentPresenter extends BasePresenter implements NetWor
     public void getDataFromServer() {
         //hanzheng to do queryDevList
         //TuyaUser.getDeviceInstance().queryDevList();
-        TuyaHomeSdk.newHomeInstance(CommonConfig.getHomeId(mActivity)).getHomeDetail(new ITuyaHomeResultCallback() {
-            @Override
-            public void onSuccess(HomeBean homeBean) {
-                updateLocalData(homeBean);
-            }
+        long homeId = CommonConfig.getHomeId(mActivity);
+        Log.d(TAG,"getDataFromServer,homeId=" + homeId);
+        if(homeId > 0) {
+            TuyaHomeSdk.newHomeInstance(homeId).getHomeDetail(new ITuyaHomeResultCallback() {
+                @Override
+                public void onSuccess(HomeBean homeBean) {
+                    updateLocalData(homeBean);
+                }
 
-            @Override
-            public void onError(String s, String s1) {
-                Log.e(TAG, "getHomeDetail.onError" + s + "," + s1);
-                mView.loadFinish();
-            }
-        });
+                @Override
+                public void onError(String s, String s1) {
+                    Log.e(TAG, "getHomeDetail.onError" + s + "," + s1);
+                    mView.loadFinish();
+                }
+            });
+        }else {
+            queryHomeList();
+        }
     }
 
     public void gotoAddDevice() {
@@ -519,5 +554,103 @@ public class DeviceListFragmentPresenter extends BasePresenter implements NetWor
     @Override
     public void onRemoved(String s) {
 
+    }
+    //*************************************
+    private HomeBean mHomeBean;
+    private BlueMeshBean mBlueMeshBean;
+    public void queryHomeList() {
+        long homeId = CommonConfig.getHomeId(mActivity.getApplicationContext());
+        if (homeId > 0) {
+            Log.d(TAG,"getHomeDetail");
+            TuyaHomeSdk.newHomeInstance(homeId).getHomeDetail(new ITuyaHomeResultCallback() {
+                @Override
+                public void onSuccess(HomeBean homeBean) {
+                    mHomeBean = homeBean;
+                    initMesh();
+                }
+
+                @Override
+                public void onError(String s, String s1) {
+                    Log.e(TAG, "onError:" + s1);
+                }
+            });
+        } else {
+            Log.d(TAG,"queryHomeList");
+            TuyaHomeSdk.getHomeManagerInstance().queryHomeList(new ITuyaGetHomeListCallback() {
+                @Override
+                public void onSuccess(List<HomeBean> list) {
+                    if (list == null || list.isEmpty()) {
+                        createHome();
+                    } else {
+                        mHomeBean = list.get(0);
+                        CommonConfig.setHomeId(mActivity.getApplicationContext(), mHomeBean.getHomeId());
+                        initMesh();
+                    }
+                }
+
+                @Override
+                public void onError(String code, String error) {
+                    Log.e(TAG, "onError=" + code + "," + error);
+                }
+            });
+        }
+    }
+
+    protected void createHome() {
+        double lat = 0D;
+        double lon = 0D;
+        String cityName = "浙江杭州";
+        if (TuyaSmartApp.getInstance().getLocation() != null) {
+            lat = TuyaSmartApp.getInstance().getLocation().getLatitude();
+            lon = TuyaSmartApp.getInstance().getLocation().getLongitude();
+            cityName = TuyaSmartApp.getInstance().getLocation().getProvince() + TuyaSmartApp.getInstance().getLocation().getCity();
+        }
+        Log.d(TAG, "create Home....");
+        TuyaHomeSdk.getHomeManagerInstance().createHome("home", lon, lat, cityName, new
+                ArrayList<String>(), new
+                ITuyaHomeResultCallback() {
+                    @Override
+                    public void onSuccess(HomeBean homeBean) {
+                        Log.d(TAG, "createHome onSuccess,homeid=" + homeBean.getHomeId());
+                        mHomeBean = homeBean;
+                        CommonConfig.setHomeId(mActivity.getApplicationContext(), mHomeBean.getHomeId());
+                        initMesh();
+                    }
+
+                    @Override
+                    public void onError(String code, String error) {
+                        Log.e(TAG, "createHome.onError=" + error);
+                    }
+                });
+    }
+
+    protected void initMesh() {
+        if (mHomeBean != null) {
+            mHandler.sendEmptyMessageDelayed(ACTION_GETDATA, 3000);
+            List<BlueMeshBean> meshList = mHomeBean.getMeshList();
+            if (meshList.isEmpty()) {
+                TuyaHomeSdk.newHomeInstance(mHomeBean.getHomeId()).createBlueMesh("mesh", new
+                        ITuyaResultCallback<BlueMeshBean>() {
+                            @Override
+                            public void onError(String errorCode, String errorMsg) {
+                                Log.e(TAG, "initMesh.onError:" + errorMsg);
+                            }
+
+                            @Override
+                            public void onSuccess(BlueMeshBean blueMeshBean) {
+                                Log.d(TAG, "initMesh.onSuccess");
+                                mBlueMeshBean = blueMeshBean;
+                                CommonConfig.setMeshId(mActivity.getApplicationContext(), mBlueMeshBean
+                                        .getMeshId());
+                                TuyaHomeSdk.initMesh(mBlueMeshBean.getMeshId());
+                            }
+                        });
+            } else {
+                mBlueMeshBean = meshList.get(0);
+                CommonConfig.setMeshId(mActivity.getApplicationContext(), mBlueMeshBean.getMeshId());
+                TuyaHomeSdk.initMesh(mBlueMeshBean.getMeshId());
+            }
+
+        }
     }
 }

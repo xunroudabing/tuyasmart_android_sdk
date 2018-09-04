@@ -3,6 +3,7 @@ package com.tuya.smart.android.demo.model;
 import android.content.Context;
 
 import com.tuya.smart.android.common.utils.SafeHandler;
+import com.tuya.smart.android.demo.config.CommonConfig;
 import com.tuya.smart.android.mvp.model.BaseModel;
 import com.tuya.smart.android.user.api.ILogoutCallback;
 import com.tuya.smart.android.user.api.IReNickNameCallback;
@@ -65,6 +66,7 @@ public class PersonalInfoModel extends BaseModel implements IPersonalInfoModel {
         TuyaUser.getUserInstance().logout(new ILogoutCallback() {
             @Override
             public void onSuccess() {
+                CommonConfig.setHomeId(mContext,0L);
                 resultSuccess(WHAT_SETTING_LOGOUT_SUCCESS, true);
             }
 

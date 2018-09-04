@@ -70,12 +70,24 @@
                 android:layout_height="wrap_content" />
         </LinearLayout>
         <TextView
-            android:id="@+id/common_device_item_txtFunction"
-            android:layout_width="match_parent"
+            android:id="@+id/common_device_item_txtOnline"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignLeft="@id/tv_device"
             android:layout_below="@id/tv_device"
             android:layout_marginTop="5dp"
+            android:text="@string/offline"
+            android:textColor="@color/google_green"
+            android:textSize="@dimen/ts_14"
+            tools:text="设备在线" />
+        <TextView
+            android:id="@+id/common_device_item_txtFunction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+           android:layout_toRightOf="@id/common_device_item_txtOnline"
+            android:layout_below="@id/tv_device"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="5dp"
             android:text="@string/btn_commonuse"
             android:textColor="@color/google_green"
             android:textSize="@dimen/ts_14"

@@ -34,8 +34,8 @@ public class TuyaUtils {
         int g = Color.green(color);
         int b = Color.blue(color);
         Map<String, Object> map = new HashMap<>();
+        //map.put("3",100);
         map.put("109", "colour");
-        //map.put("2","scene");
         //map.put("5", value);
         map.put("101", r);
         map.put("102", g);

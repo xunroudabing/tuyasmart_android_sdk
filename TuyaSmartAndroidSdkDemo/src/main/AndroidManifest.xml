@@ -259,6 +259,7 @@
         <activity android:name=".debug.MainListActivity">
         </activity>
         <activity android:name=".debug.HoloColorPickerActivity"></activity>
+        <activity android:name=".activity.MeshGateWayActivity"  android:theme="@style/Splash.Theme"></activity>
     </application>
 
 </manifest>
