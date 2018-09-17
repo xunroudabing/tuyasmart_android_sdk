@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">smartlife</string>
     <string name="online">设备在线</string>
+    <string name="alert_group_isfull">群组已满</string>
     <string name="gateway_working">网关工作中...</string>
     <string name="gateway_function">网关设备可以为蓝牙Mesh的设备提供远程控制的能力</string>
     <string name="alert_check_device">请至少选择一个设备</string>

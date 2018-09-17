@@ -1,7 +1,8 @@
 package com.tuya.smart.android.demo.bean;
 
+import android.text.TextUtils;
+
 import com.tuya.smart.home.interior.presenter.TuyaSmartDevice;
-import com.tuya.smart.sdk.TuyaUser;
 import com.tuya.smart.sdk.bean.DeviceBean;
 import com.tuya.smart.sdk.bean.GroupBean;
 
@@ -24,6 +25,17 @@ public class DeviceAndGroupBean {
     public boolean getIsOnline() {
         if (type == 1) {
             return device.getIsOnline();
+        } else if (group != null) {
+            if (!TextUtils.isEmpty(group.getMeshId())) {
+                List<DeviceBean> list = group.getDeviceBeans();
+                if (list != null) {
+                    for (DeviceBean bean : list) {
+                        if (bean.getIsOnline()) {
+                            return true;
+                        }
+                    }
+                }
+            }
         }
         return group.getIsOnline();
     }
@@ -73,9 +85,18 @@ public class DeviceAndGroupBean {
             return device.getDevId();
         }
         List<String> devIds = group.getDevIds();
-        if (devIds.size() <= 0) {
-            return null;
+        List<DeviceBean> beans = group.getDeviceBeans();
+        if(devIds != null) {
+            if (devIds.size() <= 0) {
+                return null;
+            }
+            return devIds.get(0);
+        }else if(beans != null){
+            if (beans.size() <= 0) {
+                return null;
+            }
+            return beans.get(0).getDevId();
         }
-        return devIds.get(0);
+        return  null;
     }
 }

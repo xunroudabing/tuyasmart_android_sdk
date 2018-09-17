@@ -502,7 +502,7 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
             if (!isGroup) {
                 Map<String, Object> map_dp = TuyaSmartDevice.getInstance().getDps(mDevId);
                 Map<String, Object> map = new HashMap<>();
-                if(isMesh){
+                if (isMesh) {
                     int i3 = (int) map_dp.get("3");
                     int value_light = 255 * i3 / 100;
                     int value_temp = (int) map_dp.get("104");
@@ -511,8 +511,9 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
                     String l = Integer.toHexString(value_light);
                     map.put("109", "scene_3");
                     //00000ffff005900E0
-                    map.put("113", String.format("0ff0000%02x%02x%02x00E0", value_temp, 255 - value_temp, value_light));
-                }else {
+                    map.put("113", String.format("0ff0000%02x%02x%02x00E0", value_temp, 255 -
+                            value_temp, value_light));
+                } else {
                     int v3 = (int) map_dp.get("3");
                     int v4 = (int) map_dp.get("4");
                     String v = String.format("%s%s%d01ff0000", Integer
@@ -550,7 +551,8 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
                     String l = Integer.toHexString(value_light);
                     map.put("109", "scene_3");
                     //00000ffff005900E0
-                    map.put("113", String.format("00000ff%02x%02x%02x00E0", value_temp, 255 - value_temp, value_light));
+                    map.put("113", String.format("00000ff%02x%02x%02x00E0", value_temp, 255 -
+                            value_temp, value_light));
                 } else {
                     int v3 = (int) map_dp.get("3");
                     int v4 = (int) map_dp.get("4");
@@ -580,7 +582,7 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
             if (!isGroup) {
                 Map<String, Object> map_dp = TuyaSmartDevice.getInstance().getDps(mDevId);
                 Map<String, Object> map = new HashMap<>();
-                if(isMesh){
+                if (isMesh) {
                     int i3 = (int) map_dp.get("3");
                     int value_light = 255 * i3 / 100;
                     int value_temp = (int) map_dp.get("104");
@@ -589,8 +591,9 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
                     String l = Integer.toHexString(value_light);
                     map.put("109", "scene_3");
                     //00000ffff005900E0
-                    map.put("113", String.format("000ff00%02x%02x%02x00E0", value_temp, 255 - value_temp, value_light));
-                }else {
+                    map.put("113", String.format("000ff00%02x%02x%02x00E0", value_temp, 255 -
+                            value_temp, value_light));
+                } else {
                     int v3 = (int) map_dp.get("3");
                     int v4 = (int) map_dp.get("4");
                     String v = String.format("%s%s%d0100ff00", Integer
@@ -620,7 +623,7 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
             if (!isGroup) {
                 Map<String, Object> map_dp = TuyaSmartDevice.getInstance().getDps(mDevId);
                 Map<String, Object> map = new HashMap<>();
-                if(isMesh){
+                if (isMesh) {
                     int i3 = (int) map_dp.get("3");
                     int value_light = 255 * i3 / 100;
                     int value_temp = (int) map_dp.get("104");
@@ -629,8 +632,9 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
                     String l = Integer.toHexString(value_light);
                     map.put("109", "scene_1");
                     //00000ffff005900E0
-                    map.put("111", String.format("0ffffff%02x%02x%02x00E0", value_temp, 255 - value_temp, value_light));
-                }else {
+                    map.put("111", String.format("0ffffff%02x%02x%02x00E0", value_temp, 255 -
+                            value_temp, value_light));
+                } else {
                     int v3 = (int) map_dp.get("3");
                     int v4 = (int) map_dp.get("4");
                     String v = String.format("%s%s%d01ffffff", Integer
@@ -705,9 +709,15 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
 
     protected void setColorByMusic(int volumn) {
         Random random = new Random();
-        int r = random.nextInt(255);
-        int b = Math.abs(255 - volumn);
-        int color = Color.argb(255, volumn, r, b);
+        int seed = random.nextInt(volumn);
+        int a = random.nextInt(255 - seed);
+        seed = random.nextInt(volumn);
+        int r = random.nextInt(255 - seed);
+        seed = random.nextInt(volumn);
+        int g = random.nextInt(255 - seed);
+        seed = random.nextInt(volumn);
+        int b = random.nextInt(255 - seed);
+        int color = Color.argb(a, r, g, b);
         setLightColor(color);
     }
 
@@ -718,7 +728,7 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
         Log.d(TAG, "value= " + value);
         if (isMesh) {
             sendDp(TuyaUtils.getMeshLightColor(color));
-        }else {
+        } else {
             Map<String, Object> map = new HashMap<>();
             map.put("2", "colour");
             //map.put("2","scene");

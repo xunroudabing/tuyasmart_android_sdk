@@ -3,6 +3,8 @@ package com.tuya.smart.android.demo.test.utils;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -477,5 +479,24 @@ public class DialogUtil {
         }
         dialog.setMessage(message);
         return dialog.create();
+    }
+
+    public static void customerListDialogTitleCenter(Context context, String title, RecyclerView.Adapter adapter,
+                                                     DialogInterface.OnClickListener listener) {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(context);
+
+        dialog.setPositiveButton("confirm", listener);
+        View contentView =  LayoutInflater.from(context).inflate(
+                R.layout.bluemesh_dialog_custom_list, null);
+        TextView tvTitle= (TextView) contentView.findViewById(R.id.dialog_title);
+        tvTitle.setText(title);
+        RecyclerView listView = (RecyclerView) contentView.findViewById(R.id.dialog_simple_listview);
+        listView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
+        listView.setAdapter(adapter);
+
+        dialog.setView(contentView);
+        final AlertDialog create = dialog.create();
+        create.setCanceledOnTouchOutside(true);
+        create.show();
     }
 }

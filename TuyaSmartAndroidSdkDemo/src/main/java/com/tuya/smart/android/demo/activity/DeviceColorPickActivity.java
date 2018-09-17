@@ -42,6 +42,7 @@ import com.tuya.smart.home.sdk.TuyaHomeSdk;
 import com.tuya.smart.sdk.api.IResultCallback;
 import com.tuya.smart.sdk.api.IResultStatusCallback;
 import com.tuya.smart.sdk.api.ITuyaGroup;
+import com.tuya.smart.sdk.bean.GroupBean;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -100,6 +101,7 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
     private String mCategory;
     private TuyaDevice mTuyaDevice;
     private ITuyaGroup mTuyaGroup;
+    private GroupBean mGroupBean;
     private ITuyaBlueMeshDevice mMeshDevice;
     private CommonDeviceDebugPresenter mPresenter;
 
@@ -194,6 +196,7 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
             } else {
                 mTuyaGroup = TuyaHomeSdk.newGroupInstance(mGroupId);
             }
+            mGroupBean = TuyaHomeSdk.getDataInstance().getGroupBean(mGroupId);
         }
         if (isMesh) {
             mMeshDevice = TuyaHomeSdk.newBlueMeshDeviceInstance(CommonConfig.getMeshId
@@ -323,10 +326,10 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
                         int i101 = (int) map_dp.get("101");
                         int i102 = (int) map_dp.get("102");
                         int i103 = (int) map_dp.get("103");
-                        if(color.equals("colour")) {
+                        if (color.equals("colour")) {
                             mCurrentColor = Color.rgb(i101, i102, i103);
                         }
-                        Log.d(TAG,"[mesh]mCurrentColor=" + mCurrentColor);
+                        Log.d(TAG, "[mesh]mCurrentColor=" + mCurrentColor);
                     } else {
                         color = (String) map_dp.get("2");
                         value_light = (int) map_dp.get("3");
@@ -627,10 +630,10 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
     protected void setLight(int value) {
         if (mWhiteMode) {
             Map<String, Object> map = new HashMap<>();
-            if(isMesh){
+            if (isMesh) {
                 int v = value * 100 / 255;
                 map.put("3", v);
-            }else {
+            } else {
                 map.put("3", value);
             }
             final String json = JSONObject.toJSONString(map);
@@ -647,9 +650,9 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
             String color_hex = Integer.toHexString(convertColor).toLowerCase().substring(2);
             Log.d(TAG, "setSu.color_hex=" + color_hex);
             String dp5_convert = String.format("%s0000ff%s", color_hex, Integer.toHexString(255));
-            if(isMesh){
+            if (isMesh) {
                 sendDp(TuyaUtils.getMeshLightColor(convertColor));
-            }else {
+            } else {
                 Map<String, Object> map = new HashMap<>();
                 map.put("2", "colour");
                 map.put("5", dp5_convert);
@@ -977,6 +980,22 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
                 }
             });
         } else {
+            if (isMesh) {
+                mMeshDevice.multicastDps(mGroupBean.getLocalId(), mGroupBean.getCategory(), json,
+                        new IResultCallback() {
+
+                    @Override
+                    public void onError(String s, String s1) {
+                        Log.d(TAG, "onError:" + s + "," + s1);
+                    }
+
+                    @Override
+                    public void onSuccess() {
+                        Log.d(TAG, " mMeshDevice.multicastDps onSuccess");
+                    }
+                });
+                return;
+            }
             mTuyaGroup.publishDps(json, new IResultCallback() {
                 @Override
                 public void onError(String s, String s1) {
