@@ -12,16 +12,19 @@ import android.util.Log;
 
 import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
+import com.tuya.smart.android.base.TuyaSmartSdk;
 import com.tuya.smart.android.demo.activity.LoginActivity;
 import com.tuya.smart.android.demo.config.CommonConfig;
 import com.tuya.smart.android.demo.model.HomeBeanEvent;
 import com.tuya.smart.android.demo.service.LocationService;
 import com.tuya.smart.android.demo.utils.ApplicationInfoUtil;
+import com.tuya.smart.home.interior.presenter.TuyaHomeShare;
 import com.tuya.smart.home.sdk.TuyaHomeSdk;
 import com.tuya.smart.home.sdk.bean.HomeBean;
 import com.tuya.smart.home.sdk.callback.ITuyaGetHomeListCallback;
 import com.tuya.smart.home.sdk.callback.ITuyaHomeResultCallback;
 import com.tuya.smart.home.sdk.callback.ITuyaResultCallback;
+import com.tuya.smart.sdk.TuyaSdk;
 import com.tuya.smart.sdk.api.INeedLoginListener;
 import com.tuya.smart.sdk.bean.BlueMeshBean;
 

@@ -19,7 +19,11 @@ import com.tuya.smart.android.demo.model.MeshGroupDeviceListModel;
 import com.tuya.smart.android.demo.test.utils.DialogUtil;
 import com.tuya.smart.android.demo.widget.ListViewForScrollView;
 import com.tuya.smart.home.interior.mesh.TuyaBlueMeshDevice;
+import com.tuya.smart.home.interior.presenter.TuyaGroupManager;
 import com.tuya.smart.home.sdk.TuyaHomeSdk;
+import com.tuya.smart.home.sdk.api.ITuyaHome;
+import com.tuya.smart.home.sdk.bean.HomeBean;
+import com.tuya.smart.home.sdk.callback.ITuyaHomeResultCallback;
 import com.tuya.smart.home.sdk.callback.ITuyaResultCallback;
 import com.tuya.smart.sdk.api.ITuyaGroup;
 import com.tuya.smart.sdk.api.bluemesh.IAddGroupCallback;
@@ -186,6 +190,7 @@ public class AddGroupActivity extends BaseActivity {
     public void addMeshDevice(long groupId) {
         //mesh设备
         GroupBean groupBean = TuyaHomeSdk.getDataInstance().getGroupBean(groupId);
+
         if (groupBean != null) {
             ITuyaGroup mGroup = TuyaHomeSdk.newBlueMeshGroupInstance(groupId);
             ArrayList<DeviceBean> _addBeans = new ArrayList<>();
@@ -250,16 +255,9 @@ public class AddGroupActivity extends BaseActivity {
             mITuyaBlueMesh.addGroup(groupName, "0501", enableLocalId, new IAddGroupCallback() {
                 @Override
                 public void onSuccess(long groupId) {
-                    Toast.makeText(AddGroupActivity.this
-                            , R.string.alert_group_add_sucess, Toast.LENGTH_SHORT).show();
-                    //getDataFromServer();
-                    final long mGroupId = groupId;
-                    mHandler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            addMeshDevice(mGroupId);
-                        }
-                    }, 400);
+//                    Toast.makeText(AddGroupActivity.this
+//                            , R.string.alert_group_add_sucess, Toast.LENGTH_SHORT).show();
+                    getDataFromServer(groupId);
 
                 }
 
@@ -307,5 +305,21 @@ public class AddGroupActivity extends BaseActivity {
         DialogUtil.customerListDialogTitleCenter(AddGroupActivity.this,
                 "以下设备执行失败",
                 adapter, null);
+    }
+
+    public void getDataFromServer(final long groupId) {
+        ITuyaHome mTuyaHome = TuyaHomeSdk.newHomeInstance(CommonConfig.getHomeId(getApplicationContext()));
+        mTuyaHome.getHomeDetail(new ITuyaHomeResultCallback() {
+            @Override
+            public void onSuccess(HomeBean homeBean) {
+                List<GroupBean> list = TuyaHomeSdk.getDataInstance().getMeshGroupList(CommonConfig.getMeshId(getApplicationContext()));
+                addMeshDevice(groupId);
+            }
+
+            @Override
+            public void onError(String errorCode, String errorMsg) {
+
+            }
+        });
     }
 }
