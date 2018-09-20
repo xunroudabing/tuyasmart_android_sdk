@@ -31,6 +31,8 @@ import com.tuya.smart.android.demo.presenter.CommonDeviceDebugPresenter;
 import com.tuya.smart.android.demo.test.bean.AlertPickBean;
 import com.tuya.smart.android.demo.test.utils.DialogUtil;
 import com.tuya.smart.android.demo.test.widget.AlertPickDialog;
+import com.tuya.smart.android.demo.utils.ProgressUtil;
+import com.tuya.smart.android.demo.utils.ToastUtil;
 import com.tuya.smart.android.demo.utils.TuyaUtils;
 import com.tuya.smart.android.demo.utils.ViewUtils;
 import com.tuya.smart.android.demo.view.ICommonDeviceDebugView;
@@ -135,6 +137,12 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
                 @Override
                 public boolean onMenuItemClick(MenuItem menuItem) {
                     switch (menuItem.getItemId()) {
+                        case R.id.action_edit_group:
+                            renameGroup();
+                            break;
+                        case R.id.action_manage_group:
+                            manageGroup();
+                            break;
                         case R.id.action_del_group:
                             deleteGroup();
                             break;
@@ -511,7 +519,48 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
         layerDrawable.setLayerInset(1, 15, 15, 15, 15);
         return layerDrawable;
     }
+    protected void renameGroup(){
+        DialogUtil.simpleInputDialog(this, getString(R.string.rename), getTitle(),
+                false, new DialogUtil.SimpleInputDialogInterface() {
+                    @Override
+                    public void onPositive(DialogInterface dialog, String inputText) {
+                        int limit = getResources().getInteger(R.integer
+                                .change_device_name_limit);
+                        if (inputText.length() > limit) {
+                            ToastUtil.showToast(DeviceColorPickActivity.this, R.string
+                                    .ty_modify_device_name_length_limit);
+                        } else {
+                            renameGroupTitleToServer(inputText);
+                        }
+                    }
 
+                    @Override
+                    public void onNegative(DialogInterface dialog) {
+
+                    }
+                });
+    }
+    private void renameGroupTitleToServer(final String titleName) {
+        ProgressUtil.showLoading(this, R.string.loading);
+        mTuyaGroup.renameGroup(titleName, new IResultCallback() {
+            @Override
+            public void onError(String s, String s1) {
+                ProgressUtil.hideLoading();
+                ToastUtil.showToast(DeviceColorPickActivity.this, s1);
+            }
+
+            @Override
+            public void onSuccess() {
+                ProgressUtil.hideLoading();
+               setTitle(titleName);
+            }
+        });
+    }
+    protected void manageGroup(){
+        Intent intent = new Intent(getApplicationContext(),ManageGroupActivity.class);
+        intent.putExtras(getIntent());
+        startActivity(intent);
+    }
     protected void deleteGroup() {
         DialogUtil.simpleConfirmDialog(DeviceColorPickActivity.this, getString(R.string
                 .alert_confirm_delete_group), new DialogInterface.OnClickListener() {

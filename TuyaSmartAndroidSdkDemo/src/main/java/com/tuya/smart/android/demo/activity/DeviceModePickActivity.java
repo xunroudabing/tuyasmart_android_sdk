@@ -34,6 +34,7 @@ import com.tuya.smart.home.sdk.TuyaHomeSdk;
 import com.tuya.smart.sdk.api.IResultCallback;
 import com.tuya.smart.sdk.api.IResultStatusCallback;
 import com.tuya.smart.sdk.api.ITuyaGroup;
+import com.tuya.smart.sdk.bean.GroupBean;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -86,6 +87,7 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
     private TuyaDevice mTuyaDevice;
     private ITuyaGroup mTuyaGroup;
     private ITuyaBlueMeshDevice mMeshDevice;
+    private GroupBean mGroupBean;
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -191,6 +193,7 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
             } else {
                 mTuyaGroup = TuyaHomeSdk.newGroupInstance(mGroupId);
             }
+            mGroupBean = TuyaHomeSdk.getDataInstance().getGroupBean(mGroupId);
         }
         if (isMesh) {
             mMeshDevice = TuyaHomeSdk.newBlueMeshDeviceInstance(CommonConfig.getMeshId
@@ -946,6 +949,22 @@ public class DeviceModePickActivity extends BaseActivity implements SeekBar
                 }
             });
         } else {
+            if (isMesh) {
+                mMeshDevice.multicastDps(mGroupBean.getLocalId(), mGroupBean.getCategory(), json,
+                        new IResultCallback() {
+
+                            @Override
+                            public void onError(String s, String s1) {
+                                Log.d(TAG, "onError:" + s + "," + s1);
+                            }
+
+                            @Override
+                            public void onSuccess() {
+                                Log.d(TAG, " mMeshDevice.multicastDps onSuccess");
+                            }
+                        });
+                return;
+            }
             mTuyaGroup.publishDps(json, new IResultCallback() {
                 @Override
                 public void onError(String s, String s1) {

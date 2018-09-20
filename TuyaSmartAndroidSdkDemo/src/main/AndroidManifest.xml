@@ -51,6 +51,7 @@
             android:value="ejhpgschncm755kq5d77kg8ddrnffryw" />
 
         <service android:name="org.eclipse.paho.android.service.MqttService" />
+        <service android:name="com.tuya.smart.mqtt.MqttService" android:stopWithTask="true"/>
         <service android:name="com.tuya.smart.android.hardware.service.DevTransferService" />
 
         <activity
@@ -260,6 +261,7 @@
         </activity>
         <activity android:name=".debug.HoloColorPickerActivity"></activity>
         <activity android:name=".activity.MeshGateWayActivity"  android:theme="@style/Splash.Theme"></activity>
+        <activity android:name=".activity.ManageGroupActivity" android:theme="@style/Splash.Theme"></activity>
     </application>
 
 </manifest>

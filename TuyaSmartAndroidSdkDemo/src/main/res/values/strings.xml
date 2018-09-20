@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">smartlife</string>
     <string name="online">设备在线</string>
+    <string name="alert_device_offline">设备离线，无法添加</string>
+    <string name="menu_manage_group">管理群组设备</string>
+    <string name="menu_edit_groupname">修改群组名称</string>
     <string name="alert_group_isfull">群组已满</string>
     <string name="gateway_working">网关工作中...</string>
     <string name="gateway_function">网关设备可以为蓝牙Mesh的设备提供远程控制的能力</string>
