@@ -125,9 +125,9 @@ public class ManageGroupActivity extends BaseActivity implements MeshGroupDevLis
         //List<DeviceBean> devList = TuyaHomeSdk.getDataInstance().getMeshDeviceList(mMeshId);
         for (DeviceBean bean : devList) {
             //TODO 不同大小类的设备  部分命令不通用 在这里可以过滤出相同的大小类的设备
-//            if (!bean.getCategory().equals(mVendorId)) {
-//                continue;
-//            }
+            if (!bean.getCategory().equals(mVendorId)) {
+                continue;
+            }
             //过滤wifi 与 mesh 设备
             boolean devMesh = bean.isBleMesh();
             if (isMesh == devMesh) {

@@ -14,5 +14,9 @@
         android:gravity="center"
         android:layout_marginLeft="15dp"
         android:textColor="#626262" />
-
+<View
+    android:layout_above="@id/tv_tip"
+    android:background="#626262"
+    android:layout_width="match_parent"
+    android:layout_height="1.0px"></View>
 </RelativeLayout>

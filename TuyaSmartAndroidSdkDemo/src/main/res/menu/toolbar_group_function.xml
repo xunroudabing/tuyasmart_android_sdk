@@ -14,5 +14,5 @@
     <item
         android:id="@+id/action_del_group"
         android:title="@string/delete_group"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="never" />
 </menu>

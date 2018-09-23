@@ -143,7 +143,7 @@ public class MeshGroupDevListAdapter extends RecyclerView.Adapter {
                 selected.setVisibility(View.VISIBLE);
                 hint_status.setVisibility(View.GONE);
                 selected.setImageResource(type == ADD_ACTION
-                        ? R.drawable.ty_group_selected : R.drawable.ty_group_un_select);
+                        ? R.drawable.widget_chk_checked : R.drawable.widget_chk_normal);
             } else {
                 selected.setVisibility(View.GONE);
                 hint_status.setVisibility(View.VISIBLE);

@@ -519,8 +519,9 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
         layerDrawable.setLayerInset(1, 15, 15, 15, 15);
         return layerDrawable;
     }
-    protected void renameGroup(){
-        DialogUtil.simpleInputDialog(this, getString(R.string.rename), getTitle(),
+
+    protected void renameGroup() {
+        DialogUtil.simpleInputDialog(this, getString(R.string.rename), getToolBar().getTitle(),
                 false, new DialogUtil.SimpleInputDialogInterface() {
                     @Override
                     public void onPositive(DialogInterface dialog, String inputText) {
@@ -540,6 +541,7 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
                     }
                 });
     }
+
     private void renameGroupTitleToServer(final String titleName) {
         ProgressUtil.showLoading(this, R.string.loading);
         mTuyaGroup.renameGroup(titleName, new IResultCallback() {
@@ -552,15 +554,17 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
             @Override
             public void onSuccess() {
                 ProgressUtil.hideLoading();
-               setTitle(titleName);
+                setTitle(titleName);
             }
         });
     }
-    protected void manageGroup(){
-        Intent intent = new Intent(getApplicationContext(),ManageGroupActivity.class);
+
+    protected void manageGroup() {
+        Intent intent = new Intent(getApplicationContext(), ManageGroupActivity.class);
         intent.putExtras(getIntent());
         startActivity(intent);
     }
+
     protected void deleteGroup() {
         DialogUtil.simpleConfirmDialog(DeviceColorPickActivity.this, getString(R.string
                 .alert_confirm_delete_group), new DialogInterface.OnClickListener() {
@@ -968,17 +972,17 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
             mNightOn = true;
         } else {
             light = 255;
-            temp = 255;
+            temp = (int) (255 * 0.5);//夜灯关上色温改为50%
             Map<String, Object> map = new HashMap<>();
             if (isMesh) {
                 map.put("109", "white");
                 map.put("3", 100);
-                map.put("104", 255);
-                map.put("105", 0);
+                map.put("104", temp);
+                map.put("105", 255 - temp);
             } else {
                 map.put("2", "white");
                 map.put("3", 255);
-                map.put("4", 255);
+                map.put("4", temp);
             }
             final String json = JSONObject.toJSONString(map);
             sendDp(json);
@@ -1033,16 +1037,16 @@ public class DeviceColorPickActivity extends BaseActivity implements View.OnClic
                 mMeshDevice.multicastDps(mGroupBean.getLocalId(), mGroupBean.getCategory(), json,
                         new IResultCallback() {
 
-                    @Override
-                    public void onError(String s, String s1) {
-                        Log.d(TAG, "onError:" + s + "," + s1);
-                    }
+                            @Override
+                            public void onError(String s, String s1) {
+                                Log.d(TAG, "onError:" + s + "," + s1);
+                            }
 
-                    @Override
-                    public void onSuccess() {
-                        Log.d(TAG, " mMeshDevice.multicastDps onSuccess");
-                    }
-                });
+                            @Override
+                            public void onSuccess() {
+                                Log.d(TAG, " mMeshDevice.multicastDps onSuccess");
+                            }
+                        });
                 return;
             }
             mTuyaGroup.publishDps(json, new IResultCallback() {
